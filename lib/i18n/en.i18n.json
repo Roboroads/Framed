@@ -1,0 +1,10 @@
+{
+  "app": {
+    "title": "Framed"
+  },
+  "home": {
+    "joinGame": "Join game",
+    "hostGame": "Host game",
+    "playFairDisclaimer": "This game trusts the group. We don't detect GPS spoofing or modified clients — just play fair."
+  }
+}
