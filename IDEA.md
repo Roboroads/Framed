@@ -4,10 +4,19 @@ A local-area circular assassination game you play IRL.
 
 ## How does the game work
 
-This is a game played in real life, assisted by your phone's GPS. Players gather at a starting point and start a game, after which they have to disperse. After the dispersion timer, the game starts for real. Everyone gets a target they have to find and "frame" by taking a picture of them. The picture is sent to the other players to judge whether it really shows the target. On a majority "yes" vote, the target is out of the game and the assassin inherits their target's target. Last player standing wins.
+This is a game played in real life, assisted by your phone's GPS. Players gather at a starting point and start a game, after which they have to disperse. After the dispersion timer, the game starts for real. Everyone gets a target they have to find and "frame" by taking a picture of them. The picture is sent to the other players to judge whether it really shows the target. On a majority "yes" vote, the target is out of the game and the assassin inherits their target's target. The game ends when one player remains; who wins depends on the game mode.
 
 - **Players:** 3 or more, no upper limit. (With 3 players there is exactly 1 judge per frame; that single vote decides.)
 - **The host** is a regular player once the game starts. The server is authoritative — the game continues even if the host's phone dies. No kick/force-end powers in-game.
+
+## Game modes
+
+The host picks one of two modes in the lobby. Gameplay is identical in both — same circle, frames, votes, permanent deaths, punishments. Only the winner differs:
+
+- **Most frames wins** (default). When the game ends, the player with the most confirmed frames wins — a dead player can win. Ties break on survival time, so the last player standing beats anyone tied with them.
+- **Last man standing.** The last player alive wins.
+
+Either way the game ends when one player remains (or when the last players die MIA simultaneously).
 
 ## Core loop: framing & judging
 
@@ -62,12 +71,13 @@ Anything that needs your attention fires a **high-priority, time-sensitive push 
   - **Judging modal.** Frame photo next to the target's reference selfie, title "Is this (player name)?", ✗ and ✓ buttons.
   - **Warning modal.** Shown while you're breaking a rule (e.g. outside the geofence) until you stop or die.
 - **Death screen.** How you died, how long you survived, the photo that framed you, and **who your assassin was**. Includes a chat with the other dead players so they can set up a meeting spot. Dead players still receive judging modals.
-- **Game finish.** Winner plus stats (most kills, most stand-still player, most moved player, combined movement, etc.) and the full kill chain. The host can choose "replay with same players" (same lobby, same selfies, reshuffled targets); players can only "Leave game".
+- **Game finish.** Winner (per the game mode, with the mode named on screen) plus stats (most kills, most stand-still player, most moved player, combined movement, etc.) and the full kill chain. The host can choose "replay with same players" (same lobby, same selfies, reshuffled targets); players can only "Leave game".
 
 ## Game options
 
 Set by the host in the lobby:
 
+- `game_mode` — `most_frames` (default) or `last_man_standing`. See Game modes.
 - `geofence_center` and `geofence_radius` — the play area for this game.
 - `disperse_minutes` — dispersal time before the game starts. Default: 10.
 - `soft_punishment_minutes` — how long you can break a rule before soft consequences. Default: 2.
@@ -154,7 +164,7 @@ The delete-everything design is the core of compliance, but these points need to
 
 Elements to take into account for later:
 
-- **Multiple game modes.** Launch with "assassination"; later Free-For-All or teams.
+- **More game modes.** The MVP ships most-frames and last-man-standing; later Free-For-All or teams.
 - **Powerups.** Shown on the map; claim one by standing at that spot (landmark?) and use it from the ingame screen. Powerups should be individually toggleable per-game. Candidate set: 
   - Cloak (your location is skipped in one pulse)
   - Compass (an extra personal compass peek)
