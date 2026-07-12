@@ -1,6 +1,6 @@
 # Framed
 
-A local-area circular assassination game you play IRL — GPS-assisted, photo-based, last player standing wins.
+A local-area circular assassination game you play IRL — GPS-assisted, photo-based. Two game modes: most frames wins (default) or last player standing.
 
 **[IDEA.md](IDEA.md)** holds the full game design.
 
