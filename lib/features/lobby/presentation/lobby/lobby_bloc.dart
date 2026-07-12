@@ -180,8 +180,11 @@ class LobbyBloc extends Cubit<LobbyState> {
     return next;
   }
 
-  Future<void> changeMode(GameMode mode) {
-    return _repository.updateSettings(
+  Future<void> changeMode(GameMode mode) async {
+    // supabase_flutter's rpc() builder is lazy — it only actually sends the
+    // request once awaited. _showModePicker's onChanged callback discards
+    // this method's returned future, so the await must happen in here.
+    await _repository.updateSettings(
       gameId: gameId,
       settings: {'mode': mode.wireValue},
     );

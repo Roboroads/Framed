@@ -322,6 +322,22 @@ void main() {
       expect(bloc.state.mode, GameMode.lastManStanding);
     });
 
+    test('changeMode sends the new mode to the repository', () async {
+      repository.snapshot = snapshotWith();
+      final bloc = LobbyBloc(
+        repository: repository,
+        session: sessionAs('player-host'),
+        events: events.stream,
+        gameId: gameId,
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      await bloc.changeMode(GameMode.lastManStanding);
+
+      expect(repository.capturedSettings, {'mode': 'last_man_standing'});
+    });
+
     test('canStart flips true only once 3 players are ready', () async {
       repository.snapshot = snapshotWith(
         roster: [
