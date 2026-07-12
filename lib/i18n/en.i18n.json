@@ -6,5 +6,37 @@
     "joinGame": "Join game",
     "hostGame": "Host game",
     "playFairDisclaimer": "This game trusts the group. We don't detect GPS spoofing or modified clients — just play fair."
+  },
+  "hostSetup": {
+    "title": "Host a game",
+    "modeSectionTitle": "Game mode",
+    "modeMostFrames": "Most frames wins",
+    "modeMostFramesDescription": "Whoever has the most confirmed frames when the game ends wins, even if they've been framed themselves.",
+    "modeLastManStanding": "Last man standing",
+    "modeLastManStandingDescription": "The last player alive wins.",
+    "geofenceSectionTitle": "Play area",
+    "geofenceRadiusLabel": "$radius m radius",
+    "timingSectionTitle": "Timing",
+    "disperseMinutes": "Dispersal time (minutes)",
+    "softPunishmentMinutes": "Soft punishment after (minutes)",
+    "hardPunishmentMinutes": "Hard punishment after (minutes)",
+    "compassUpdateIntervalMinutes": "Compass pulse interval (minutes)",
+    "compassViewSeconds": "Compass visible for (seconds)",
+    "voteTimeoutMinutes": "Vote timeout (minutes)",
+    "frameCooldownMinutes": "Frame cooldown (minutes)",
+    "createGame": "Create game",
+    "errorBadSettings": "Something in the settings doesn't look right — check the values and try again.",
+    "errorGeneric": "Couldn't create the game. Check your connection and try again."
+  },
+  "preJoin": {
+    "title": "You're playing too",
+    "nameLabel": "Your name",
+    "consentNotice": "We collect your name and a reference selfie for this game only. Everything is deleted when the game ends, or after 24 hours at the latest. Taking the selfie means you agree.",
+    "takeSelfie": "Take reference selfie",
+    "retakeSelfie": "Retake selfie"
+  },
+  "lobby": {
+    "title": "Lobby",
+    "scanToJoin": "Scan to join"
   }
 }

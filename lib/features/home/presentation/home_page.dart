@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../i18n/strings.g.dart';
+import '../../lobby/presentation/host_setup/host_setup_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -27,7 +28,9 @@ class HomePage extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               OutlinedButton(
-                onPressed: null, // TODO: lobby as host
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const HostSetupPage()),
+                ),
                 child: Text(t.home.hostGame),
               ),
               const SizedBox(height: 48),

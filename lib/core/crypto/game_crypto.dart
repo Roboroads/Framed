@@ -31,26 +31,36 @@ class GameCrypto {
   Future<Uint8List> get keyBytes async =>
       Uint8List.fromList(await _secretKey.extractBytes());
 
-  /// `base64(nonce(12) ‖ ciphertext ‖ tag(16))`, fresh nonce every call.
-  Future<String> encrypt(List<int> plaintext) async {
+  /// Raw `nonce(12) ‖ ciphertext ‖ tag(16)`, fresh nonce every call — what
+  /// Storage blobs (selfies, frame photos) upload directly, no text
+  /// encoding wasted on binary content.
+  Future<Uint8List> encryptBytes(List<int> plaintext) async {
     final box = await _algorithm.encrypt(plaintext, secretKey: _secretKey);
-    return base64Encode(box.concatenation());
+    return box.concatenation();
   }
+
+  /// `base64(nonce(12) ‖ ciphertext ‖ tag(16))` — for text columns (names,
+  /// chat).
+  Future<String> encrypt(List<int> plaintext) async =>
+      base64Encode(await encryptBytes(plaintext));
 
   Future<String> encryptString(String plaintext) =>
       encrypt(utf8.encode(plaintext));
 
-  /// Reverses [encrypt]. Throws [SecretBoxAuthenticationError] on tampered
-  /// or corrupt input.
-  Future<Uint8List> decrypt(String blob) async {
+  /// Reverses [encryptBytes]. Throws [SecretBoxAuthenticationError] on
+  /// tampered or corrupt input.
+  Future<Uint8List> decryptBytes(List<int> blob) async {
     final box = SecretBox.fromConcatenation(
-      base64Decode(blob),
+      blob,
       nonceLength: _algorithm.nonceLength,
       macLength: _algorithm.macAlgorithm.macLength,
     );
     final plain = await _algorithm.decrypt(box, secretKey: _secretKey);
     return Uint8List.fromList(plain);
   }
+
+  /// Reverses [encrypt].
+  Future<Uint8List> decrypt(String blob) => decryptBytes(base64Decode(blob));
 
   Future<String> decryptString(String blob) async =>
       utf8.decode(await decrypt(blob));

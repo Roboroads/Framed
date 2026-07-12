@@ -12,6 +12,11 @@ Future<void> main() async {
     url: Env.supabaseUrl,
     publishableKey: Env.supabaseAnonKey,
   );
+  // Every RPC identifies the caller by auth.uid(); sign in once, persisted
+  // across restarts by supabase_flutter (see backend/README.md).
+  if (Supabase.instance.client.auth.currentSession == null) {
+    await Supabase.instance.client.auth.signInAnonymously();
+  }
   configureDependencies();
   runApp(TranslationProvider(child: const FramedApp()));
 }
