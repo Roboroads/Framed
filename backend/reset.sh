@@ -34,10 +34,10 @@ confirm
 echo "===> Stopping and removing all containers..."
 
 if [ -f ".env" ]; then
-    docker compose -f docker-compose.yml -f ./dev/docker-compose.dev.yml down -v --remove-orphans
+    docker compose -f docker-compose.yml down -v --remove-orphans
 elif [ -f ".env.example" ]; then
     echo "No .env found, using .env.example for docker compose down..."
-    docker compose --env-file .env.example -f docker-compose.yml -f ./dev/docker-compose.dev.yml down -v --remove-orphans
+    docker compose --env-file .env.example -f docker-compose.yml down -v --remove-orphans
 else
     echo "Skipping 'docker compose down' because there's no env-file."
 fi
@@ -49,7 +49,8 @@ for dir in $BIND_MOUNTS; do
     if [ -d "$dir" ]; then
         echo "Removing $dir..."
         confirm
-        rm -rf "$dir"
+        # Contents are owned by container users; fall back to removing via docker
+        rm -rf "$dir" 2>/dev/null || docker run --rm -v "$(pwd)/$(dirname "$dir"):/wipe" --entrypoint rm supabase/postgres:17.6.1.136 -rf "/wipe/$(basename "$dir")"
     else
         echo "$dir not found."
     fi
