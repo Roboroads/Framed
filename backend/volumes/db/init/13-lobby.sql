@@ -241,6 +241,8 @@ begin
     raise exception using message = 'not_found';
   end if;
   update public.players set selfie_path = path where id = me.id;
+  perform public.emit('game:' || me.game_id, 'player_ready',
+    jsonb_build_object('player_id', me.id));
 end $$;
 
 -- Only signed-in players call these; strip the default-ACL grants otherwise
