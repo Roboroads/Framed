@@ -334,6 +334,36 @@ services:
       RUN_JANITOR: "true"
       DISABLE_HEALTHCHECK_LOGGING: "true"
 
+  # Framed: applies volumes/db/init/*.sql (idempotent) on every `up`, once db
+  # and storage are healthy — storage.objects does not exist at initdb time,
+  # so the schema/policy files cannot run as initdb migrations.
+  framed-sql:
+    container_name: framed-sql
+    image: supabase/postgres:17.6.1.136
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+      storage:
+        condition: service_healthy
+    volumes:
+      - ./volumes/db/init:/framed-init:Z,ro
+    environment:
+      PGHOST: ${POSTGRES_HOST}
+      PGPORT: ${POSTGRES_PORT}
+      PGDATABASE: ${POSTGRES_DB}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+    entrypoint: ["/bin/sh", "-ceu"]
+    command:
+      - |
+        for f in /framed-init/*.sql; do
+          [ -e "$$f" ] || continue
+          echo "framed-sql: applying $$f"
+          psql -v ON_ERROR_STOP=1 --no-password --no-psqlrc -U supabase_admin -f "$$f"
+        done
+        # PostgREST caches the schema at boot; tell it about anything new
+        psql -v ON_ERROR_STOP=1 --no-password --no-psqlrc -U supabase_admin -c "notify pgrst, 'reload schema'"
+
   # To use S3 backed storage: docker compose -f docker-compose.yml -f docker-compose.s3.yml up
   storage:
     container_name: supabase-storage
@@ -500,9 +530,6 @@ services:
       - ./volumes/db/logs.sql:/docker-entrypoint-initdb.d/migrations/99-logs.sql:Z
       # Changes required for Pooler support
       - ./volumes/db/pooler.sql:/docker-entrypoint-initdb.d/migrations/99-pooler.sql:Z
-      # Framed: PostGIS + game schema (990/991 sort after the 99-* supabase files)
-      - ./volumes/db/init/data.sql:/docker-entrypoint-initdb.d/migrations/990-framed-postgis.sql:Z
-      - ./volumes/db/init/10-schema.sql:/docker-entrypoint-initdb.d/migrations/991-framed-schema.sql:Z
       # Use named volume to persist pgsodium decryption key between restarts
       - db-config:/etc/postgresql-custom
     healthcheck:

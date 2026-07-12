@@ -1,6 +1,6 @@
 # Framed backend — local dev
 
-Vendored from the official [supabase/supabase docker setup](https://github.com/supabase/supabase/tree/master/docker), with PostGIS enabled in `volumes/db/init/data.sql`.
+Vendored from the official [supabase/supabase docker setup](https://github.com/supabase/supabase/tree/master/docker), with PostGIS enabled in `volumes/db/init/00-postgis.sql`.
 
 ## Run
 
@@ -14,6 +14,10 @@ docker compose up -d
 - Postgres: `postgresql://postgres:<POSTGRES_PASSWORD>@localhost:5432/postgres`
 
 The app connects with `SUPABASE_PUBLIC_URL` + `ANON_KEY` from `.env` (see `lib/core/config/env.dart`).
+
+Anonymous sign-ins are enabled (`ENABLE_ANONYMOUS_USERS=true` in `.env`) — every RPC identifies the caller by `auth.uid()` from Supabase anonymous auth.
+
+The `framed-sql` one-shot container applies `volumes/db/init/*.sql` (idempotent schema + policies) on every `docker compose up`, after db and storage are healthy.
 
 ## Reset
 
