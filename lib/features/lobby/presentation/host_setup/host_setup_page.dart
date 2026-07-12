@@ -58,12 +58,7 @@ class _HostSetupViewState extends State<_HostSetupView> {
         listener: (context, state) {
           if (state.status == HostSetupStatus.success) {
             Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (_) => LobbyPage(
-                  joinToken: state.joinTokenForQr!,
-                  gameKey: state.gameKeyForQr!,
-                ),
-              ),
+              MaterialPageRoute(builder: (_) => const LobbyPage()),
             );
           } else if (state.status == HostSetupStatus.failure) {
             ScaffoldMessenger.of(context).showSnackBar(

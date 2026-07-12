@@ -8,4 +8,7 @@ enum GameMode {
 
   /// The exact string the `mode` column and settings jsonb expect.
   final String wireValue;
+
+  static GameMode fromWireValue(String value) =>
+      values.firstWhere((m) => m.wireValue == value);
 }

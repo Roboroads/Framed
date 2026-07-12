@@ -45,6 +45,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$hostSetup$en hostSetup = Translations$hostSetup$en._(_root);
 	late final Translations$preJoin$en preJoin = Translations$preJoin$en._(_root);
 	late final Translations$lobby$en lobby = Translations$lobby$en._(_root);
+	late final Translations$ingame$en ingame = Translations$ingame$en._(_root);
 	late final Translations$scan$en scan = Translations$scan$en._(_root);
 	late final Translations$camera$en camera = Translations$camera$en._(_root);
 	late final Translations$join$en join = Translations$join$en._(_root);
@@ -186,6 +187,57 @@ class Translations$lobby$en {
 
 	/// en: 'Scan to join'
 	String get scanToJoin => 'Scan to join';
+
+	/// en: '$ready/$total ready'
+	String readyCount({required Object ready, required Object total}) => '${ready}/${total} ready';
+
+	/// en: 'Host'
+	String get hostBadge => 'Host';
+
+	/// en: 'Ready'
+	String get readyBadge => 'Ready';
+
+	/// en: 'Not ready yet'
+	String get notReadyBadge => 'Not ready yet';
+
+	/// en: 'Start game'
+	String get startButton => 'Start game';
+
+	/// en: 'Need at least 3 ready players'
+	String get startTooFewPlayers => 'Need at least 3 ready players';
+
+	/// en: 'Waiting for the host to start…'
+	String get waitingForHost => 'Waiting for the host to start…';
+
+	/// en: 'Change mode'
+	String get changeMode => 'Change mode';
+
+	/// en: 'Something went wrong. Check your connection and try again.'
+	String get errorGeneric => 'Something went wrong. Check your connection and try again.';
+}
+
+// Path: ingame
+class Translations$ingame$en {
+	Translations$ingame$en._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Spread out'
+	String get disperseTitle => 'Spread out';
+
+	/// en: 'You'll get your target when this hits zero.'
+	String get disperseInstruction => 'You\'ll get your target when this hits zero.';
+
+	/// en: 'Your target'
+	String get targetCardTitle => 'Your target';
+
+	/// en: 'Frame (coming soon)'
+	String get frameButtonPlaceholder => 'Frame (coming soon)';
+
+	/// en: 'Couldn't load your target. Try reopening the app.'
+	String get errorTargetLoad => 'Couldn\'t load your target. Try reopening the app.';
 }
 
 // Path: scan
@@ -278,6 +330,20 @@ extension on Translations {
 			'preJoin.retakeSelfie' => 'Retake selfie',
 			'lobby.title' => 'Lobby',
 			'lobby.scanToJoin' => 'Scan to join',
+			'lobby.readyCount' => ({required Object ready, required Object total}) => '${ready}/${total} ready',
+			'lobby.hostBadge' => 'Host',
+			'lobby.readyBadge' => 'Ready',
+			'lobby.notReadyBadge' => 'Not ready yet',
+			'lobby.startButton' => 'Start game',
+			'lobby.startTooFewPlayers' => 'Need at least 3 ready players',
+			'lobby.waitingForHost' => 'Waiting for the host to start…',
+			'lobby.changeMode' => 'Change mode',
+			'lobby.errorGeneric' => 'Something went wrong. Check your connection and try again.',
+			'ingame.disperseTitle' => 'Spread out',
+			'ingame.disperseInstruction' => 'You\'ll get your target when this hits zero.',
+			'ingame.targetCardTitle' => 'Your target',
+			'ingame.frameButtonPlaceholder' => 'Frame (coming soon)',
+			'ingame.errorTargetLoad' => 'Couldn\'t load your target. Try reopening the app.',
 			'scan.title' => 'Scan to join',
 			'scan.invalidCode' => 'That\'s not a valid Framed code — keep scanning.',
 			'camera.permissionDeniedBody' => 'Framed needs camera access for this. Grant it, then try again.',

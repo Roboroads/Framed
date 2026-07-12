@@ -6,6 +6,7 @@ import 'package:framed/core/session/game_session.dart';
 import 'package:framed/features/lobby/domain/game_settings.dart';
 import 'package:framed/features/lobby/domain/lobby_error.dart';
 import 'package:framed/features/lobby/domain/lobby_repository.dart';
+import 'package:framed/features/lobby/domain/lobby_snapshot.dart';
 import 'package:framed/features/lobby/presentation/join/join_cubit.dart';
 import 'package:framed/features/lobby/presentation/join/join_state.dart';
 import 'package:postgrest/postgrest.dart';
@@ -67,11 +68,17 @@ class _FakeLobbyRepository implements LobbyRepository {
   @override
   Future<void> updateSettings({
     required String gameId,
-    required GameSettings settings,
+    required Map<String, dynamic> settings,
   }) => throw UnimplementedError();
 
   @override
   Future<void> leaveLobby(String gameId) => throw UnimplementedError();
+
+  @override
+  Future<LobbySnapshot> fetchLobby(String gameId) => throw UnimplementedError();
+
+  @override
+  Future<void> startGame(String gameId) => throw UnimplementedError();
 }
 
 void main() {

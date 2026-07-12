@@ -8,6 +8,7 @@
 --
 --   game:{game_id}        — players of that game
 --     player_joined   {player_id, name_ciphertext}
+--     player_ready    {player_id}
 --     player_left     {player_id}
 --     host_changed    {player_id}
 --     settings_changed{settings}

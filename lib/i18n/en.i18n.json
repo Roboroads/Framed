@@ -38,7 +38,23 @@
   },
   "lobby": {
     "title": "Lobby",
-    "scanToJoin": "Scan to join"
+    "scanToJoin": "Scan to join",
+    "readyCount": "$ready/$total ready",
+    "hostBadge": "Host",
+    "readyBadge": "Ready",
+    "notReadyBadge": "Not ready yet",
+    "startButton": "Start game",
+    "startTooFewPlayers": "Need at least 3 ready players",
+    "waitingForHost": "Waiting for the host to start…",
+    "changeMode": "Change mode",
+    "errorGeneric": "Something went wrong. Check your connection and try again."
+  },
+  "ingame": {
+    "disperseTitle": "Spread out",
+    "disperseInstruction": "You'll get your target when this hits zero.",
+    "targetCardTitle": "Your target",
+    "frameButtonPlaceholder": "Frame (coming soon)",
+    "errorTargetLoad": "Couldn't load your target. Try reopening the app."
   },
   "scan": {
     "title": "Scan to join",

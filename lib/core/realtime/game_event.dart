@@ -16,6 +16,34 @@ sealed class GameEvent with _$GameEvent {
     required String nameCiphertext,
   }) = PlayerJoined;
 
+  /// game:{game_id} — a player's selfie upload completed (set_selfie);
+  /// they now count towards the ready total.
+  const factory GameEvent.playerReady({required String playerId}) = PlayerReady;
+
+  /// game:{game_id} — someone left the lobby (or was never seated again
+  /// after MIA — lobby-only in practice, see leave_lobby).
+  const factory GameEvent.playerLeft({required String playerId}) = PlayerLeft;
+
+  /// game:{game_id} — the host left; this player inherited the role.
+  const factory GameEvent.hostChanged({required String playerId}) = HostChanged;
+
+  /// game:{game_id} — the host changed the settings. Same shape as
+  /// `framed_settings_json` (backend/volumes/db/init/13-lobby.sql).
+  const factory GameEvent.settingsChanged({
+    required Map<String, dynamic> settings,
+  }) = SettingsChanged;
+
+  /// game:{game_id} — the lobby closed; everyone disperses until [endsAt].
+  const factory GameEvent.dispersalStarted({required DateTime endsAt}) =
+      DispersalStarted;
+
+  /// player:{player_id} — dispersal ended, here is your target.
+  const factory GameEvent.targetAssigned({
+    required String targetId,
+    required String nameCiphertext,
+    required String selfiePath,
+  }) = TargetAssigned;
+
   /// Fallback for events this app version does not model (yet).
   const factory GameEvent.unknown({
     required String event,
@@ -29,6 +57,30 @@ sealed class GameEvent with _$GameEvent {
           return GameEvent.playerJoined(
             playerId: payload['player_id'] as String,
             nameCiphertext: payload['name_ciphertext'] as String,
+          );
+        case 'player_ready':
+          return GameEvent.playerReady(
+            playerId: payload['player_id'] as String,
+          );
+        case 'player_left':
+          return GameEvent.playerLeft(playerId: payload['player_id'] as String);
+        case 'host_changed':
+          return GameEvent.hostChanged(
+            playerId: payload['player_id'] as String,
+          );
+        case 'settings_changed':
+          return GameEvent.settingsChanged(
+            settings: Map<String, dynamic>.from(payload['settings'] as Map),
+          );
+        case 'dispersal_started':
+          return GameEvent.dispersalStarted(
+            endsAt: DateTime.parse(payload['ends_at'] as String),
+          );
+        case 'target_assigned':
+          return GameEvent.targetAssigned(
+            targetId: payload['target_id'] as String,
+            nameCiphertext: payload['name_ciphertext'] as String,
+            selfiePath: payload['selfie_path'] as String,
           );
         default:
           return GameEvent.unknown(event: event, payload: payload);

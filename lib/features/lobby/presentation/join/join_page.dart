@@ -52,10 +52,7 @@ class _JoinView extends StatelessWidget {
         listener: (context, state) {
           if (state.status == JoinStatus.success) {
             Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (_) =>
-                    LobbyPage(joinToken: joinToken, gameKey: gameKeyBytes),
-              ),
+              MaterialPageRoute(builder: (_) => const LobbyPage()),
             );
           } else if (state.status == JoinStatus.failure &&
               state.error != LobbyError.nameTaken) {
