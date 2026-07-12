@@ -24,6 +24,7 @@ declare
   g public.games%rowtype;
   ids uuid[];
   n int;
+  started timestamptz := now();
 begin
   select * into g from public.games where id = start_game.game_id for update;
   if not found then raise exception using message = 'not_found'; end if;
@@ -42,11 +43,13 @@ begin
     update public.players set target_id = ids[(i % n) + 1] where id = ids[i];
   end loop;
 
-  update public.games set status = 'dispersing', started_at = now(), join_token = null
+  update public.games set status = 'dispersing', started_at = started, join_token = null
     where id = g.id;
 
+  -- g is the pre-update snapshot (started_at was still null there) — use
+  -- the `started` variable captured above, not g.started_at
   perform public.emit('game:' || g.id, 'dispersal_started',
-    jsonb_build_object('ends_at', g.started_at + (g.disperse_minutes || ' minutes')::interval));
+    jsonb_build_object('ends_at', started + (g.disperse_minutes || ' minutes')::interval));
 end $$;
 
 -- Step 1: dispersal ends -> active, first pulse scheduled, targets revealed.
