@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../features/game/di.dart';
 import '../../features/lobby/di.dart';
 import '../realtime/game_channels.dart';
 
@@ -12,4 +13,5 @@ void configureDependencies() {
   getIt.registerSingleton<SupabaseClient>(Supabase.instance.client);
   getIt.registerLazySingleton<GameChannels>(() => GameChannels(getIt()));
   configureLobbyDependencies();
+  configureGameDependencies();
 }

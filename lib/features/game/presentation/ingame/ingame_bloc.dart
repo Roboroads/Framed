@@ -1,0 +1,63 @@
+import 'dart:async';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../../core/crypto/game_crypto.dart';
+import '../../../../core/realtime/game_event.dart';
+import '../../domain/game_repository.dart';
+import '../../domain/target.dart';
+import 'ingame_state.dart';
+
+class IngameBloc extends Cubit<IngameState> {
+  IngameBloc({
+    required Stream<GameEvent> events,
+    required GameCrypto crypto,
+    required GameRepository repository,
+    required DateTime initialEndsAt,
+  }) : _crypto = crypto,
+       _repository = repository,
+       super(IngameState.dispersing(endsAt: initialEndsAt)) {
+    _subscription = events.listen(_onEvent);
+  }
+
+  final GameCrypto _crypto;
+  final GameRepository _repository;
+  late final StreamSubscription<GameEvent> _subscription;
+
+  // Bumped on every target_assigned so an in-flight download/decrypt from a
+  // superseded assignment (e.g. a target reassigned after dying) can't land
+  // after a newer one already did.
+  int _targetGeneration = 0;
+
+  Future<void> _onEvent(GameEvent event) async {
+    if (event is! TargetAssigned) return;
+    final generation = ++_targetGeneration;
+
+    try {
+      final name = await _crypto.decryptString(event.nameCiphertext);
+      final encryptedSelfie = await _repository.downloadSelfie(
+        event.selfiePath,
+      );
+      final selfieBytes = await _crypto.decryptBytes(encryptedSelfie);
+      if (isClosed || generation != _targetGeneration) return;
+      emit(
+        IngameState.playing(
+          target: Target(
+            playerId: event.targetId,
+            name: name,
+            selfieBytes: selfieBytes,
+          ),
+        ),
+      );
+    } catch (_) {
+      if (isClosed || generation != _targetGeneration) return;
+      emit(const IngameState.targetLoadFailed());
+    }
+  }
+
+  @override
+  Future<void> close() {
+    _subscription.cancel();
+    return super.close();
+  }
+}
