@@ -102,67 +102,78 @@ void main() {
       expect(session.isActive, isFalse);
     });
 
-    test('happy path: creates the game, uploads the selfie, starts the session', () async {
-      cubit
-        ..nameChanged('  Alice ')
-        ..selfieChanged(Uint8List.fromList(List.generate(50, (i) => i)))
-        ..geofenceChanged(const LatLng(52.09, 5.12))
-        ..modeChanged(GameMode.lastManStanding)
-        ..geofenceRadiusChanged(500);
+    test(
+      'happy path: creates the game, uploads the selfie, starts the session',
+      () async {
+        cubit
+          ..nameChanged('  Alice ')
+          ..selfieChanged(Uint8List.fromList(List.generate(50, (i) => i)))
+          ..geofenceChanged(const LatLng(52.09, 5.12))
+          ..modeChanged(GameMode.lastManStanding)
+          ..geofenceRadiusChanged(500);
 
-      await cubit.submit();
+        await cubit.submit();
 
-      expect(cubit.state.status, HostSetupStatus.success);
-      expect(cubit.state.gameId, _FakeLobbyRepository.gameId);
-      expect(cubit.state.joinTokenForQr, _FakeLobbyRepository.joinToken);
+        expect(cubit.state.status, HostSetupStatus.success);
+        expect(cubit.state.gameId, _FakeLobbyRepository.gameId);
+        expect(cubit.state.joinTokenForQr, _FakeLobbyRepository.joinToken);
 
-      // Settings reached the repository with the right shape.
-      expect(repository.capturedSettings!.mode, GameMode.lastManStanding);
-      expect(repository.capturedSettings!.geofenceRadiusM, 500);
-      expect(repository.capturedSettings!.geofenceLat, 52.09);
-      expect(repository.capturedPlatform, isNotEmpty);
+        // Settings reached the repository with the right shape.
+        expect(repository.capturedSettings!.mode, GameMode.lastManStanding);
+        expect(repository.capturedSettings!.geofenceRadiusM, 500);
+        expect(repository.capturedSettings!.geofenceLat, 52.09);
+        expect(repository.capturedPlatform, isNotEmpty);
 
-      // The session now holds the same crypto that encrypted the name/selfie —
-      // decrypting what the repository received returns the original input.
-      final crypto = session.crypto;
-      expect(await crypto.decryptString(repository.capturedNameCiphertext!), 'Alice');
-      expect(
-        await crypto.nameHmac('alice'),
-        repository.capturedNameHmac,
-      );
-      final decryptedSelfie = await crypto.decryptBytes(repository.capturedSelfie!);
-      expect(decryptedSelfie, List.generate(50, (i) => i));
+        // The session now holds the same crypto that encrypted the name/selfie —
+        // decrypting what the repository received returns the original input.
+        final crypto = session.crypto;
+        expect(
+          await crypto.decryptString(repository.capturedNameCiphertext!),
+          'Alice',
+        );
+        expect(await crypto.nameHmac('alice'), repository.capturedNameHmac);
+        final decryptedSelfie = await crypto.decryptBytes(
+          repository.capturedSelfie!,
+        );
+        expect(decryptedSelfie, List.generate(50, (i) => i));
 
-      expect(session.isActive, isTrue);
-      expect(session.gameId, _FakeLobbyRepository.gameId);
-      expect(session.playerId, _FakeLobbyRepository.hostPlayerId);
-    });
+        expect(session.isActive, isTrue);
+        expect(session.gameId, _FakeLobbyRepository.gameId);
+        expect(session.playerId, _FakeLobbyRepository.hostPlayerId);
+      },
+    );
 
-    test('sad path: a bad_settings error surfaces as LobbyError.badSettings', () async {
-      repository.failure = const PostgrestException(message: 'bad_settings');
-      cubit
-        ..nameChanged('Alice')
-        ..selfieChanged(Uint8List.fromList([1, 2, 3]))
-        ..geofenceChanged(const LatLng(52.0, 5.0));
+    test(
+      'sad path: a bad_settings error surfaces as LobbyError.badSettings',
+      () async {
+        repository.failure = const PostgrestException(message: 'bad_settings');
+        cubit
+          ..nameChanged('Alice')
+          ..selfieChanged(Uint8List.fromList([1, 2, 3]))
+          ..geofenceChanged(const LatLng(52.0, 5.0));
 
-      await cubit.submit();
+        await cubit.submit();
 
-      expect(cubit.state.status, HostSetupStatus.failure);
-      expect(cubit.state.error, LobbyError.badSettings);
-      expect(session.isActive, isFalse);
-    });
+        expect(cubit.state.status, HostSetupStatus.failure);
+        expect(cubit.state.error, LobbyError.badSettings);
+        expect(session.isActive, isFalse);
+      },
+    );
 
-    test('sad path: an unrecognized error surfaces as LobbyError.unknown', () async {
-      repository.failure = Exception('network is down');
-      cubit
-        ..nameChanged('Alice')
-        ..selfieChanged(Uint8List.fromList([1, 2, 3]))
-        ..geofenceChanged(const LatLng(52.0, 5.0));
+    test(
+      'sad path: an unrecognized error surfaces as LobbyError.unknown',
+      () async {
+        repository.failure = Exception('network is down');
+        cubit
+          ..nameChanged('Alice')
+          ..selfieChanged(Uint8List.fromList([1, 2, 3]))
+          ..geofenceChanged(const LatLng(52.0, 5.0));
 
-      await cubit.submit();
+        await cubit.submit();
 
-      expect(cubit.state.status, HostSetupStatus.failure);
-      expect(cubit.state.error, LobbyError.unknown);
-    });
+        expect(cubit.state.status, HostSetupStatus.failure);
+        expect(cubit.state.error, LobbyError.unknown);
+      },
+    );
   });
 }

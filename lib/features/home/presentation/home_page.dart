@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../i18n/strings.g.dart';
 import '../../lobby/presentation/host_setup/host_setup_page.dart';
+import '../../lobby/presentation/scan/scan_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -23,7 +24,9 @@ class HomePage extends StatelessWidget {
               ),
               const SizedBox(height: 48),
               FilledButton(
-                onPressed: null, // TODO: QR scan -> pre-join
+                onPressed: () => Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (_) => const ScanPage())),
                 child: Text(t.home.joinGame),
               ),
               const SizedBox(height: 16),

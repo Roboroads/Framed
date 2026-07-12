@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
+import '../../../../core/camera/in_app_camera_page.dart';
 import '../../../../i18n/strings.g.dart';
 
 /// Name + reference selfie, shared by the host flow (#8) and the join flow
@@ -19,6 +19,7 @@ class PreJoinForm extends StatefulWidget {
     required this.onNameChanged,
     required this.selfieBytes,
     required this.onSelfieChanged,
+    this.nameError,
     super.key,
   });
 
@@ -26,6 +27,10 @@ class PreJoinForm extends StatefulWidget {
   final ValueChanged<String> onNameChanged;
   final Uint8List? selfieBytes;
   final ValueChanged<Uint8List?> onSelfieChanged;
+
+  /// Inline error under the name field — e.g. the join flow's `name_taken`
+  /// response from the server. `null` when there's nothing to show.
+  final String? nameError;
 
   @override
   State<PreJoinForm> createState() => _PreJoinFormState();
@@ -41,14 +46,11 @@ class _PreJoinFormState extends State<PreJoinForm> {
   }
 
   Future<void> _takeSelfie() async {
-    final photo = await ImagePicker().pickImage(
-      source: ImageSource.camera,
-      preferredCameraDevice: CameraDevice.front,
-      maxWidth: 1024,
-      imageQuality: 85,
+    final bytes = await Navigator.of(context).push<Uint8List>(
+      MaterialPageRoute(builder: (_) => const InAppCameraPage()),
     );
-    if (photo == null) return;
-    widget.onSelfieChanged(await photo.readAsBytes());
+    if (bytes == null) return;
+    widget.onSelfieChanged(bytes);
   }
 
   @override
@@ -58,7 +60,10 @@ class _PreJoinFormState extends State<PreJoinForm> {
       children: [
         TextField(
           controller: _nameController,
-          decoration: InputDecoration(labelText: t.preJoin.nameLabel),
+          decoration: InputDecoration(
+            labelText: t.preJoin.nameLabel,
+            errorText: widget.nameError,
+          ),
           onChanged: widget.onNameChanged,
         ),
         const SizedBox(height: 16),
@@ -67,6 +72,11 @@ class _PreJoinFormState extends State<PreJoinForm> {
           style: Theme.of(context).textTheme.bodySmall,
         ),
         const SizedBox(height: 16),
+        Text(
+          t.preJoin.selfieHint,
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        const SizedBox(height: 8),
         if (widget.selfieBytes != null)
           ClipRRect(
             borderRadius: BorderRadius.circular(12),

@@ -73,5 +73,23 @@ void main() {
 
       expect(await a.nameHmac('bob'), isNot(equals(await b.nameHmac('bob'))));
     });
+
+    test(
+      'encryptBytes hides a recognizable image (JPEG magic number)',
+      () async {
+        final crypto = await GameCrypto.generate();
+        final jpegLike = Uint8List.fromList([
+          0xFF, 0xD8, 0xFF, 0xE0, // JPEG SOI + APP0 marker
+          ...List.generate(50, (i) => i % 256),
+        ]);
+
+        final encrypted = await crypto.encryptBytes(jpegLike);
+
+        // Bytes 0-11 are the nonce; the ciphertext proper starts at 12 —
+        // that's the part a Storage byte-sniffer would see as "the file".
+        final ciphertextStart = encrypted.sublist(12, 16);
+        expect(ciphertextStart, isNot(equals(jpegLike.sublist(0, 4))));
+      },
+    );
   });
 }

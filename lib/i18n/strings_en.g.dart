@@ -45,6 +45,9 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$hostSetup$en hostSetup = Translations$hostSetup$en._(_root);
 	late final Translations$preJoin$en preJoin = Translations$preJoin$en._(_root);
 	late final Translations$lobby$en lobby = Translations$lobby$en._(_root);
+	late final Translations$scan$en scan = Translations$scan$en._(_root);
+	late final Translations$camera$en camera = Translations$camera$en._(_root);
+	late final Translations$join$en join = Translations$join$en._(_root);
 }
 
 // Path: app
@@ -157,8 +160,11 @@ class Translations$preJoin$en {
 	/// en: 'Your name'
 	String get nameLabel => 'Your name';
 
-	/// en: 'We collect your name and a reference selfie for this game only. Everything is deleted when the game ends, or after 24 hours at the latest. Taking the selfie means you agree.'
-	String get consentNotice => 'We collect your name and a reference selfie for this game only. Everything is deleted when the game ends, or after 24 hours at the latest. Taking the selfie means you agree.';
+	/// en: 'We collect your name, reference selfie, live location, frame photos, and push notifications for this game only. Everything is deleted when the game ends, or after 24 hours at the latest. Joining means you agree, and that you'll play safe: watch for traffic, don't trespass, no physical contact, don't photograph bystanders up close, and respect any areas the host declares off-limits.'
+	String get consentNotice => 'We collect your name, reference selfie, live location, frame photos, and push notifications for this game only. Everything is deleted when the game ends, or after 24 hours at the latest. Joining means you agree, and that you\'ll play safe: watch for traffic, don\'t trespass, no physical contact, don\'t photograph bystanders up close, and respect any areas the host declares off-limits.';
+
+	/// en: 'Judges compare this to every frame you're in — make sure your face is clearly visible.'
+	String get selfieHint => 'Judges compare this to every frame you\'re in — make sure your face is clearly visible.';
 
 	/// en: 'Take reference selfie'
 	String get takeSelfie => 'Take reference selfie';
@@ -180,6 +186,57 @@ class Translations$lobby$en {
 
 	/// en: 'Scan to join'
 	String get scanToJoin => 'Scan to join';
+}
+
+// Path: scan
+class Translations$scan$en {
+	Translations$scan$en._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Scan to join'
+	String get title => 'Scan to join';
+
+	/// en: 'That's not a valid Framed code — keep scanning.'
+	String get invalidCode => 'That\'s not a valid Framed code — keep scanning.';
+}
+
+// Path: camera
+class Translations$camera$en {
+	Translations$camera$en._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Framed needs camera access for this. Grant it, then try again.'
+	String get permissionDeniedBody => 'Framed needs camera access for this. Grant it, then try again.';
+
+	/// en: 'Couldn't start the camera. Try again.'
+	String get errorGeneric => 'Couldn\'t start the camera. Try again.';
+
+	/// en: 'Try again'
+	String get retry => 'Try again';
+}
+
+// Path: join
+class Translations$join$en {
+	Translations$join$en._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Join game'
+	String get joinButton => 'Join game';
+
+	/// en: 'That name is taken in this lobby.'
+	String get errorNameTaken => 'That name is taken in this lobby.';
+
+	/// en: 'Couldn't join the game. Check your connection and try again.'
+	String get errorGeneric => 'Couldn\'t join the game. Check your connection and try again.';
 }
 
 /// The flat map containing all translations for locale <en>.
@@ -215,11 +272,20 @@ extension on Translations {
 			'hostSetup.errorGeneric' => 'Couldn\'t create the game. Check your connection and try again.',
 			'preJoin.title' => 'You\'re playing too',
 			'preJoin.nameLabel' => 'Your name',
-			'preJoin.consentNotice' => 'We collect your name and a reference selfie for this game only. Everything is deleted when the game ends, or after 24 hours at the latest. Taking the selfie means you agree.',
+			'preJoin.consentNotice' => 'We collect your name, reference selfie, live location, frame photos, and push notifications for this game only. Everything is deleted when the game ends, or after 24 hours at the latest. Joining means you agree, and that you\'ll play safe: watch for traffic, don\'t trespass, no physical contact, don\'t photograph bystanders up close, and respect any areas the host declares off-limits.',
+			'preJoin.selfieHint' => 'Judges compare this to every frame you\'re in — make sure your face is clearly visible.',
 			'preJoin.takeSelfie' => 'Take reference selfie',
 			'preJoin.retakeSelfie' => 'Retake selfie',
 			'lobby.title' => 'Lobby',
 			'lobby.scanToJoin' => 'Scan to join',
+			'scan.title' => 'Scan to join',
+			'scan.invalidCode' => 'That\'s not a valid Framed code — keep scanning.',
+			'camera.permissionDeniedBody' => 'Framed needs camera access for this. Grant it, then try again.',
+			'camera.errorGeneric' => 'Couldn\'t start the camera. Try again.',
+			'camera.retry' => 'Try again',
+			'join.joinButton' => 'Join game',
+			'join.errorNameTaken' => 'That name is taken in this lobby.',
+			'join.errorGeneric' => 'Couldn\'t join the game. Check your connection and try again.',
 			_ => null,
 		};
 	}
