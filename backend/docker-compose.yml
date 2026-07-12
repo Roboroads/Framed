@@ -346,6 +346,9 @@ services:
         condition: service_healthy
       storage:
         condition: service_healthy
+      realtime:
+        # 12-realtime.sql needs realtime.messages
+        condition: service_healthy
     volumes:
       - ./volumes/db/init:/framed-init:Z,ro
     environment:

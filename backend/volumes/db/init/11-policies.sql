@@ -31,7 +31,9 @@ language sql stable security definer set search_path = '' as $$
     false)
 $$;
 
-revoke execute on function framed_uuid(text), framed_my_player(uuid), framed_i_am_dead(uuid) from public;
+-- Supabase default ACLs grant execute on new public functions to anon and
+-- authenticated directly — revoke those, not just public
+revoke execute on function framed_uuid(text), framed_my_player(uuid), framed_i_am_dead(uuid) from public, anon;
 grant execute on function framed_uuid(text), framed_my_player(uuid), framed_i_am_dead(uuid) to authenticated;
 
 -- Baseline: the app roles get nothing, then exactly what the design allows.
