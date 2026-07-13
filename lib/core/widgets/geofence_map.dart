@@ -3,26 +3,19 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
-/// OSM map showing (and letting the host pick) a center point and radius —
-/// the geofence for a game. Tap to move the center; [radiusM] is drawn as a
-/// live circle overlay, controlled by the caller (e.g. a slider alongside
-/// this widget).
+/// OSM map showing the game's geofence: a live view of [center] (always the
+/// host's current location — see [currentLocationOrFallback]) and [radiusM],
+/// drawn as a circle overlay controlled by the caller (e.g. a slider
+/// alongside this widget). Not user-adjustable — the center tracks GPS, it
+/// isn't a free-placement picker.
 ///
 /// Bare wrapper, reused by the soft-punishment map (issue #18) — this widget
 /// only knows about center/radius, nothing game-specific.
 class GeofenceMap extends StatelessWidget {
-  const GeofenceMap({
-    required this.center,
-    required this.radiusM,
-    required this.onCenterChanged,
-    this.interactive = true,
-    super.key,
-  });
+  const GeofenceMap({required this.center, required this.radiusM, super.key});
 
   final LatLng center;
   final double radiusM;
-  final ValueChanged<LatLng>? onCenterChanged;
-  final bool interactive;
 
   @override
   Widget build(BuildContext context) {
@@ -30,14 +23,9 @@ class GeofenceMap extends StatelessWidget {
       options: MapOptions(
         initialCenter: center,
         initialZoom: 15,
-        interactionOptions: InteractionOptions(
-          flags: interactive
-              ? InteractiveFlag.all
-              : InteractiveFlag.pinchZoom | InteractiveFlag.drag,
+        interactionOptions: const InteractionOptions(
+          flags: InteractiveFlag.none,
         ),
-        onTap: interactive && onCenterChanged != null
-            ? (_, point) => onCenterChanged!(point)
-            : null,
       ),
       children: [
         TileLayer(

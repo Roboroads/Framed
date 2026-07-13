@@ -15,7 +15,7 @@ import 'host_setup_cubit.dart';
 import 'host_setup_state.dart';
 
 /// Arbitrary fallback when GPS is unavailable/denied — Utrecht, NL (this
-/// backend's home region). The host can always tap the map to move the pin.
+/// backend's home region).
 const _fallbackCenter = LatLng(52.0907, 5.1214);
 
 class HostSetupPage extends StatelessWidget {
@@ -109,7 +109,6 @@ class _HostSetupViewState extends State<_HostSetupView> {
                   child: GeofenceMap(
                     center: state.geofenceCenter!,
                     radiusM: state.geofenceRadiusM.toDouble(),
-                    onCenterChanged: cubit.geofenceChanged,
                   ),
                 ),
                 Slider(
