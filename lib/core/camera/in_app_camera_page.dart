@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
@@ -6,6 +7,11 @@ import 'package:flutter/material.dart';
 import '../../i18n/strings.g.dart';
 
 enum _Status { initializing, ready, permissionDenied, error }
+
+/// Some emulator camera backends never produce a first frame — initialize()
+/// then hangs forever with no exception. A real camera opens in well under
+/// this on any device that actually works.
+const _initTimeout = Duration(seconds: 10);
 
 /// Full-screen in-app photo capture (front camera by default). Pops with the
 /// captured bytes, or `null` if the user backs out.
@@ -43,18 +49,19 @@ class _InAppCameraPageState extends State<InAppCameraPage>
   Future<void> _initialize() async {
     final generation = ++_initGeneration;
     setState(() => _status = _Status.initializing);
+    CameraController? controller;
     try {
       final cameras = await availableCameras();
       final description = cameras.firstWhere(
         (c) => c.lensDirection == widget.lensDirection,
         orElse: () => cameras.first,
       );
-      final controller = CameraController(
+      controller = CameraController(
         description,
         ResolutionPreset.medium,
         enableAudio: false,
       );
-      await controller.initialize();
+      await controller.initialize().timeout(_initTimeout);
       if (!mounted || generation != _initGeneration) {
         await controller.dispose();
         return;
@@ -72,6 +79,12 @@ class _InAppCameraPageState extends State<InAppCameraPage>
             ? _Status.permissionDenied
             : _Status.error;
       });
+    } on TimeoutException {
+      // Don't await: a controller stuck mid-initialize can hang dispose()
+      // too, and the user needs the retry button back either way.
+      unawaited(controller?.dispose());
+      if (!mounted || generation != _initGeneration) return;
+      setState(() => _status = _Status.error);
     }
   }
 
