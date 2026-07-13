@@ -24,7 +24,7 @@ dependencies:
   latlong2: ^0.10.1
   mcp_toolkit: ^3.0.0
   mobile_scanner: ^7.2.0
-  permission_handler: ^11.4.0
+  permission_handler: ^12.0.3
   postgrest: ^2.8.0
   qr_flutter: ^4.1.0
   slang: ^4.18.0
