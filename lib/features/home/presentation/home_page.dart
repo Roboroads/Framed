@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../i18n/strings.g.dart';
-import '../../lobby/presentation/host_setup/host_setup_page.dart';
-import '../../lobby/presentation/scan/scan_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -24,16 +23,12 @@ class HomePage extends StatelessWidget {
               ),
               const SizedBox(height: 48),
               FilledButton(
-                onPressed: () => Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (_) => const ScanPage())),
+                onPressed: () => context.push('/scan'),
                 child: Text(t.home.joinGame),
               ),
               const SizedBox(height: 16),
               OutlinedButton(
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const HostSetupPage()),
-                ),
+                onPressed: () => context.push('/host-setup'),
                 child: Text(t.home.hostGame),
               ),
               const SizedBox(height: 48),

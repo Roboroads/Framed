@@ -2,6 +2,7 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../i18n/strings.g.dart';
@@ -15,10 +16,10 @@ enum _GateStatus { explaining, requesting, blocked }
 /// requests "while in use" then escalates toward background, and falls
 /// back to a blocked-state screen with a Settings deep link when denied.
 class BackgroundLocationGate extends StatefulWidget {
-  const BackgroundLocationGate({required this.next, super.key});
+  const BackgroundLocationGate({required this.initialEndsAt, super.key});
 
-  /// Built once permission is granted, replacing this screen.
-  final WidgetBuilder next;
+  /// Passed straight through to IngamePage once permission is granted.
+  final DateTime initialEndsAt;
 
   @override
   State<BackgroundLocationGate> createState() => _BackgroundLocationGateState();
@@ -77,9 +78,7 @@ class _BackgroundLocationGateState extends State<BackgroundLocationGate>
     if (!mounted) return;
     if (permission == LocationPermission.always ||
         permission == LocationPermission.whileInUse) {
-      Navigator.of(
-        context,
-      ).pushReplacement(MaterialPageRoute(builder: widget.next));
+      context.go('/ingame', extra: widget.initialEndsAt);
       return;
     }
     setState(() => _status = _GateStatus.blocked);

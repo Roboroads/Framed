@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../../../core/di/injector.dart';
@@ -9,7 +10,6 @@ import '../../../../i18n/strings.g.dart';
 import '../../domain/game_mode.dart';
 import '../../domain/lobby_error.dart';
 import '../../domain/lobby_repository.dart';
-import '../lobby/lobby_page.dart';
 import '../pre_join/pre_join_form.dart';
 import 'host_setup_cubit.dart';
 import 'host_setup_state.dart';
@@ -57,9 +57,7 @@ class _HostSetupViewState extends State<_HostSetupView> {
         listenWhen: (previous, current) => previous.status != current.status,
         listener: (context, state) {
           if (state.status == HostSetupStatus.success) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (_) => const LobbyPage()),
-            );
+            context.go('/lobby');
           } else if (state.status == HostSetupStatus.failure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(_errorMessage(state.error!))),

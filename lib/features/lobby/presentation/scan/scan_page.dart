@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../../../../core/crypto/qr_payload.dart';
 import '../../../../i18n/strings.g.dart';
-import '../join/join_page.dart';
 
 /// Full-screen QR scan from the Home "Join game" button. Hands a valid
 /// payload straight to the join page; anything malformed keeps scanning.
@@ -34,14 +34,7 @@ class _ScanPageState extends State<ScanPage> {
     }
 
     _handled = true;
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (_) => JoinPage(
-          joinToken: payload.joinToken,
-          gameKeyBytes: payload.keyBytes,
-        ),
-      ),
-    );
+    context.go('/join', extra: payload);
   }
 
   @override

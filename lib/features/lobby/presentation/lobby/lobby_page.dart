@@ -2,15 +2,14 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../../../core/crypto/qr_payload.dart';
 import '../../../../core/di/injector.dart';
-import '../../../../core/location/background_location_gate.dart';
 import '../../../../core/realtime/game_channels.dart';
 import '../../../../core/session/game_session.dart';
 import '../../../../i18n/strings.g.dart';
-import '../../../game/presentation/ingame/ingame_page.dart';
 import '../../domain/game_mode.dart';
 import '../../domain/lobby_error.dart';
 import '../../domain/lobby_repository.dart';
@@ -54,9 +53,7 @@ class _LobbyView extends StatelessWidget {
           // Best-effort: the player still wants out even if the network
           // call failed. The game/lobby cleans up stale players anyway.
         }
-        if (context.mounted) {
-          Navigator.of(context).popUntil((route) => route.isFirst);
-        }
+        if (context.mounted) context.go('/');
       },
       child: BlocConsumer<LobbyBloc, LobbyState>(
         listenWhen: (previous, current) =>
@@ -65,13 +62,7 @@ class _LobbyView extends StatelessWidget {
         listener: (context, state) {
           final endsAt = state.dispersalEndsAt;
           if (endsAt != null) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (_) => BackgroundLocationGate(
-                  next: (_) => IngamePage(initialEndsAt: endsAt),
-                ),
-              ),
-            );
+            context.go('/location-gate', extra: endsAt);
           } else if (state.error != null) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(_errorMessage(state.error!))),

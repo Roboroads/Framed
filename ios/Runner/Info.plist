@@ -36,6 +36,20 @@
 	<array>
 		<string>location</string>
 	</array>
+	<!-- Join links: framed://join?v=1&t={join_token}&k={game key}
+	     (lib/core/crypto/qr_payload.dart) — same payload as the lobby QR
+	     code, routed through go_router (issue #49). -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>framed</string>
+			</array>
+		</dict>
+	</array>
+	<key>FlutterDeepLinkingEnabled</key>
+	<true/>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

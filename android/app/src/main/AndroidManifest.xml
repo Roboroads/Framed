@@ -32,6 +32,14 @@
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
               />
+            <!-- Lets Flutter's engine forward the intent-filter below into
+                 go_router (lib/core/router/app_router.dart) as a normal
+                 route via its platform deep-linking channel — no
+                 third-party plugin needed (issue #49). -->
+            <meta-data
+              android:name="flutter_deeplinking_enabled"
+              android:value="true"
+              />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

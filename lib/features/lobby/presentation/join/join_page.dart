@@ -2,13 +2,13 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/injector.dart';
 import '../../../../core/session/game_session.dart';
 import '../../../../i18n/strings.g.dart';
 import '../../domain/lobby_error.dart';
 import '../../domain/lobby_repository.dart';
-import '../lobby/lobby_page.dart';
 import '../pre_join/pre_join_form.dart';
 import 'join_cubit.dart';
 import 'join_state.dart';
@@ -51,9 +51,7 @@ class _JoinView extends StatelessWidget {
         listenWhen: (previous, current) => previous.status != current.status,
         listener: (context, state) {
           if (state.status == JoinStatus.success) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (_) => const LobbyPage()),
-            );
+            context.go('/lobby');
           } else if (state.status == JoinStatus.failure &&
               state.error != LobbyError.nameTaken) {
             ScaffoldMessenger.of(
