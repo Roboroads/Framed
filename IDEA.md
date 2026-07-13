@@ -70,6 +70,7 @@ Anything that needs your attention fires a **high-priority, time-sensitive push 
   - **Game in progress.** Shows the name + reference picture of your target, and a "frame" button that opens the in-app camera. At every global pulse the compass update appears (arrow + distance, live device-compass rotation) and disappears after `compass_view_seconds`. If your target is soft-punished for leaving the play area, a map with their exact location appears here.
   - **Judging modal.** Frame photo next to the target's reference selfie, title "Is this (player name)?", ✗ and ✓ buttons.
   - **Warning modal.** Shown while you're breaking a rule (e.g. outside the geofence) until you stop or die.
+  - **Play-area edge banner.** A small, dismissable-by-nature banner (not a modal, doesn't block anything) while you're still inside the geofence but close to its edge — a heads-up before the warning modal above would ever trigger.
 - **Death screen.** How you died, how long you survived, the photo that framed you, and **who your assassin was**. Includes a chat with the other dead players so they can set up a meeting spot. Dead players still receive judging modals.
 - **Game finish.** Winner (per the game mode, with the mode named on screen) plus stats (most kills, most stand-still player, most moved player, combined movement, etc.) and the full kill chain. The host can choose "replay with same players" (same lobby, same selfies, reshuffled targets); players can only "Leave game".
 
@@ -94,6 +95,7 @@ Set by the host in the lobby:
   - While breaking this rule you receive no compass updates for your target.
   - Soft punishment: your assassin receives your exact location on the map.
   - Hard punishment: MIA death.
+  - Proactive edge nudge: while still *inside* the geofence but within 5% of `geofence_radius_m` of the boundary, the app shows a lightweight, non-blocking heads-up — a chance to step back in before you'd actually trigger the rule above. This is not a punishment and starts no timer; it clears the moment you move back toward center or actually cross the boundary (at which point the rule above takes over instead).
 - **Your phone must send location updates to the server.**
   - The app sends a location update every 30 seconds. You count as **stale** when the server hasn't received one for 90 seconds (3 missed updates — tolerates a bad GPS fix or a short network drop).
   - While stale: the warning modal shows, and you receive no compass update at a pulse. Your assassin's compass still points at your last known location.

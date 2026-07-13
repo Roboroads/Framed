@@ -61,6 +61,13 @@ sealed class GameEvent with _$GameEvent {
     DateTime? hardDeadline,
   }) = Warning;
 
+  /// player:{player_id} — still inside the geofence but close to leaving it
+  /// (#61), a heads-up before [warning] (with reason `geofence`) would ever
+  /// fire. Distinct event on purpose: warning means a punishment clock is
+  /// already running, this doesn't.
+  const factory GameEvent.geofenceProximity({required bool active}) =
+      GeofenceProximity;
+
   /// player:{player_id} — the global compass pulse's snapshot for this
   /// player (#16), a bearing/distance pair valid until [expiresAt].
   const factory GameEvent.compassPulse({
@@ -160,6 +167,8 @@ sealed class GameEvent with _$GameEvent {
                 ? DateTime.parse(payload['hard_deadline'] as String)
                 : null,
           );
+        case 'geofence_proximity':
+          return GameEvent.geofenceProximity(active: payload['active'] as bool);
         case 'compass_pulse':
           return GameEvent.compassPulse(
             bearingDeg: (payload['bearing_deg'] as num).toDouble(),

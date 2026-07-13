@@ -93,6 +93,10 @@ sealed class IngameState with _$IngameState {
   const factory IngameState({
     required IngamePhase phase,
     IngameWarning? warning,
+    // Still inside the geofence but close to its edge (#61) — a heads-up
+    // distinct from [warning], which only starts once a player has
+    // actually left (or gone stale) and a punishment clock is running.
+    @Default(false) bool nearGeofenceEdge,
     IngameCompass? compass,
     IngameTargetLocation? targetLocation,
     @Default(IngameFrameStatus.ready()) IngameFrameStatus frameStatus,

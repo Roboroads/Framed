@@ -470,6 +470,42 @@ void main() {
       expect(bloc.state.warning, isNull);
     });
 
+    test('geofence_proximity active:true sets nearGeofenceEdge', () async {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        gameId: 'game-1',
+        initialEndsAt: endsAt,
+      );
+
+      events.add(const GameEvent.geofenceProximity(active: true));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.nearGeofenceEdge, isTrue);
+      // Distinct from warning — unrelated to it either way.
+      expect(bloc.state.warning, isNull);
+    });
+
+    test('geofence_proximity active:false clears nearGeofenceEdge', () async {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        gameId: 'game-1',
+        initialEndsAt: endsAt,
+      );
+
+      events.add(const GameEvent.geofenceProximity(active: true));
+      await Future<void>.delayed(Duration.zero);
+      expect(bloc.state.nearGeofenceEdge, isTrue);
+
+      events.add(const GameEvent.geofenceProximity(active: false));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.nearGeofenceEdge, isFalse);
+    });
+
     test('compass_pulse sets the snapshot until it expires', () async {
       final bloc = IngameBloc(
         events: events.stream,

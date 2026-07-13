@@ -75,6 +75,10 @@ class IngameBloc extends Cubit<IngameState> {
       _onWarning(event);
       return;
     }
+    if (event is GeofenceProximity) {
+      emit(state.copyWith(nearGeofenceEdge: event.active));
+      return;
+    }
     if (event is CompassPulse) {
       _onCompassPulse(event);
       return;

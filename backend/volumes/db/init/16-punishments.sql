@@ -16,6 +16,20 @@ language sql immutable as $$
     and not public.st_dwithin(g.geofence_center, p.last_location, g.geofence_radius_m)
 $$;
 
+-- Proactive edge nudge (#61): still inside, but within 5% of the radius of
+-- leaving. A separate, earlier signal than is_outside_geofence — that one
+-- only flips once the player has actually left.
+create or replace function is_near_geofence_edge(p public.players, g public.games) returns boolean
+language sql immutable as $$
+  select p.last_location is not null
+    and public.st_dwithin(g.geofence_center, p.last_location, g.geofence_radius_m)
+    and not public.st_dwithin(g.geofence_center, p.last_location, g.geofence_radius_m * 0.95)
+$$;
+
+-- #61: tracks the in/out transition of is_near_geofence_edge, same shape as
+-- outside_geofence_since — null except while currently near the edge.
+alter table public.players add column if not exists near_geofence_edge_since timestamptz;
+
 -- kill_player(...): the only way a circle-death happens. Shared by this
 -- tick's MIA punishment below and #20's vote-resolution kill.
 create or replace function kill_player(
@@ -92,6 +106,7 @@ language plpgsql set search_path = '' as $$
 declare
   p public.players%rowtype;
   outside boolean;
+  near_edge boolean;
   reasons text[];
   assassin_id uuid;
 begin
@@ -106,6 +121,25 @@ begin
     elsif not outside and p.outside_geofence_since is not null then
       p.outside_geofence_since := null;
       update public.players set outside_geofence_since = null where id = p.id;
+    end if;
+
+    -- geofence_proximity (#61): a heads-up before is_outside_geofence would
+    -- ever flip, so a player can step back in before the warning below (and
+    -- its punishment clock) ever starts. One event per transition, same
+    -- shape as warning below. is_near_geofence_edge already requires "not
+    -- outside", so crossing the boundary clears this on its own — no
+    -- explicit handoff to the reactive warning needed.
+    near_edge := public.is_near_geofence_edge(p, g);
+    if near_edge and p.near_geofence_edge_since is null then
+      p.near_geofence_edge_since := now();
+      update public.players set near_geofence_edge_since = now() where id = p.id;
+      perform public.emit('player:' || p.id, 'geofence_proximity',
+        jsonb_build_object('active', true));
+    elsif not near_edge and p.near_geofence_edge_since is not null then
+      p.near_geofence_edge_since := null;
+      update public.players set near_geofence_edge_since = null where id = p.id;
+      perform public.emit('player:' || p.id, 'geofence_proximity',
+        jsonb_build_object('active', false));
     end if;
 
     -- warning: one combined event per active/inactive transition, not every
@@ -154,5 +188,6 @@ begin
 end $$;
 
 revoke execute on function tick_punishments(public.games),
-  is_outside_geofence(public.players, public.games), send_pulse_to(uuid)
+  is_outside_geofence(public.players, public.games),
+  is_near_geofence_edge(public.players, public.games), send_pulse_to(uuid)
   from public, anon, authenticated;

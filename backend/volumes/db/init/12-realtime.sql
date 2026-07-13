@@ -23,6 +23,7 @@
 --     frame_verdict   {passed, cooldown_until}
 --     you_died        {cause, killer_name_ciphertext, photo_path, survived_seconds}
 --     warning         {active, reasons[], hard_deadline}
+--     geofence_proximity {active}
 --     target_location {lat, lng}
 --
 --   game:{game_id}:dead   — dead players of that game

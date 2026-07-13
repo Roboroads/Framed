@@ -142,6 +142,12 @@ class _IngameView extends StatelessWidget {
                 },
                 if (state.warning case final warning?)
                   _WarningOverlay(warning: warning),
+                // Only ever shown while state.warning is null — the proximity
+                // nudge clears itself the moment a player actually leaves
+                // (is_near_geofence_edge requires "not outside" server-side),
+                // so the two never compete for the same screen space.
+                if (state.nearGeofenceEdge && state.warning == null)
+                  const _ProximityBanner(),
                 if (state.judgingQueue.isNotEmpty)
                   _JudgingOverlay(entry: state.judgingQueue.first),
               ],
@@ -294,6 +300,49 @@ class _WarningOverlay extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The proactive edge nudge (#61): still inside the geofence, but close to
+/// leaving it. Deliberately lightweight compared to [_WarningOverlay] — a
+/// dismissable-by-nature banner, not a blocking full-screen modal, since
+/// nothing is actually being punished yet.
+class _ProximityBanner extends StatelessWidget {
+  const _ProximityBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    final warningColor = Theme.of(context).extension<GameColors>()!.warning;
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      child: SafeArea(
+        child: Container(
+          margin: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: warningColor.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: warningColor),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.arrow_circle_left_outlined, color: warningColor),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  t.ingame.nearGeofenceEdge,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(color: warningColor),
+                ),
+              ),
+            ],
           ),
         ),
       ),

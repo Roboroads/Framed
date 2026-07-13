@@ -102,6 +102,7 @@
     "targetCardTitle": "Your target",
     "errorTargetLoad": "Couldn't load your target. Try reopening the app.",
     "warningGeofence": "You're outside the play area — go back.",
+    "nearGeofenceEdge": "You're close to the edge of the play area",
     "warningStale": "We're not receiving your location. Check GPS, signal, and battery saver.",
     "warningDeadline": "You die in $time",
     "compassNoPulseWarning": "No compass while breaking rules",
