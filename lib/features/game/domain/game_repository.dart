@@ -20,4 +20,17 @@ abstract interface class GameRepository {
   /// The game's play area, for the soft-punishment target map (#18) — the
   /// geofence is set once at host setup and static for the whole game.
   Future<GeofenceInfo> getGeofence(String gameId);
+
+  /// Uploads the already-encrypted frame photo to `frames/{photoPath}`
+  /// (#19). Upserts, so a retry after a dropped connection can safely
+  /// re-upload to the same path instead of erroring on conflict.
+  Future<void> uploadFramePhoto({
+    required String photoPath,
+    required Uint8List encryptedBytes,
+  });
+
+  /// `submit_frame(game_id, photo_path)` (#19) — the photo must already be
+  /// uploaded at that path. Throws [PostgrestException] on any guard
+  /// failure; see [FrameError] for the stable codes.
+  Future<void> submitFrame({required String gameId, required String photoPath});
 }

@@ -51,6 +51,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$lobby$en lobby = Translations$lobby$en._(_root);
 	late final Translations$ingame$en ingame = Translations$ingame$en._(_root);
 	late final Translations$scan$en scan = Translations$scan$en._(_root);
+	late final Translations$frame$en frame = Translations$frame$en._(_root);
 	late final Translations$camera$en camera = Translations$camera$en._(_root);
 	late final Translations$permissionRationale$en permissionRationale = Translations$permissionRationale$en._(_root);
 	late final Translations$join$en join = Translations$join$en._(_root);
@@ -361,9 +362,6 @@ class Translations$ingame$en {
 	/// en: 'Your target'
 	String get targetCardTitle => 'Your target';
 
-	/// en: 'Frame (coming soon)'
-	String get frameButtonPlaceholder => 'Frame (coming soon)';
-
 	/// en: 'Couldn't load your target. Try reopening the app.'
 	String get errorTargetLoad => 'Couldn\'t load your target. Try reopening the app.';
 
@@ -405,6 +403,45 @@ class Translations$scan$en {
 
 	/// en: 'That's not a valid Framed code — keep scanning.'
 	String get invalidCode => 'That\'s not a valid Framed code — keep scanning.';
+}
+
+// Path: frame
+class Translations$frame$en {
+	Translations$frame$en._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Frame'
+	String get button => 'Frame';
+
+	/// en: 'Waiting for verdict'
+	String get waiting => 'Waiting for verdict';
+
+	/// en: 'Cooldown $time'
+	String cooldown({required Object time}) => 'Cooldown ${time}';
+
+	/// en: 'Confirm frame'
+	String get confirmTitle => 'Confirm frame';
+
+	/// en: 'Retake'
+	String get retake => 'Retake';
+
+	/// en: 'Submit'
+	String get submit => 'Submit';
+
+	/// en: 'Still cooling down from your last frame.'
+	String get errorOnCooldown => 'Still cooling down from your last frame.';
+
+	/// en: 'You already have a frame awaiting judgment.'
+	String get errorAlreadyPending => 'You already have a frame awaiting judgment.';
+
+	/// en: 'You can't frame anyone right now.'
+	String get errorWrongStatus => 'You can\'t frame anyone right now.';
+
+	/// en: 'Couldn't submit that frame. Check your connection and try again.'
+	String get errorGeneric => 'Couldn\'t submit that frame. Check your connection and try again.';
 }
 
 // Path: camera
@@ -541,7 +578,6 @@ extension on Translations {
 			'ingame.disperseTitle' => 'Spread out',
 			'ingame.disperseInstruction' => 'You\'ll get your target when this hits zero.',
 			'ingame.targetCardTitle' => 'Your target',
-			'ingame.frameButtonPlaceholder' => 'Frame (coming soon)',
 			'ingame.errorTargetLoad' => 'Couldn\'t load your target. Try reopening the app.',
 			'ingame.warningGeofence' => 'You\'re outside the play area — go back.',
 			'ingame.warningStale' => 'We\'re not receiving your location. Check GPS, signal, and battery saver.',
@@ -553,6 +589,16 @@ extension on Translations {
 			'ingame.targetLocationTitle' => 'Your target left the play area — this is where they are',
 			'scan.title' => 'Scan to join',
 			'scan.invalidCode' => 'That\'s not a valid Framed code — keep scanning.',
+			'frame.button' => 'Frame',
+			'frame.waiting' => 'Waiting for verdict',
+			'frame.cooldown' => ({required Object time}) => 'Cooldown ${time}',
+			'frame.confirmTitle' => 'Confirm frame',
+			'frame.retake' => 'Retake',
+			'frame.submit' => 'Submit',
+			'frame.errorOnCooldown' => 'Still cooling down from your last frame.',
+			'frame.errorAlreadyPending' => 'You already have a frame awaiting judgment.',
+			'frame.errorWrongStatus' => 'You can\'t frame anyone right now.',
+			'frame.errorGeneric' => 'Couldn\'t submit that frame. Check your connection and try again.',
 			'camera.permissionDeniedBody' => 'Framed needs camera access for this. Grant it, then try again.',
 			'camera.errorGeneric' => 'Couldn\'t start the camera. Try again.',
 			'camera.retry' => 'Try again',

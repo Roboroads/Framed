@@ -90,7 +90,6 @@
     "disperseTitle": "Spread out",
     "disperseInstruction": "You'll get your target when this hits zero.",
     "targetCardTitle": "Your target",
-    "frameButtonPlaceholder": "Frame (coming soon)",
     "errorTargetLoad": "Couldn't load your target. Try reopening the app.",
     "warningGeofence": "You're outside the play area — go back.",
     "warningStale": "We're not receiving your location. Check GPS, signal, and battery saver.",
@@ -104,6 +103,18 @@
   "scan": {
     "title": "Scan to join",
     "invalidCode": "That's not a valid Framed code — keep scanning."
+  },
+  "frame": {
+    "button": "Frame",
+    "waiting": "Waiting for verdict",
+    "cooldown": "Cooldown $time",
+    "confirmTitle": "Confirm frame",
+    "retake": "Retake",
+    "submit": "Submit",
+    "errorOnCooldown": "Still cooling down from your last frame.",
+    "errorAlreadyPending": "You already have a frame awaiting judgment.",
+    "errorWrongStatus": "You can't frame anyone right now.",
+    "errorGeneric": "Couldn't submit that frame. Check your connection and try again."
   },
   "camera": {
     "permissionDeniedBody": "Framed needs camera access for this. Grant it, then try again.",

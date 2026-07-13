@@ -38,4 +38,29 @@ class SupabaseGameRepository implements GameRepository {
       radiusM: row['radius_m'] as int,
     );
   }
+
+  @override
+  Future<void> uploadFramePhoto({
+    required String photoPath,
+    required Uint8List encryptedBytes,
+  }) async {
+    await _client.storage
+        .from('frames')
+        .uploadBinary(
+          photoPath,
+          encryptedBytes,
+          fileOptions: const FileOptions(upsert: true),
+        );
+  }
+
+  @override
+  Future<void> submitFrame({
+    required String gameId,
+    required String photoPath,
+  }) async {
+    await _client.rpc(
+      'submit_frame',
+      params: {'game_id': gameId, 'photo_path': photoPath},
+    );
+  }
 }

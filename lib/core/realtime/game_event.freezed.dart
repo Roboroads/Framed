@@ -55,7 +55,7 @@ extension GameEventPatterns on GameEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( PlayerJoined value)?  playerJoined,TResult Function( PlayerReady value)?  playerReady,TResult Function( PlayerLeft value)?  playerLeft,TResult Function( HostChanged value)?  hostChanged,TResult Function( SettingsChanged value)?  settingsChanged,TResult Function( DispersalStarted value)?  dispersalStarted,TResult Function( TargetAssigned value)?  targetAssigned,TResult Function( YouDied value)?  youDied,TResult Function( Warning value)?  warning,TResult Function( CompassPulse value)?  compassPulse,TResult Function( TargetLocation value)?  targetLocation,TResult Function( GameFinished value)?  gameFinished,TResult Function( UnknownGameEvent value)?  unknown,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( PlayerJoined value)?  playerJoined,TResult Function( PlayerReady value)?  playerReady,TResult Function( PlayerLeft value)?  playerLeft,TResult Function( HostChanged value)?  hostChanged,TResult Function( SettingsChanged value)?  settingsChanged,TResult Function( DispersalStarted value)?  dispersalStarted,TResult Function( TargetAssigned value)?  targetAssigned,TResult Function( YouDied value)?  youDied,TResult Function( Warning value)?  warning,TResult Function( CompassPulse value)?  compassPulse,TResult Function( TargetLocation value)?  targetLocation,TResult Function( FrameVerdict value)?  frameVerdict,TResult Function( GameFinished value)?  gameFinished,TResult Function( UnknownGameEvent value)?  unknown,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case PlayerJoined() when playerJoined != null:
@@ -69,7 +69,8 @@ return targetAssigned(_that);case YouDied() when youDied != null:
 return youDied(_that);case Warning() when warning != null:
 return warning(_that);case CompassPulse() when compassPulse != null:
 return compassPulse(_that);case TargetLocation() when targetLocation != null:
-return targetLocation(_that);case GameFinished() when gameFinished != null:
+return targetLocation(_that);case FrameVerdict() when frameVerdict != null:
+return frameVerdict(_that);case GameFinished() when gameFinished != null:
 return gameFinished(_that);case UnknownGameEvent() when unknown != null:
 return unknown(_that);case _:
   return orElse();
@@ -89,7 +90,7 @@ return unknown(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( PlayerJoined value)  playerJoined,required TResult Function( PlayerReady value)  playerReady,required TResult Function( PlayerLeft value)  playerLeft,required TResult Function( HostChanged value)  hostChanged,required TResult Function( SettingsChanged value)  settingsChanged,required TResult Function( DispersalStarted value)  dispersalStarted,required TResult Function( TargetAssigned value)  targetAssigned,required TResult Function( YouDied value)  youDied,required TResult Function( Warning value)  warning,required TResult Function( CompassPulse value)  compassPulse,required TResult Function( TargetLocation value)  targetLocation,required TResult Function( GameFinished value)  gameFinished,required TResult Function( UnknownGameEvent value)  unknown,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( PlayerJoined value)  playerJoined,required TResult Function( PlayerReady value)  playerReady,required TResult Function( PlayerLeft value)  playerLeft,required TResult Function( HostChanged value)  hostChanged,required TResult Function( SettingsChanged value)  settingsChanged,required TResult Function( DispersalStarted value)  dispersalStarted,required TResult Function( TargetAssigned value)  targetAssigned,required TResult Function( YouDied value)  youDied,required TResult Function( Warning value)  warning,required TResult Function( CompassPulse value)  compassPulse,required TResult Function( TargetLocation value)  targetLocation,required TResult Function( FrameVerdict value)  frameVerdict,required TResult Function( GameFinished value)  gameFinished,required TResult Function( UnknownGameEvent value)  unknown,}){
 final _that = this;
 switch (_that) {
 case PlayerJoined():
@@ -103,7 +104,8 @@ return targetAssigned(_that);case YouDied():
 return youDied(_that);case Warning():
 return warning(_that);case CompassPulse():
 return compassPulse(_that);case TargetLocation():
-return targetLocation(_that);case GameFinished():
+return targetLocation(_that);case FrameVerdict():
+return frameVerdict(_that);case GameFinished():
 return gameFinished(_that);case UnknownGameEvent():
 return unknown(_that);}
 }
@@ -119,7 +121,7 @@ return unknown(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( PlayerJoined value)?  playerJoined,TResult? Function( PlayerReady value)?  playerReady,TResult? Function( PlayerLeft value)?  playerLeft,TResult? Function( HostChanged value)?  hostChanged,TResult? Function( SettingsChanged value)?  settingsChanged,TResult? Function( DispersalStarted value)?  dispersalStarted,TResult? Function( TargetAssigned value)?  targetAssigned,TResult? Function( YouDied value)?  youDied,TResult? Function( Warning value)?  warning,TResult? Function( CompassPulse value)?  compassPulse,TResult? Function( TargetLocation value)?  targetLocation,TResult? Function( GameFinished value)?  gameFinished,TResult? Function( UnknownGameEvent value)?  unknown,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( PlayerJoined value)?  playerJoined,TResult? Function( PlayerReady value)?  playerReady,TResult? Function( PlayerLeft value)?  playerLeft,TResult? Function( HostChanged value)?  hostChanged,TResult? Function( SettingsChanged value)?  settingsChanged,TResult? Function( DispersalStarted value)?  dispersalStarted,TResult? Function( TargetAssigned value)?  targetAssigned,TResult? Function( YouDied value)?  youDied,TResult? Function( Warning value)?  warning,TResult? Function( CompassPulse value)?  compassPulse,TResult? Function( TargetLocation value)?  targetLocation,TResult? Function( FrameVerdict value)?  frameVerdict,TResult? Function( GameFinished value)?  gameFinished,TResult? Function( UnknownGameEvent value)?  unknown,}){
 final _that = this;
 switch (_that) {
 case PlayerJoined() when playerJoined != null:
@@ -133,7 +135,8 @@ return targetAssigned(_that);case YouDied() when youDied != null:
 return youDied(_that);case Warning() when warning != null:
 return warning(_that);case CompassPulse() when compassPulse != null:
 return compassPulse(_that);case TargetLocation() when targetLocation != null:
-return targetLocation(_that);case GameFinished() when gameFinished != null:
+return targetLocation(_that);case FrameVerdict() when frameVerdict != null:
+return frameVerdict(_that);case GameFinished() when gameFinished != null:
 return gameFinished(_that);case UnknownGameEvent() when unknown != null:
 return unknown(_that);case _:
   return null;
@@ -152,7 +155,7 @@ return unknown(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String playerId,  String nameCiphertext)?  playerJoined,TResult Function( String playerId)?  playerReady,TResult Function( String playerId)?  playerLeft,TResult Function( String playerId)?  hostChanged,TResult Function( Map<String, dynamic> settings)?  settingsChanged,TResult Function( DateTime endsAt)?  dispersalStarted,TResult Function( String targetId,  String nameCiphertext,  String selfiePath)?  targetAssigned,TResult Function( String cause,  String? killerNameCiphertext,  String? photoPath,  int survivedSeconds)?  youDied,TResult Function( bool active,  List<String> reasons,  DateTime? hardDeadline)?  warning,TResult Function( double bearingDeg,  double distanceM,  DateTime expiresAt)?  compassPulse,TResult Function( double lat,  double lng)?  targetLocation,TResult Function( String winnerId,  Map<String, dynamic> stats,  List<dynamic> killChain)?  gameFinished,TResult Function( String event,  Map<String, dynamic> payload)?  unknown,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String playerId,  String nameCiphertext)?  playerJoined,TResult Function( String playerId)?  playerReady,TResult Function( String playerId)?  playerLeft,TResult Function( String playerId)?  hostChanged,TResult Function( Map<String, dynamic> settings)?  settingsChanged,TResult Function( DateTime endsAt)?  dispersalStarted,TResult Function( String targetId,  String nameCiphertext,  String selfiePath)?  targetAssigned,TResult Function( String cause,  String? killerNameCiphertext,  String? photoPath,  int survivedSeconds)?  youDied,TResult Function( bool active,  List<String> reasons,  DateTime? hardDeadline)?  warning,TResult Function( double bearingDeg,  double distanceM,  DateTime expiresAt)?  compassPulse,TResult Function( double lat,  double lng)?  targetLocation,TResult Function( bool passed,  DateTime? cooldownUntil)?  frameVerdict,TResult Function( String winnerId,  Map<String, dynamic> stats,  List<dynamic> killChain)?  gameFinished,TResult Function( String event,  Map<String, dynamic> payload)?  unknown,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case PlayerJoined() when playerJoined != null:
 return playerJoined(_that.playerId,_that.nameCiphertext);case PlayerReady() when playerReady != null:
@@ -165,7 +168,8 @@ return targetAssigned(_that.targetId,_that.nameCiphertext,_that.selfiePath);case
 return youDied(_that.cause,_that.killerNameCiphertext,_that.photoPath,_that.survivedSeconds);case Warning() when warning != null:
 return warning(_that.active,_that.reasons,_that.hardDeadline);case CompassPulse() when compassPulse != null:
 return compassPulse(_that.bearingDeg,_that.distanceM,_that.expiresAt);case TargetLocation() when targetLocation != null:
-return targetLocation(_that.lat,_that.lng);case GameFinished() when gameFinished != null:
+return targetLocation(_that.lat,_that.lng);case FrameVerdict() when frameVerdict != null:
+return frameVerdict(_that.passed,_that.cooldownUntil);case GameFinished() when gameFinished != null:
 return gameFinished(_that.winnerId,_that.stats,_that.killChain);case UnknownGameEvent() when unknown != null:
 return unknown(_that.event,_that.payload);case _:
   return orElse();
@@ -185,7 +189,7 @@ return unknown(_that.event,_that.payload);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String playerId,  String nameCiphertext)  playerJoined,required TResult Function( String playerId)  playerReady,required TResult Function( String playerId)  playerLeft,required TResult Function( String playerId)  hostChanged,required TResult Function( Map<String, dynamic> settings)  settingsChanged,required TResult Function( DateTime endsAt)  dispersalStarted,required TResult Function( String targetId,  String nameCiphertext,  String selfiePath)  targetAssigned,required TResult Function( String cause,  String? killerNameCiphertext,  String? photoPath,  int survivedSeconds)  youDied,required TResult Function( bool active,  List<String> reasons,  DateTime? hardDeadline)  warning,required TResult Function( double bearingDeg,  double distanceM,  DateTime expiresAt)  compassPulse,required TResult Function( double lat,  double lng)  targetLocation,required TResult Function( String winnerId,  Map<String, dynamic> stats,  List<dynamic> killChain)  gameFinished,required TResult Function( String event,  Map<String, dynamic> payload)  unknown,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String playerId,  String nameCiphertext)  playerJoined,required TResult Function( String playerId)  playerReady,required TResult Function( String playerId)  playerLeft,required TResult Function( String playerId)  hostChanged,required TResult Function( Map<String, dynamic> settings)  settingsChanged,required TResult Function( DateTime endsAt)  dispersalStarted,required TResult Function( String targetId,  String nameCiphertext,  String selfiePath)  targetAssigned,required TResult Function( String cause,  String? killerNameCiphertext,  String? photoPath,  int survivedSeconds)  youDied,required TResult Function( bool active,  List<String> reasons,  DateTime? hardDeadline)  warning,required TResult Function( double bearingDeg,  double distanceM,  DateTime expiresAt)  compassPulse,required TResult Function( double lat,  double lng)  targetLocation,required TResult Function( bool passed,  DateTime? cooldownUntil)  frameVerdict,required TResult Function( String winnerId,  Map<String, dynamic> stats,  List<dynamic> killChain)  gameFinished,required TResult Function( String event,  Map<String, dynamic> payload)  unknown,}) {final _that = this;
 switch (_that) {
 case PlayerJoined():
 return playerJoined(_that.playerId,_that.nameCiphertext);case PlayerReady():
@@ -198,7 +202,8 @@ return targetAssigned(_that.targetId,_that.nameCiphertext,_that.selfiePath);case
 return youDied(_that.cause,_that.killerNameCiphertext,_that.photoPath,_that.survivedSeconds);case Warning():
 return warning(_that.active,_that.reasons,_that.hardDeadline);case CompassPulse():
 return compassPulse(_that.bearingDeg,_that.distanceM,_that.expiresAt);case TargetLocation():
-return targetLocation(_that.lat,_that.lng);case GameFinished():
+return targetLocation(_that.lat,_that.lng);case FrameVerdict():
+return frameVerdict(_that.passed,_that.cooldownUntil);case GameFinished():
 return gameFinished(_that.winnerId,_that.stats,_that.killChain);case UnknownGameEvent():
 return unknown(_that.event,_that.payload);}
 }
@@ -214,7 +219,7 @@ return unknown(_that.event,_that.payload);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String playerId,  String nameCiphertext)?  playerJoined,TResult? Function( String playerId)?  playerReady,TResult? Function( String playerId)?  playerLeft,TResult? Function( String playerId)?  hostChanged,TResult? Function( Map<String, dynamic> settings)?  settingsChanged,TResult? Function( DateTime endsAt)?  dispersalStarted,TResult? Function( String targetId,  String nameCiphertext,  String selfiePath)?  targetAssigned,TResult? Function( String cause,  String? killerNameCiphertext,  String? photoPath,  int survivedSeconds)?  youDied,TResult? Function( bool active,  List<String> reasons,  DateTime? hardDeadline)?  warning,TResult? Function( double bearingDeg,  double distanceM,  DateTime expiresAt)?  compassPulse,TResult? Function( double lat,  double lng)?  targetLocation,TResult? Function( String winnerId,  Map<String, dynamic> stats,  List<dynamic> killChain)?  gameFinished,TResult? Function( String event,  Map<String, dynamic> payload)?  unknown,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String playerId,  String nameCiphertext)?  playerJoined,TResult? Function( String playerId)?  playerReady,TResult? Function( String playerId)?  playerLeft,TResult? Function( String playerId)?  hostChanged,TResult? Function( Map<String, dynamic> settings)?  settingsChanged,TResult? Function( DateTime endsAt)?  dispersalStarted,TResult? Function( String targetId,  String nameCiphertext,  String selfiePath)?  targetAssigned,TResult? Function( String cause,  String? killerNameCiphertext,  String? photoPath,  int survivedSeconds)?  youDied,TResult? Function( bool active,  List<String> reasons,  DateTime? hardDeadline)?  warning,TResult? Function( double bearingDeg,  double distanceM,  DateTime expiresAt)?  compassPulse,TResult? Function( double lat,  double lng)?  targetLocation,TResult? Function( bool passed,  DateTime? cooldownUntil)?  frameVerdict,TResult? Function( String winnerId,  Map<String, dynamic> stats,  List<dynamic> killChain)?  gameFinished,TResult? Function( String event,  Map<String, dynamic> payload)?  unknown,}) {final _that = this;
 switch (_that) {
 case PlayerJoined() when playerJoined != null:
 return playerJoined(_that.playerId,_that.nameCiphertext);case PlayerReady() when playerReady != null:
@@ -227,7 +232,8 @@ return targetAssigned(_that.targetId,_that.nameCiphertext,_that.selfiePath);case
 return youDied(_that.cause,_that.killerNameCiphertext,_that.photoPath,_that.survivedSeconds);case Warning() when warning != null:
 return warning(_that.active,_that.reasons,_that.hardDeadline);case CompassPulse() when compassPulse != null:
 return compassPulse(_that.bearingDeg,_that.distanceM,_that.expiresAt);case TargetLocation() when targetLocation != null:
-return targetLocation(_that.lat,_that.lng);case GameFinished() when gameFinished != null:
+return targetLocation(_that.lat,_that.lng);case FrameVerdict() when frameVerdict != null:
+return frameVerdict(_that.passed,_that.cooldownUntil);case GameFinished() when gameFinished != null:
 return gameFinished(_that.winnerId,_that.stats,_that.killChain);case UnknownGameEvent() when unknown != null:
 return unknown(_that.event,_that.payload);case _:
   return null;
@@ -991,6 +997,74 @@ class _$TargetLocationCopyWithImpl<$Res>
 lat: null == lat ? _self.lat : lat // ignore: cast_nullable_to_non_nullable
 as double,lng: null == lng ? _self.lng : lng // ignore: cast_nullable_to_non_nullable
 as double,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class FrameVerdict implements GameEvent {
+  const FrameVerdict({required this.passed, this.cooldownUntil});
+  
+
+ final  bool passed;
+ final  DateTime? cooldownUntil;
+
+/// Create a copy of GameEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$FrameVerdictCopyWith<FrameVerdict> get copyWith => _$FrameVerdictCopyWithImpl<FrameVerdict>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FrameVerdict&&(identical(other.passed, passed) || other.passed == passed)&&(identical(other.cooldownUntil, cooldownUntil) || other.cooldownUntil == cooldownUntil));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,passed,cooldownUntil);
+
+@override
+String toString() {
+  return 'GameEvent.frameVerdict(passed: $passed, cooldownUntil: $cooldownUntil)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $FrameVerdictCopyWith<$Res> implements $GameEventCopyWith<$Res> {
+  factory $FrameVerdictCopyWith(FrameVerdict value, $Res Function(FrameVerdict) _then) = _$FrameVerdictCopyWithImpl;
+@useResult
+$Res call({
+ bool passed, DateTime? cooldownUntil
+});
+
+
+
+
+}
+/// @nodoc
+class _$FrameVerdictCopyWithImpl<$Res>
+    implements $FrameVerdictCopyWith<$Res> {
+  _$FrameVerdictCopyWithImpl(this._self, this._then);
+
+  final FrameVerdict _self;
+  final $Res Function(FrameVerdict) _then;
+
+/// Create a copy of GameEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? passed = null,Object? cooldownUntil = freezed,}) {
+  return _then(FrameVerdict(
+passed: null == passed ? _self.passed : passed // ignore: cast_nullable_to_non_nullable
+as bool,cooldownUntil: freezed == cooldownUntil ? _self.cooldownUntil : cooldownUntil // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 

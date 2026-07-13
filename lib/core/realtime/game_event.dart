@@ -77,6 +77,13 @@ sealed class GameEvent with _$GameEvent {
     required double lng,
   }) = TargetLocation;
 
+  /// player:{assassin_id} — the verdict on your one open frame (#20).
+  /// [cooldownUntil] is only present when [passed] is false.
+  const factory GameEvent.frameVerdict({
+    required bool passed,
+    DateTime? cooldownUntil,
+  }) = FrameVerdict;
+
   /// game:{game_id} — the game is over.
   const factory GameEvent.gameFinished({
     required String winnerId,
@@ -149,6 +156,13 @@ sealed class GameEvent with _$GameEvent {
           return GameEvent.targetLocation(
             lat: (payload['lat'] as num).toDouble(),
             lng: (payload['lng'] as num).toDouble(),
+          );
+        case 'frame_verdict':
+          return GameEvent.frameVerdict(
+            passed: payload['passed'] as bool,
+            cooldownUntil: payload['cooldown_until'] != null
+                ? DateTime.parse(payload['cooldown_until'] as String)
+                : null,
           );
         case 'game_finished':
           return GameEvent.gameFinished(

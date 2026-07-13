@@ -52,6 +52,16 @@ sealed class IngameTargetLocation with _$IngameTargetLocation {
   }) = _IngameTargetLocation;
 }
 
+/// The frame button's state (#21). [cooldown]'s [until] mirrors the
+/// server's `frame_cooldown_until` — no local logic decides when it ends.
+@freezed
+sealed class IngameFrameStatus with _$IngameFrameStatus {
+  const factory IngameFrameStatus.ready() = FrameReady;
+  const factory IngameFrameStatus.waitingForVerdict() = FrameWaitingForVerdict;
+  const factory IngameFrameStatus.cooldown({required DateTime until}) =
+      FrameCooldown;
+}
+
 @freezed
 sealed class IngameState with _$IngameState {
   const factory IngameState({
@@ -59,5 +69,6 @@ sealed class IngameState with _$IngameState {
     IngameWarning? warning,
     IngameCompass? compass,
     IngameTargetLocation? targetLocation,
+    @Default(IngameFrameStatus.ready()) IngameFrameStatus frameStatus,
   }) = _IngameState;
 }

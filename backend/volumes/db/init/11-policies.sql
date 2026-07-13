@@ -126,6 +126,23 @@ create policy framed_frames_insert on storage.objects
     and framed_my_player(framed_uuid((string_to_array(name, '/'))[1])) is not null
   );
 
+-- frames: same-path re-upload (#21) — a client retrying submit_frame after
+-- a dropped connection upserts to the same path rather than picking a new
+-- one, so this needs update too, not just insert.
+drop policy if exists framed_frames_update on storage.objects;
+create policy framed_frames_update on storage.objects
+  for update to authenticated
+  using (
+    bucket_id = 'frames'
+    and array_length(string_to_array(name, '/'), 1) = 2
+    and framed_my_player(framed_uuid((string_to_array(name, '/'))[1])) is not null
+  )
+  with check (
+    bucket_id = 'frames'
+    and array_length(string_to_array(name, '/'), 1) = 2
+    and framed_my_player(framed_uuid((string_to_array(name, '/'))[1])) is not null
+  );
+
 -- read (signed URLs): members of the game only
 drop policy if exists framed_objects_select on storage.objects;
 create policy framed_objects_select on storage.objects

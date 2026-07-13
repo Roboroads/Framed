@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:typed_data';
 
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:latlong2/latlong.dart';
 
+import '../../../../core/camera/in_app_camera_page.dart';
 import '../../../../core/di/injector.dart';
 import '../../../../core/location/compass_math.dart';
 import '../../../../core/location/heading.dart';
@@ -17,6 +20,7 @@ import '../../../../i18n/strings.g.dart';
 import '../../domain/game_repository.dart';
 import '../../domain/geofence_info.dart';
 import '../../domain/target.dart';
+import 'frame_confirm_page.dart';
 import 'ingame_bloc.dart';
 import 'ingame_state.dart';
 
@@ -54,6 +58,7 @@ class _IngamePageState extends State<IngamePage> {
       events: playerEvents,
       crypto: session.crypto,
       repository: repository,
+      gameId: session.gameId,
       initialEndsAt: widget.initialEndsAt,
     );
     _locationService = LocationService(
@@ -113,6 +118,7 @@ class _IngameView extends StatelessWidget {
                     hasWarning: state.warning != null,
                     targetLocation: state.targetLocation,
                     geofence: geofence,
+                    frameStatus: state.frameStatus,
                   ),
                   IngameTargetLoadFailed() => Center(
                     child: Padding(
@@ -271,6 +277,7 @@ class _TargetCard extends StatelessWidget {
     required this.hasWarning,
     required this.targetLocation,
     required this.geofence,
+    required this.frameStatus,
   });
 
   final Target target;
@@ -278,6 +285,7 @@ class _TargetCard extends StatelessWidget {
   final bool hasWarning;
   final IngameTargetLocation? targetLocation;
   final GeofenceInfo? geofence;
+  final IngameFrameStatus frameStatus;
 
   @override
   Widget build(BuildContext context) {
@@ -315,15 +323,60 @@ class _TargetCard extends StatelessWidget {
               _TargetLocationPanel(location: location, geofence: geofence),
             ],
           const SizedBox(height: 24),
-          // Placeholder for #21 — the frame camera wires this up.
-          FilledButton.icon(
-            onPressed: null,
-            icon: const Icon(Icons.camera_alt),
-            label: Text(t.ingame.frameButtonPlaceholder),
-          ),
+          _FrameButton(status: frameStatus),
         ],
       ),
     );
+  }
+}
+
+/// The frame button (#21): ready to shoot, waiting on a verdict (held and
+/// pending look identical by design — see #19), or cooling down from a
+/// failed vote. The cooldown clock is the bloc's, not this widget's — it
+/// just renders whatever `until` the server sent.
+class _FrameButton extends StatelessWidget {
+  const _FrameButton({required this.status});
+
+  final IngameFrameStatus status;
+
+  Future<void> _openCamera(BuildContext context) async {
+    final bloc = context.read<IngameBloc>();
+    final bytes = await Navigator.of(context).push<Uint8List>(
+      MaterialPageRoute(
+        builder: (_) =>
+            const InAppCameraPage(lensDirection: CameraLensDirection.back),
+      ),
+    );
+    if (bytes == null || !context.mounted) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => FrameConfirmPage(photoBytes: bytes, bloc: bloc),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return switch (status) {
+      FrameReady() => FilledButton.icon(
+        onPressed: () => _openCamera(context),
+        icon: const Icon(Icons.camera_alt),
+        label: Text(t.frame.button),
+      ),
+      FrameWaitingForVerdict() => FilledButton.icon(
+        onPressed: null,
+        icon: const Icon(Icons.hourglass_empty),
+        label: Text(t.frame.waiting),
+      ),
+      FrameCooldown(:final until) => _CountdownText(
+        deadline: until,
+        builder: (context, time) => FilledButton.icon(
+          onPressed: null,
+          icon: const Icon(Icons.timer_outlined),
+          label: Text(t.frame.cooldown(time: time)),
+        ),
+      ),
+    };
   }
 }
 

@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/crypto/game_crypto.dart';
 import '../../../../core/realtime/game_event.dart';
+import '../../domain/frame_error.dart';
 import '../../domain/game_repository.dart';
 import '../../domain/target.dart';
 import 'ingame_state.dart';
@@ -13,6 +15,7 @@ class IngameBloc extends Cubit<IngameState> {
     required Stream<GameEvent> events,
     required GameCrypto crypto,
     required GameRepository repository,
+    required String gameId,
     required DateTime initialEndsAt,
     // ponytail: no target_location_ended event exists (#13/#18) — the
     // panel expires after this long without a fresh tick instead. Two
@@ -22,6 +25,7 @@ class IngameBloc extends Cubit<IngameState> {
     Duration targetLocationTimeout = const Duration(seconds: 70),
   }) : _crypto = crypto,
        _repository = repository,
+       _gameId = gameId,
        _targetLocationTimeout = targetLocationTimeout,
        super(
          IngameState(phase: IngamePhase.dispersing(endsAt: initialEndsAt)),
@@ -31,8 +35,10 @@ class IngameBloc extends Cubit<IngameState> {
 
   final GameCrypto _crypto;
   final GameRepository _repository;
+  final String _gameId;
   final Duration _targetLocationTimeout;
   late final StreamSubscription<GameEvent> _subscription;
+  Timer? _cooldownTimer;
 
   // Bumped on every target_assigned so an in-flight download/decrypt from a
   // superseded assignment (e.g. a target reassigned after dying) can't land
@@ -57,6 +63,10 @@ class IngameBloc extends Cubit<IngameState> {
     }
     if (event is TargetLocation) {
       _onTargetLocation(event);
+      return;
+    }
+    if (event is FrameVerdict) {
+      _onFrameVerdict(event);
       return;
     }
     if (event is! TargetAssigned) return;
@@ -144,11 +154,65 @@ class IngameBloc extends Cubit<IngameState> {
     });
   }
 
+  // Encrypts and uploads the photo, then submits the frame. [frameUuid]
+  // must stay stable across retries of the same capture — the upload
+  // upserts, so a retry after a dropped connection re-uses the same
+  // storage path instead of orphaning a partial one (#21).
+  Future<FrameError?> submitFrame({
+    required Uint8List photoBytes,
+    required String frameUuid,
+  }) async {
+    if (state.frameStatus is! FrameReady) return null;
+    try {
+      final photoPath = '$_gameId/$frameUuid';
+      final encrypted = await _crypto.encryptBytes(photoBytes);
+      await _repository.uploadFramePhoto(
+        photoPath: photoPath,
+        encryptedBytes: encrypted,
+      );
+      await _repository.submitFrame(gameId: _gameId, photoPath: photoPath);
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            frameStatus: const IngameFrameStatus.waitingForVerdict(),
+          ),
+        );
+      }
+      return null;
+    } catch (e) {
+      return FrameError.fromException(e);
+    }
+  }
+
+  // A passed verdict just goes back to ready — the target_assigned event
+  // that follows (from kill_player's relink) drives the new target card.
+  // A failed one starts a cooldown that clears itself on schedule, same
+  // idea as the compass expiry timer above.
+  void _onFrameVerdict(FrameVerdict event) {
+    _cooldownTimer?.cancel();
+    final until = event.cooldownUntil;
+    if (event.passed || until == null) {
+      emit(state.copyWith(frameStatus: const IngameFrameStatus.ready()));
+      return;
+    }
+    emit(state.copyWith(frameStatus: IngameFrameStatus.cooldown(until: until)));
+    final remaining = until.difference(DateTime.now());
+    if (remaining.isNegative) {
+      emit(state.copyWith(frameStatus: const IngameFrameStatus.ready()));
+      return;
+    }
+    _cooldownTimer = Timer(remaining, () {
+      if (isClosed) return;
+      emit(state.copyWith(frameStatus: const IngameFrameStatus.ready()));
+    });
+  }
+
   @override
   Future<void> close() {
     _subscription.cancel();
     _compassTimer?.cancel();
     _targetLocationTimer?.cancel();
+    _cooldownTimer?.cancel();
     return super.close();
   }
 }

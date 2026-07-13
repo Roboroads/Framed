@@ -4,10 +4,12 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:framed/core/crypto/game_crypto.dart';
 import 'package:framed/core/realtime/game_event.dart';
+import 'package:framed/features/game/domain/frame_error.dart';
 import 'package:framed/features/game/domain/game_repository.dart';
 import 'package:framed/features/game/domain/geofence_info.dart';
 import 'package:framed/features/game/presentation/ingame/ingame_bloc.dart';
 import 'package:framed/features/game/presentation/ingame/ingame_state.dart';
+import 'package:postgrest/postgrest.dart';
 
 class _FakeGameRepository implements GameRepository {
   Uint8List? selfieBytes;
@@ -18,6 +20,10 @@ class _FakeGameRepository implements GameRepository {
   /// concurrent downloads "finishes" first.
   bool controlled = false;
   final completers = <Completer<Uint8List>>[];
+
+  Object? frameFailure;
+  String? lastUploadedPhotoPath;
+  String? lastSubmittedPhotoPath;
 
   @override
   Future<Uint8List> downloadSelfie(String path) {
@@ -40,6 +46,24 @@ class _FakeGameRepository implements GameRepository {
   @override
   Future<GeofenceInfo> getGeofence(String gameId) async {
     return const GeofenceInfo(lat: 0, lng: 0, radiusM: 200);
+  }
+
+  @override
+  Future<void> uploadFramePhoto({
+    required String photoPath,
+    required Uint8List encryptedBytes,
+  }) async {
+    if (frameFailure != null) throw frameFailure!;
+    lastUploadedPhotoPath = photoPath;
+  }
+
+  @override
+  Future<void> submitFrame({
+    required String gameId,
+    required String photoPath,
+  }) async {
+    if (frameFailure != null) throw frameFailure!;
+    lastSubmittedPhotoPath = photoPath;
   }
 }
 
@@ -64,6 +88,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        gameId: 'game-1',
         initialEndsAt: endsAt,
       );
 
@@ -78,6 +103,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        gameId: 'game-1',
         initialEndsAt: endsAt,
       );
       final selfieBytes = Uint8List.fromList([1, 2, 3, 4]);
@@ -108,6 +134,7 @@ void main() {
           events: events.stream,
           crypto: crypto,
           repository: repository,
+          gameId: 'game-1',
           initialEndsAt: endsAt,
         );
         repository.failure = Exception('storage unavailable');
@@ -136,6 +163,7 @@ void main() {
           events: events.stream,
           crypto: crypto,
           repository: repository,
+          gameId: 'game-1',
           initialEndsAt: endsAt,
         );
         repository.controlled = true;
@@ -180,6 +208,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        gameId: 'game-1',
         initialEndsAt: endsAt,
       );
 
@@ -197,6 +226,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        gameId: 'game-1',
         initialEndsAt: endsAt,
       );
       final deadline = DateTime.utc(2026, 1, 1, 12, 5);
@@ -223,6 +253,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        gameId: 'game-1',
         initialEndsAt: endsAt,
       );
 
@@ -247,6 +278,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        gameId: 'game-1',
         initialEndsAt: endsAt,
       );
 
@@ -273,6 +305,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        gameId: 'game-1',
         initialEndsAt: endsAt,
       );
 
@@ -295,6 +328,7 @@ void main() {
           events: events.stream,
           crypto: crypto,
           repository: repository,
+          gameId: 'game-1',
           initialEndsAt: endsAt,
         );
 
@@ -328,6 +362,7 @@ void main() {
           events: events.stream,
           crypto: crypto,
           repository: repository,
+          gameId: 'game-1',
           initialEndsAt: endsAt,
           targetLocationTimeout: const Duration(milliseconds: 50),
         );
@@ -355,6 +390,7 @@ void main() {
           events: events.stream,
           crypto: crypto,
           repository: repository,
+          gameId: 'game-1',
           initialEndsAt: endsAt,
           targetLocationTimeout: const Duration(milliseconds: 30),
         );
@@ -373,6 +409,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        gameId: 'game-1',
         initialEndsAt: endsAt,
         targetLocationTimeout: const Duration(milliseconds: 50),
       );
@@ -390,5 +427,131 @@ void main() {
         const IngameTargetLocation(lat: 5, lng: 6),
       );
     });
+
+    test('starts ready', () {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        gameId: 'game-1',
+        initialEndsAt: endsAt,
+      );
+
+      expect(bloc.state.frameStatus, const IngameFrameStatus.ready());
+    });
+
+    test('submitFrame uploads, submits, and moves to waiting', () async {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        gameId: 'game-1',
+        initialEndsAt: endsAt,
+      );
+
+      final error = await bloc.submitFrame(
+        photoBytes: Uint8List.fromList([1, 2, 3]),
+        frameUuid: 'uuid-1',
+      );
+
+      expect(error, isNull);
+      expect(repository.lastUploadedPhotoPath, 'game-1/uuid-1');
+      expect(repository.lastSubmittedPhotoPath, 'game-1/uuid-1');
+      expect(
+        bloc.state.frameStatus,
+        const IngameFrameStatus.waitingForVerdict(),
+      );
+    });
+
+    test('submitFrame surfaces the server error and stays ready', () async {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        gameId: 'game-1',
+        initialEndsAt: endsAt,
+      );
+      repository.frameFailure = PostgrestException(message: 'on_cooldown');
+
+      final error = await bloc.submitFrame(
+        photoBytes: Uint8List.fromList([1, 2, 3]),
+        frameUuid: 'uuid-1',
+      );
+
+      expect(error, FrameError.onCooldown);
+      expect(bloc.state.frameStatus, const IngameFrameStatus.ready());
+    });
+
+    test('a second submitFrame while waiting is a no-op', () async {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        gameId: 'game-1',
+        initialEndsAt: endsAt,
+      );
+      await bloc.submitFrame(
+        photoBytes: Uint8List.fromList([1, 2, 3]),
+        frameUuid: 'uuid-1',
+      );
+
+      final error = await bloc.submitFrame(
+        photoBytes: Uint8List.fromList([4, 5, 6]),
+        frameUuid: 'uuid-2',
+      );
+
+      expect(error, isNull);
+      // still the first attempt's path — the second call never reached
+      // the repository
+      expect(repository.lastSubmittedPhotoPath, 'game-1/uuid-1');
+    });
+
+    test('frame_verdict passed:true returns to ready', () async {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        gameId: 'game-1',
+        initialEndsAt: endsAt,
+      );
+      await bloc.submitFrame(
+        photoBytes: Uint8List.fromList([1, 2, 3]),
+        frameUuid: 'uuid-1',
+      );
+
+      events.add(const GameEvent.frameVerdict(passed: true));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.frameStatus, const IngameFrameStatus.ready());
+    });
+
+    test(
+      'frame_verdict passed:false starts a cooldown that clears itself',
+      () async {
+        final bloc = IngameBloc(
+          events: events.stream,
+          crypto: crypto,
+          repository: repository,
+          gameId: 'game-1',
+          initialEndsAt: endsAt,
+        );
+        await bloc.submitFrame(
+          photoBytes: Uint8List.fromList([1, 2, 3]),
+          frameUuid: 'uuid-1',
+        );
+        final until = DateTime.now().add(const Duration(milliseconds: 50));
+
+        events.add(GameEvent.frameVerdict(passed: false, cooldownUntil: until));
+        await Future<void>.delayed(Duration.zero);
+
+        expect(
+          bloc.state.frameStatus,
+          IngameFrameStatus.cooldown(until: until),
+        );
+
+        await Future<void>.delayed(const Duration(milliseconds: 80));
+        expect(bloc.state.frameStatus, const IngameFrameStatus.ready());
+      },
+    );
   });
 }
