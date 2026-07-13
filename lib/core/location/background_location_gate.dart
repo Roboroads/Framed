@@ -29,6 +29,16 @@ class _BackgroundLocationGateState extends State<BackgroundLocationGate>
     with WidgetsBindingObserver {
   _GateStatus _status = _GateStatus.explaining;
 
+  // The OS permission dialog itself cycles inactive->resumed, same as
+  // actually backgrounding the app — the only way to tell "came back from
+  // Settings" from "the in-app permission dialog just closed" is that the
+  // former passes through `paused` first (the app is truly backgrounded)
+  // and the latter never does (the dialog overlays this same foreground
+  // task). Without this, resumed-after-in-app-dialog re-triggers the
+  // request immediately, showing a second dialog right after the first
+  // (see PermissionGate, #52, where this was caught live on device).
+  bool _wasPaused = false;
+
   @override
   void initState() {
     super.initState();
@@ -43,8 +53,15 @@ class _BackgroundLocationGateState extends State<BackgroundLocationGate>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      _wasPaused = true;
+      return;
+    }
     // Recheck on return from the Settings app — no app restart needed.
-    if (state == AppLifecycleState.resumed && _status == _GateStatus.blocked) {
+    if (state == AppLifecycleState.resumed &&
+        _status == _GateStatus.blocked &&
+        _wasPaused) {
+      _wasPaused = false;
       _requestPermission();
     }
   }
