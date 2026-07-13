@@ -89,15 +89,16 @@ end $$;
 -- not the assassin, not the target, alive or dead. One vote per judge (pk
 -- on frame_votes); a repeat vote or a vote on an already-resolved frame is
 -- a silent no-op, not an error — the modal may still be open somewhere.
-create or replace function cast_vote(p_frame_id uuid, p_vote boolean) returns void
+create or replace function cast_vote(frame_id uuid, vote boolean) returns void
 language plpgsql security definer set search_path = '' as $$
+#variable_conflict use_column
 declare
   f public.frames%rowtype;
   me public.players%rowtype;
   yes_count integer;
   no_count integer;
 begin
-  select * into f from public.frames where id = p_frame_id for update;
+  select * into f from public.frames where id = cast_vote.frame_id for update;
   if not found then raise exception using message = 'not_found'; end if;
 
   select * into me from public.players p
@@ -109,7 +110,7 @@ begin
   if f.status <> 'pending' then return; end if;
 
   insert into public.frame_votes (frame_id, judge_id, vote)
-  values (f.id, me.id, p_vote)
+  values (f.id, me.id, cast_vote.vote)
   on conflict (frame_id, judge_id) do nothing;
 
   select count(*) filter (where fv.vote), count(*) filter (where not fv.vote)

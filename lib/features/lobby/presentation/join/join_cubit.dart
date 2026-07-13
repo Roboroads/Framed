@@ -72,6 +72,14 @@ class JoinCubit extends Cubit<JoinState> {
 
       emit(state.copyWith(status: JoinStatus.success));
     } catch (e) {
+      // Debug-only: LobbyError.fromException collapses anything it doesn't
+      // recognize into LobbyError.unknown, which is enough for the UI but
+      // not for diagnosing why a call actually failed.
+      assert(() {
+        // ignore: avoid_print
+        print('JOIN_ERROR_DEBUG: $e');
+        return true;
+      }());
       emit(
         state.copyWith(
           status: JoinStatus.failure,
