@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
@@ -15,7 +16,9 @@ enum _GateStatus { explaining, requesting, blocked }
 /// is caught before the player invests time in name entry and a selfie.
 /// Denying camera or location blocks entry, reusing the same
 /// explain-then-block pattern as [BackgroundLocationGate]; notifications
-/// stay best-effort and never block, matching that gate too.
+/// stay best-effort and never block, matching that gate too. A returning
+/// player who already granted everything never sees the explainer —
+/// it's rationale for a dialog, and there's nothing left to ask.
 class PermissionGate extends StatefulWidget {
   const PermissionGate({required this.nextRoute, super.key});
 
@@ -29,7 +32,10 @@ class PermissionGate extends StatefulWidget {
 
 class _PermissionGateState extends State<PermissionGate>
     with WidgetsBindingObserver {
-  _GateStatus _status = _GateStatus.explaining;
+  // Spinner while the silent pre-check below runs — the explainer is
+  // rationale for a dialog we're about to show, so it has no reason to
+  // appear if everything's already granted (e.g. a returning player).
+  _GateStatus _status = _GateStatus.requesting;
 
   // The OS permission dialog itself cycles inactive->resumed, same as
   // actually backgrounding the app — the only way to tell "came back from
@@ -44,6 +50,24 @@ class _PermissionGateState extends State<PermissionGate>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    unawaited(_checkThenProceed());
+  }
+
+  /// Non-prompting check: if camera and location are already granted, skip
+  /// straight through instead of showing rationale for a dialog nobody's
+  /// about to see.
+  Future<void> _checkThenProceed() async {
+    final camera = await Permission.camera.status;
+    final location = await Geolocator.checkPermission();
+    final locationGranted =
+        location == LocationPermission.always ||
+        location == LocationPermission.whileInUse;
+    if (!mounted) return;
+    if (camera.isGranted && locationGranted) {
+      await _requestPermissions();
+    } else {
+      setState(() => _status = _GateStatus.explaining);
+    }
   }
 
   @override
