@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../domain/judging_frame.dart';
@@ -22,13 +24,14 @@ sealed class IngamePhase with _$IngamePhase {
   const factory IngamePhase.targetLoadFailed() = IngameTargetLoadFailed;
 
   /// This player is out (#54's reconnect catch-up can land here directly
-  /// on cold start). Deliberately minimal — the full reveal (kill photo,
-  /// stats) is #23's job; this just makes sure a dead player, live or
-  /// reconnecting, never gets stuck looking like they're still playing.
+  /// on cold start). [photoBytes] is the decrypted frame that killed you —
+  /// only present for `cause == 'framed'`; `mia` has no photo, no assassin
+  /// (#23).
   const factory IngamePhase.dead({
     required String cause,
     String? killerName,
     required int survivedSeconds,
+    Uint8List? photoBytes,
   }) = IngameDead;
 }
 

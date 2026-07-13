@@ -332,6 +332,51 @@ void main() {
       );
     });
 
+    test('you_died with a photo downloads and decrypts it', () async {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        gameId: 'game-1',
+        initialEndsAt: endsAt,
+      );
+      final original = Uint8List.fromList(List.generate(20, (i) => i));
+      repository.framePhotoBytes = await crypto.encryptBytes(original);
+
+      events.add(
+        GameEvent.youDied(
+          cause: 'framed',
+          killerNameCiphertext: await crypto.encryptString('Killer'),
+          photoPath: 'game-1/frame-1',
+          survivedSeconds: 120,
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      final phase = bloc.state.phase as IngameDead;
+      expect(phase.photoBytes, original);
+      expect(repository.downloadFramePhotoCalls, 1);
+    });
+
+    test('you_died for a mia death has no photo to download', () async {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        gameId: 'game-1',
+        initialEndsAt: endsAt,
+      );
+
+      events.add(const GameEvent.youDied(cause: 'mia', survivedSeconds: 300));
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      final phase = bloc.state.phase as IngameDead;
+      expect(phase.photoBytes, isNull);
+      expect(repository.downloadFramePhotoCalls, 0);
+    });
+
     test(
       'the catch-up fetch can report dead directly (cold-start resume)',
       () async {

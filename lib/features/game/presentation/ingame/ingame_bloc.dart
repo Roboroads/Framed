@@ -178,6 +178,18 @@ class IngameBloc extends Cubit<IngameState> {
         // name that fails to decrypt just renders unattributed.
       }
     }
+    Uint8List? photoBytes;
+    if (event.photoPath != null) {
+      try {
+        final encrypted = await _repository.downloadFramePhoto(
+          event.photoPath!,
+        );
+        photoBytes = await _crypto.decryptBytes(encrypted);
+      } catch (_) {
+        // Same reasoning as the killer name above — a photo that fails to
+        // load doesn't block the rest of the death screen from showing.
+      }
+    }
     if (isClosed || generation != _targetGeneration) return;
     emit(
       state.copyWith(
@@ -185,6 +197,7 @@ class IngameBloc extends Cubit<IngameState> {
           cause: event.cause,
           killerName: killerName,
           survivedSeconds: event.survivedSeconds,
+          photoBytes: photoBytes,
         ),
       ),
     );

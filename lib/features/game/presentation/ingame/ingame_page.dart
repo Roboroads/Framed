@@ -139,11 +139,13 @@ class _IngameView extends StatelessWidget {
                     :final cause,
                     :final killerName,
                     :final survivedSeconds,
+                    :final photoBytes,
                   ) =>
                     _DeadScreen(
                       cause: cause,
                       killerName: killerName,
                       survivedSeconds: survivedSeconds,
+                      photoBytes: photoBytes,
                     ),
                 },
                 if (state.warning case final warning?)
@@ -174,27 +176,41 @@ class _IngameView extends StatelessWidget {
   }
 }
 
-/// Deliberately minimal — see [IngamePhase.dead]'s doc comment. #23 owns
-/// the full reveal (kill photo, dead chat).
+/// How you died, how long you survived, the photo that framed you, and who
+/// your assassin was (#23, IDEA.md "Screens" — death screen). Dead chat
+/// (#24) is a separate panel this screen doesn't own yet.
 class _DeadScreen extends StatelessWidget {
   const _DeadScreen({
     required this.cause,
     required this.killerName,
     required this.survivedSeconds,
+    required this.photoBytes,
   });
 
   final String cause;
   final String? killerName;
   final int survivedSeconds;
+  final Uint8List? photoBytes;
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (photoBytes != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: AspectRatio(
+                    aspectRatio: 3 / 4,
+                    child: Image.memory(photoBytes!, fit: BoxFit.cover),
+                  ),
+                ),
+              ),
             Text(
               cause == 'mia' ? t.ingame.deadTitleMia : t.ingame.deadTitleFramed,
               style: Theme.of(context).textTheme.headlineMedium,
