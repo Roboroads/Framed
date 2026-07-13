@@ -100,6 +100,8 @@
     "disperseTitle": "Spread out",
     "disperseInstruction": "You'll get your target when this hits zero.",
     "targetCardTitle": "Your target",
+    "myLocationButton": "My location",
+    "myLocationTitle": "My location",
     "errorTargetLoad": "Couldn't load your target. Try reopening the app.",
     "warningGeofence": "You're outside the play area — go back.",
     "nearGeofenceEdge": "You're close to the edge of the play area",

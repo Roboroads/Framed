@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 
 import 'package:latlong2/latlong.dart';
 
@@ -16,6 +17,7 @@ import '../../../../core/realtime/game_channels.dart';
 import '../../../../core/session/game_session.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/geofence_map.dart';
+import '../../../../core/widgets/geofence_map_viewer_page.dart';
 import '../../../../i18n/strings.g.dart';
 import '../../domain/game_repository.dart';
 import '../../domain/geofence_info.dart';
@@ -86,15 +88,19 @@ class _IngamePageState extends State<IngamePage> {
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: _bloc,
-      child: _IngameView(geofence: _geofence),
+      child: _IngameView(
+        geofence: _geofence,
+        selfPositionStream: _locationService.positionStream,
+      ),
     );
   }
 }
 
 class _IngameView extends StatelessWidget {
-  const _IngameView({required this.geofence});
+  const _IngameView({required this.geofence, required this.selfPositionStream});
 
   final GeofenceInfo? geofence;
+  final Stream<Position> selfPositionStream;
 
   @override
   Widget build(BuildContext context) {
@@ -150,6 +156,15 @@ class _IngameView extends StatelessWidget {
                   const _ProximityBanner(),
                 if (state.judgingQueue.isNotEmpty)
                   _JudgingOverlay(entry: state.judgingQueue.first),
+                // Available in both dispersing and playing — the geofence
+                // rule already applies during dispersal (tick_punishments
+                // runs for both statuses), not just once a target's
+                // assigned. Hidden once dead: nothing left to navigate by.
+                if (geofence != null && state.phase is! IngameDead)
+                  _MyLocationButton(
+                    geofence: geofence!,
+                    selfPositionStream: selfPositionStream,
+                  ),
               ],
             ),
           ),
@@ -343,6 +358,49 @@ class _ProximityBanner extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Opens a full-screen map with the player's own live position and the
+/// play-area boundary (#65) — button rather than a persistent on-screen
+/// map, since the "Game in progress" screen is already dense (target card,
+/// compass, frame button, and the proximity banner from #61).
+class _MyLocationButton extends StatelessWidget {
+  const _MyLocationButton({
+    required this.geofence,
+    required this.selfPositionStream,
+  });
+
+  final GeofenceInfo geofence;
+  final Stream<Position> selfPositionStream;
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      top: 0,
+      right: 0,
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: FloatingActionButton.small(
+            heroTag: 'myLocation',
+            tooltip: t.ingame.myLocationButton,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => GeofenceMapViewerPage(
+                  center: LatLng(geofence.lat, geofence.lng),
+                  radiusM: geofence.radiusM.toDouble(),
+                  selfPositionStream: selfPositionStream.map(
+                    (p) => LatLng(p.latitude, p.longitude),
+                  ),
+                ),
+              ),
+            ),
+            child: const Icon(Icons.my_location),
           ),
         ),
       ),

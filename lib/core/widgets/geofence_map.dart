@@ -16,20 +16,24 @@ import 'permission_rationale.dart';
 /// isn't a free-placement picker (#43); [interactive] only ever enables
 /// looking around (pan/zoom), never repositioning (#60).
 ///
-/// When there's no [targetMarker], the camera auto-fits to the circle
-/// (recomputed whenever [center]/[radiusM] change) so it fills the
-/// viewport at any radius instead of sitting at a fixed zoom that over- or
-/// under-fills depending on the radius (#60). [targetMarker]/[targetLabel]
-/// are the soft-punishment map's addition (#18): the target's exact
-/// location, outside the circle by definition, and that caller keeps its
-/// original fixed-zoom-on-target framing — auto-fit only applies to the
-/// geofence-only preview this was originally built for.
+/// When there's no [targetMarker], the camera auto-fits to the circle plus
+/// [selfMarker] if given (recomputed whenever [center]/[radiusM]/[selfMarker]
+/// change) so it fills the viewport at any radius instead of sitting at a
+/// fixed zoom that over- or under-fills depending on the radius (#60).
+/// [targetMarker]/[targetLabel] are the soft-punishment map's addition
+/// (#18): the target's exact location, outside the circle by definition,
+/// and that caller keeps its original fixed-zoom-on-target framing —
+/// auto-fit doesn't apply there. [selfMarker] is the "where am I" map (#65)
+/// — the player's own position, which can be outside the circle too (that's
+/// the point of showing it), so the fit expands to include it rather than
+/// clipping it at the circle's edge.
 class GeofenceMap extends StatefulWidget {
   const GeofenceMap({
     required this.center,
     required this.radiusM,
     this.targetMarker,
     this.targetLabel,
+    this.selfMarker,
     this.interactive = false,
     super.key,
   });
@@ -38,6 +42,12 @@ class GeofenceMap extends StatefulWidget {
   final double radiusM;
   final LatLng? targetMarker;
   final String? targetLabel;
+
+  /// The player's own position (#65) — rendered with a marker distinct
+  /// from both the geofence-center pin and the (danger-colored) target
+  /// marker. Mutually exclusive with [targetMarker] in practice (different
+  /// screens), but nothing enforces that here.
+  final LatLng? selfMarker;
 
   /// Enables pan/zoom for looking around — never repositioning the center.
   final bool interactive;
@@ -54,17 +64,18 @@ class _GeofenceMapState extends State<GeofenceMap> {
     super.didUpdateWidget(oldWidget);
     if (widget.targetMarker == null &&
         (oldWidget.center != widget.center ||
-            oldWidget.radiusM != widget.radiusM)) {
+            oldWidget.radiusM != widget.radiusM ||
+            oldWidget.selfMarker != widget.selfMarker)) {
       _fitToCircle();
     }
   }
 
   void _fitToCircle() {
+    final bounds = _boundsFor(widget.center, widget.radiusM);
+    final self = widget.selfMarker;
+    if (self != null) bounds.extend(self);
     _mapController.fitCamera(
-      CameraFit.bounds(
-        bounds: _boundsFor(widget.center, widget.radiusM),
-        padding: const EdgeInsets.all(8),
-      ),
+      CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(8)),
     );
   }
 
@@ -136,6 +147,11 @@ class _GeofenceMapState extends State<GeofenceMap> {
           markers: [
             Marker(
               point: center,
+              // #59: location_pin's visual tip sits at the bottom-center of
+              // its bounding box, not the box's geometric center (the
+              // default alignment) — without this the pin renders visibly
+              // off the circle's true center.
+              alignment: Alignment.topCenter,
               child: Icon(
                 Icons.location_pin,
                 color: Theme.of(context).colorScheme.primary,
@@ -147,6 +163,7 @@ class _GeofenceMapState extends State<GeofenceMap> {
                 point: target,
                 width: 140,
                 height: 56,
+                alignment: Alignment.topCenter,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -159,6 +176,15 @@ class _GeofenceMapState extends State<GeofenceMap> {
                       ),
                     Icon(Icons.person_pin_circle, color: danger, size: 32),
                   ],
+                ),
+              ),
+            if (widget.selfMarker != null)
+              Marker(
+                point: widget.selfMarker!,
+                child: Icon(
+                  Icons.my_location,
+                  color: Theme.of(context).colorScheme.secondary,
+                  size: 28,
                 ),
               ),
           ],

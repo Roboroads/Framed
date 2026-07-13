@@ -71,6 +71,7 @@ Anything that needs your attention fires a **high-priority, time-sensitive push 
   - **Judging modal.** Frame photo next to the target's reference selfie, title "Is this (player name)?", ✗ and ✓ buttons.
   - **Warning modal.** Shown while you're breaking a rule (e.g. outside the geofence) until you stop or die.
   - **Play-area edge banner.** A small, dismissable-by-nature banner (not a modal, doesn't block anything) while you're still inside the geofence but close to its edge — a heads-up before the warning modal above would ever trigger.
+  - **My location.** A button (available during disperse and game in progress) opens a full-screen map showing your own live position against the play-area boundary — distinct from the target's soft-punishment map above, which is about someone else's location, not your own.
 - **Death screen.** How you died, how long you survived, the photo that framed you, and **who your assassin was**. Includes a chat with the other dead players so they can set up a meeting spot. Dead players still receive judging modals.
 - **Game finish.** Winner (per the game mode, with the mode named on screen) plus stats (most kills, most stand-still player, most moved player, combined movement, etc.) and the full kill chain. The host can choose "replay with same players" (same lobby, same selfies, reshuffled targets); players can only "Leave game".
 

@@ -37,6 +37,12 @@ class LocationService {
   DateTime? _lastSentAt;
   bool _stopped = false;
 
+  // Every raw fix, not throttled to the 30s send interval (#65) — the "my
+  // location" map wants to feel live, unlike the server, which only needs a
+  // fix often enough to catch a rule break.
+  final _positionController = StreamController<Position>.broadcast();
+  Stream<Position> get positionStream => _positionController.stream;
+
   void start() {
     if (_stopped) return;
     _positionSub = Geolocator.getPositionStream(
@@ -51,6 +57,7 @@ class LocationService {
   }
 
   Future<void> _onPosition(Position position) async {
+    _positionController.add(position);
     final now = DateTime.now();
     if (_lastSentAt != null && now.difference(_lastSentAt!) < _updateInterval) {
       return;
@@ -93,5 +100,6 @@ class LocationService {
     unawaited(_positionSub?.cancel());
     unawaited(_gameEventsSub.cancel());
     unawaited(_playerEventsSub.cancel());
+    unawaited(_positionController.close());
   }
 }
