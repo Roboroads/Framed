@@ -96,9 +96,15 @@ class _HostSetupViewState extends State<_HostSetupView> {
                 ),
               ),
               const Divider(height: 32),
-              Text(
-                t.hostSetup.geofenceSectionTitle,
-                style: Theme.of(context).textTheme.titleMedium,
+              Row(
+                children: [
+                  Text(
+                    t.hostSetup.geofenceSectionTitle,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(width: 4),
+                  _InfoIcon(message: t.hostSetup.geofenceInfo),
+                ],
               ),
               const SizedBox(height: 8),
               if (state.geofenceCenter == null)
@@ -129,36 +135,43 @@ class _HostSetupViewState extends State<_HostSetupView> {
               ),
               _Stepper(
                 label: t.hostSetup.disperseMinutes,
+                info: t.hostSetup.disperseMinutesInfo,
                 value: state.disperseMinutes,
                 onChanged: cubit.disperseMinutesChanged,
               ),
               _Stepper(
                 label: t.hostSetup.softPunishmentMinutes,
+                info: t.hostSetup.softPunishmentMinutesInfo,
                 value: state.softPunishmentMinutes,
                 onChanged: cubit.softPunishmentMinutesChanged,
               ),
               _Stepper(
                 label: t.hostSetup.hardPunishmentMinutes,
+                info: t.hostSetup.hardPunishmentMinutesInfo,
                 value: state.hardPunishmentMinutes,
                 onChanged: cubit.hardPunishmentMinutesChanged,
               ),
               _Stepper(
                 label: t.hostSetup.compassUpdateIntervalMinutes,
+                info: t.hostSetup.compassUpdateIntervalMinutesInfo,
                 value: state.compassUpdateIntervalMinutes,
                 onChanged: cubit.compassUpdateIntervalMinutesChanged,
               ),
               _Stepper(
                 label: t.hostSetup.compassViewSeconds,
+                info: t.hostSetup.compassViewSecondsInfo,
                 value: state.compassViewSeconds,
                 onChanged: cubit.compassViewSecondsChanged,
               ),
               _Stepper(
                 label: t.hostSetup.voteTimeoutMinutes,
+                info: t.hostSetup.voteTimeoutMinutesInfo,
                 value: state.voteTimeoutMinutes,
                 onChanged: cubit.voteTimeoutMinutesChanged,
               ),
               _Stepper(
                 label: t.hostSetup.frameCooldownMinutes,
+                info: t.hostSetup.frameCooldownMinutesInfo,
                 value: state.frameCooldownMinutes,
                 onChanged: cubit.frameCooldownMinutesChanged,
               ),
@@ -201,6 +214,7 @@ class _HostSetupViewState extends State<_HostSetupView> {
 class _Stepper extends StatelessWidget {
   const _Stepper({
     required this.label,
+    required this.info,
     required this.value,
     required this.onChanged,
   });
@@ -208,13 +222,21 @@ class _Stepper extends StatelessWidget {
   static const _min = 1;
 
   final String label;
+  final String info;
   final int value;
   final ValueChanged<int> onChanged;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(label),
+      title: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(child: Text(label)),
+          const SizedBox(width: 4),
+          _InfoIcon(message: info),
+        ],
+      ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -231,6 +253,25 @@ class _Stepper extends StatelessWidget {
             onPressed: () => onChanged(value + 1),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _InfoIcon extends StatelessWidget {
+  const _InfoIcon({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: message,
+      triggerMode: TooltipTriggerMode.tap,
+      child: Icon(
+        Icons.info_outline,
+        size: 18,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
       ),
     );
   }

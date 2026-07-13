@@ -127,6 +127,9 @@ class Translations$hostSetup$en {
 	/// en: 'Play area'
 	String get geofenceSectionTitle => 'Play area';
 
+	/// en: 'The circle everyone has to stay inside. The server enforces this — leaving it for too long counts as breaking a rule.'
+	String get geofenceInfo => 'The circle everyone has to stay inside. The server enforces this — leaving it for too long counts as breaking a rule.';
+
 	/// en: '$radius m radius'
 	String geofenceRadiusLabel({required Object radius}) => '${radius} m radius';
 
@@ -136,23 +139,44 @@ class Translations$hostSetup$en {
 	/// en: 'Dispersal time (minutes)'
 	String get disperseMinutes => 'Dispersal time (minutes)';
 
+	/// en: 'Countdown after the game starts before targets are assigned. Nobody can frame anyone until it ends.'
+	String get disperseMinutesInfo => 'Countdown after the game starts before targets are assigned. Nobody can frame anyone until it ends.';
+
 	/// en: 'Soft punishment after (minutes)'
 	String get softPunishmentMinutes => 'Soft punishment after (minutes)';
+
+	/// en: 'How long you can break a rule — leaving the play area, a stale location — before your assassin sees your exact position on their map.'
+	String get softPunishmentMinutesInfo => 'How long you can break a rule — leaving the play area, a stale location — before your assassin sees your exact position on their map.';
 
 	/// en: 'Hard punishment after (minutes)'
 	String get hardPunishmentMinutes => 'Hard punishment after (minutes)';
 
+	/// en: 'How long before breaking a rule kills you outright. The death screen shows it as "broke a game rule for too long".'
+	String get hardPunishmentMinutesInfo => 'How long before breaking a rule kills you outright. The death screen shows it as "broke a game rule for too long".';
+
 	/// en: 'Compass pulse interval (minutes)'
 	String get compassUpdateIntervalMinutes => 'Compass pulse interval (minutes)';
+
+	/// en: 'How often the compass pulse fires. Every alive player gets an arrow and distance to their target at the same moment.'
+	String get compassUpdateIntervalMinutesInfo => 'How often the compass pulse fires. Every alive player gets an arrow and distance to their target at the same moment.';
 
 	/// en: 'Compass visible for (seconds)'
 	String get compassViewSeconds => 'Compass visible for (seconds)';
 
+	/// en: 'How many seconds that arrow and distance stay on screen before disappearing again.'
+	String get compassViewSecondsInfo => 'How many seconds that arrow and distance stay on screen before disappearing again.';
+
 	/// en: 'Vote timeout (minutes)'
 	String get voteTimeoutMinutes => 'Vote timeout (minutes)';
 
+	/// en: 'How long a frame photo stays open for judges to vote on before it resolves on whatever votes were actually cast.'
+	String get voteTimeoutMinutesInfo => 'How long a frame photo stays open for judges to vote on before it resolves on whatever votes were actually cast.';
+
 	/// en: 'Frame cooldown (minutes)'
 	String get frameCooldownMinutes => 'Frame cooldown (minutes)';
+
+	/// en: 'How long an assassin waits after a failed frame vote before they can submit another photo.'
+	String get frameCooldownMinutesInfo => 'How long an assassin waits after a failed frame vote before they can submit another photo.';
 
 	/// en: 'Create game'
 	String get createGame => 'Create game';
@@ -347,15 +371,23 @@ extension on Translations {
 			'hostSetup.modeLastManStanding' => 'Last man standing',
 			'hostSetup.modeLastManStandingDescription' => 'The last player alive wins.',
 			'hostSetup.geofenceSectionTitle' => 'Play area',
+			'hostSetup.geofenceInfo' => 'The circle everyone has to stay inside. The server enforces this — leaving it for too long counts as breaking a rule.',
 			'hostSetup.geofenceRadiusLabel' => ({required Object radius}) => '${radius} m radius',
 			'hostSetup.timingSectionTitle' => 'Timing',
 			'hostSetup.disperseMinutes' => 'Dispersal time (minutes)',
+			'hostSetup.disperseMinutesInfo' => 'Countdown after the game starts before targets are assigned. Nobody can frame anyone until it ends.',
 			'hostSetup.softPunishmentMinutes' => 'Soft punishment after (minutes)',
+			'hostSetup.softPunishmentMinutesInfo' => 'How long you can break a rule — leaving the play area, a stale location — before your assassin sees your exact position on their map.',
 			'hostSetup.hardPunishmentMinutes' => 'Hard punishment after (minutes)',
+			'hostSetup.hardPunishmentMinutesInfo' => 'How long before breaking a rule kills you outright. The death screen shows it as "broke a game rule for too long".',
 			'hostSetup.compassUpdateIntervalMinutes' => 'Compass pulse interval (minutes)',
+			'hostSetup.compassUpdateIntervalMinutesInfo' => 'How often the compass pulse fires. Every alive player gets an arrow and distance to their target at the same moment.',
 			'hostSetup.compassViewSeconds' => 'Compass visible for (seconds)',
+			'hostSetup.compassViewSecondsInfo' => 'How many seconds that arrow and distance stay on screen before disappearing again.',
 			'hostSetup.voteTimeoutMinutes' => 'Vote timeout (minutes)',
+			'hostSetup.voteTimeoutMinutesInfo' => 'How long a frame photo stays open for judges to vote on before it resolves on whatever votes were actually cast.',
 			'hostSetup.frameCooldownMinutes' => 'Frame cooldown (minutes)',
+			'hostSetup.frameCooldownMinutesInfo' => 'How long an assassin waits after a failed frame vote before they can submit another photo.',
 			'hostSetup.createGame' => 'Create game',
 			'hostSetup.errorBadSettings' => 'Something in the settings doesn\'t look right — check the values and try again.',
 			'hostSetup.errorGeneric' => 'Couldn\'t create the game. Check your connection and try again.',
