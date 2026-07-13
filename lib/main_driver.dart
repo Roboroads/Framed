@@ -3,6 +3,7 @@
 // shipped — not referenced by android/ios build configs, only launched
 // explicitly via `flutter run -t lib/main_driver.dart`.
 import 'package:flutter/material.dart';
+// ignore: depend_on_referenced_packages
 import 'package:flutter_driver/driver_extension.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
