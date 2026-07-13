@@ -14,8 +14,8 @@ name: Nightly build
 #   PROD_SUPABASE_URL, PROD_SUPABASE_ANON_KEY - optional; falls back to the
 #                               local dev backend's address, which no real
 #                               device can reach
-# Until they're set this workflow fails at the signing step — same result
-# as not running it, so it's safe to merge ahead of them.
+# Skips itself entirely (via check-secrets) until they're all set, rather
+# than failing at the signing step every night.
 
 on:
   schedule:
@@ -23,7 +23,27 @@ on:
   workflow_dispatch:
 
 jobs:
+  check-secrets:
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+    steps:
+      - id: check
+        run: |
+          if [ -n "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" ] && \
+             [ -n "${{ secrets.ANDROID_KEY_ALIAS }}" ] && \
+             [ -n "${{ secrets.ANDROID_KEY_PASSWORD }}" ] && \
+             [ -n "${{ secrets.ANDROID_STORE_PASSWORD }}" ] && \
+             [ -n "${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Signing/Play secrets not set yet — skipping this run."
+          fi
+
   build-and-upload:
+    needs: check-secrets
+    if: needs.check-secrets.outputs.ready == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

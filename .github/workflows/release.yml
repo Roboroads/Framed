@@ -6,7 +6,9 @@ name: Tagged release
 # since the last tag (issue #33). Promoting a build from internal to
 # closed/production testing stays a manual Play Console step on purpose.
 #
-# Needs the same repo secrets as nightly.yml.
+# Needs the same repo secrets as nightly.yml. Skips itself entirely (via
+# check-secrets) until they're all set, rather than failing at the signing
+# step on every tag push.
 
 on:
   push:
@@ -14,7 +16,27 @@ on:
       - 'v*'
 
 jobs:
+  check-secrets:
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+    steps:
+      - id: check
+        run: |
+          if [ -n "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" ] && \
+             [ -n "${{ secrets.ANDROID_KEY_ALIAS }}" ] && \
+             [ -n "${{ secrets.ANDROID_KEY_PASSWORD }}" ] && \
+             [ -n "${{ secrets.ANDROID_STORE_PASSWORD }}" ] && \
+             [ -n "${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Signing/Play secrets not set yet — skipping this run."
+          fi
+
   build-and-release:
+    needs: check-secrets
+    if: needs.check-secrets.outputs.ready == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
