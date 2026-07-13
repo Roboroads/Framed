@@ -78,12 +78,18 @@ class _PreJoinFormState extends State<PreJoinForm> {
         ),
         const SizedBox(height: 8),
         if (widget.selfieBytes != null)
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.memory(
-              widget.selfieBytes!,
+          Center(
+            child: SizedBox(
               height: 200,
-              fit: BoxFit.cover,
+              // Selfies are captured portrait — a full-width, fixed-height
+              // box stretched the image sideways. Match the shape instead.
+              child: AspectRatio(
+                aspectRatio: 3 / 4,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.memory(widget.selfieBytes!, fit: BoxFit.cover),
+                ),
+              ),
             ),
           ),
         const SizedBox(height: 8),

@@ -142,7 +142,15 @@ class _InAppCameraPageState extends State<InAppCameraPage>
         _Status.ready => Stack(
           fit: StackFit.expand,
           children: [
-            CameraPreview(_controller!),
+            // CameraController.value.aspectRatio is width/height in the
+            // sensor's native (landscape) orientation — invert it for a
+            // portrait viewfinder, otherwise StackFit.expand stretches it.
+            Center(
+              child: AspectRatio(
+                aspectRatio: 1 / _controller!.value.aspectRatio,
+                child: CameraPreview(_controller!),
+              ),
+            ),
             Positioned(
               bottom: 24,
               left: 0,
