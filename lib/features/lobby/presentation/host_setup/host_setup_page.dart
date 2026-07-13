@@ -6,6 +6,7 @@ import 'package:latlong2/latlong.dart';
 import '../../../../core/di/injector.dart';
 import '../../../../core/session/game_session.dart';
 import '../../../../core/widgets/geofence_map.dart';
+import '../../../../core/widgets/geofence_map_viewer_page.dart';
 import '../../../../i18n/strings.g.dart';
 import '../../domain/game_mode.dart';
 import '../../domain/lobby_error.dart';
@@ -108,11 +109,26 @@ class _HostSetupViewState extends State<_HostSetupView> {
               if (state.geofenceCenter == null)
                 const Center(child: CircularProgressIndicator())
               else ...[
-                SizedBox(
-                  height: 240,
-                  child: GeofenceMap(
-                    center: state.geofenceCenter!,
-                    radiusM: state.geofenceRadiusM.toDouble(),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: SizedBox(
+                    height: 240,
+                    child: GestureDetector(
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => GeofenceMapViewerPage(
+                            center: state.geofenceCenter!,
+                            radiusM: state.geofenceRadiusM.toDouble(),
+                          ),
+                        ),
+                      ),
+                      child: AbsorbPointer(
+                        child: GeofenceMap(
+                          center: state.geofenceCenter!,
+                          radiusM: state.geofenceRadiusM.toDouble(),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
                 Slider(
