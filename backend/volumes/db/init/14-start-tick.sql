@@ -82,6 +82,7 @@ begin
   -- both reading the same pre-update snapshot and double-emitting
   for g in select * from public.games where status <> 'finished' for update skip locked loop
     perform public.tick_end_dispersal(g);
+    perform public.tick_locations(g);
     -- later steps: tick_punishments(g), tick_pulses(g), tick_vote_timeouts(g),
     -- tick_win_check(g), tick_cleanup(g)
   end loop;
