@@ -5,6 +5,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
 import '../../i18n/strings.g.dart';
+import '../widgets/permission_rationale.dart';
 
 enum _Status { initializing, ready, permissionDenied, error }
 
@@ -39,6 +40,10 @@ class _InAppCameraPageState extends State<InAppCameraPage>
   // can tell it's been superseded and must not resurrect a stale controller.
   int _initGeneration = 0;
 
+  // Only ask once per screen visit — an already-declined-then-retried user
+  // gets straight to the OS prompt, not the rationale again.
+  bool _rationaleShown = false;
+
   @override
   void initState() {
     super.initState();
@@ -61,6 +66,20 @@ class _InAppCameraPageState extends State<InAppCameraPage>
         ResolutionPreset.medium,
         enableAudio: false,
       );
+      if (!_rationaleShown) {
+        _rationaleShown = true;
+        if (!mounted || generation != _initGeneration) return;
+        final proceed = await showPermissionRationale(
+          context: context,
+          icon: Icons.camera_alt_outlined,
+          explanation: t.permissionRationale.cameraExplanation,
+        );
+        if (!mounted || generation != _initGeneration) return;
+        if (!proceed) {
+          setState(() => _status = _Status.permissionDenied);
+          return;
+        }
+      }
       await controller.initialize().timeout(_initTimeout);
       if (!mounted || generation != _initGeneration) {
         await controller.dispose();

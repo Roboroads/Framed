@@ -44,7 +44,7 @@ class _HostSetupViewState extends State<_HostSetupView> {
   @override
   void initState() {
     super.initState();
-    currentLocationOrFallback(_fallbackCenter).then((center) {
+    currentLocationOrFallback(context, _fallbackCenter).then((center) {
       if (mounted) context.read<HostSetupCubit>().geofenceChanged(center);
     });
   }

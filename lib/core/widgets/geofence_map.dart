@@ -3,6 +3,9 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../i18n/strings.g.dart';
+import 'permission_rationale.dart';
+
 /// OSM map showing the game's geofence: a live view of [center] (always the
 /// host's current location — see [currentLocationOrFallback]) and [radiusM],
 /// drawn as a circle overlay controlled by the caller (e.g. a slider
@@ -63,15 +66,24 @@ class GeofenceMap extends StatelessWidget {
   }
 }
 
-/// Resolves the device's current position for the map's initial center.
-/// Returns [fallback] if the service or permission isn't available —
-/// picking a geofence by tapping the map still works either way.
-Future<LatLng> currentLocationOrFallback(LatLng fallback) async {
+/// Resolves the device's current position for the map's center. Returns
+/// [fallback] if the service or permission isn't available.
+Future<LatLng> currentLocationOrFallback(
+  BuildContext context,
+  LatLng fallback,
+) async {
   try {
     if (!await Geolocator.isLocationServiceEnabled()) return fallback;
 
     var permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
+      if (!context.mounted) return fallback;
+      final proceed = await showPermissionRationale(
+        context: context,
+        icon: Icons.location_on_outlined,
+        explanation: t.permissionRationale.locationExplanation,
+      );
+      if (!proceed) return fallback;
       permission = await Geolocator.requestPermission();
     }
     if (permission == LocationPermission.denied ||

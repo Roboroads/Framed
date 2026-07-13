@@ -69,6 +69,11 @@
     "errorGeneric": "Couldn't start the camera. Try again.",
     "retry": "Try again"
   },
+  "permissionRationale": {
+    "ok": "OK",
+    "locationExplanation": "Framed uses your location to point a compass arrow at your target and to enforce the play area the host set — the server needs this to run the game.",
+    "cameraExplanation": "Framed needs your camera for your reference selfie, and later for the frame photos judges compare it against to confirm a kill."
+  },
   "join": {
     "joinButton": "Join game",
     "errorNameTaken": "That name is taken in this lobby.",

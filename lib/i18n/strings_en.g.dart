@@ -49,6 +49,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$ingame$en ingame = Translations$ingame$en._(_root);
 	late final Translations$scan$en scan = Translations$scan$en._(_root);
 	late final Translations$camera$en camera = Translations$camera$en._(_root);
+	late final Translations$permissionRationale$en permissionRationale = Translations$permissionRationale$en._(_root);
 	late final Translations$join$en join = Translations$join$en._(_root);
 }
 
@@ -289,6 +290,24 @@ class Translations$camera$en {
 	String get retry => 'Try again';
 }
 
+// Path: permissionRationale
+class Translations$permissionRationale$en {
+	Translations$permissionRationale$en._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'OK'
+	String get ok => 'OK';
+
+	/// en: 'Framed uses your location to point a compass arrow at your target and to enforce the play area the host set — the server needs this to run the game.'
+	String get locationExplanation => 'Framed uses your location to point a compass arrow at your target and to enforce the play area the host set — the server needs this to run the game.';
+
+	/// en: 'Framed needs your camera for your reference selfie, and later for the frame photos judges compare it against to confirm a kill.'
+	String get cameraExplanation => 'Framed needs your camera for your reference selfie, and later for the frame photos judges compare it against to confirm a kill.';
+}
+
 // Path: join
 class Translations$join$en {
 	Translations$join$en._(this._root);
@@ -367,6 +386,9 @@ extension on Translations {
 			'camera.permissionDeniedBody' => 'Framed needs camera access for this. Grant it, then try again.',
 			'camera.errorGeneric' => 'Couldn\'t start the camera. Try again.',
 			'camera.retry' => 'Try again',
+			'permissionRationale.ok' => 'OK',
+			'permissionRationale.locationExplanation' => 'Framed uses your location to point a compass arrow at your target and to enforce the play area the host set — the server needs this to run the game.',
+			'permissionRationale.cameraExplanation' => 'Framed needs your camera for your reference selfie, and later for the frame photos judges compare it against to confirm a kill.',
 			'join.joinButton' => 'Join game',
 			'join.errorNameTaken' => 'That name is taken in this lobby.',
 			'join.errorGeneric' => 'Couldn\'t join the game. Check your connection and try again.',
