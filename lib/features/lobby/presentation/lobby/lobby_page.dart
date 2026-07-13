@@ -93,14 +93,33 @@ class _LobbyView extends StatelessWidget {
   };
 }
 
-class _LobbyBody extends StatelessWidget {
+class _LobbyBody extends StatefulWidget {
   const _LobbyBody({required this.state});
 
   final LobbyState state;
 
   @override
+  State<_LobbyBody> createState() => _LobbyBodyState();
+}
+
+class _LobbyBodyState extends State<_LobbyBody> {
+  // Auto-shown once when the join token first becomes available (i.e. when
+  // the host opens the lobby) — a flag rather than tying this to a specific
+  // lifecycle callback, since `joinToken` arrives asynchronously via bloc
+  // state, not necessarily on the first build.
+  bool _qrDialogShown = false;
+
+  @override
   Widget build(BuildContext context) {
     final bloc = context.read<LobbyBloc>();
+    final state = widget.state;
+    final joinToken = state.joinToken;
+    if (!_qrDialogShown && bloc.isHost && joinToken != null) {
+      _qrDialogShown = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _showQrDialog(context, joinToken);
+      });
+    }
     return Column(
       children: [
         _ModeBanner(
@@ -120,13 +139,20 @@ class _LobbyBody extends StatelessWidget {
             ],
           ),
         ),
-        if (bloc.isHost && state.joinToken != null)
-          _JoinQr(joinToken: state.joinToken!),
         Padding(
           padding: const EdgeInsets.all(16),
           child: bloc.isHost
               ? Column(
                   children: [
+                    if (joinToken != null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: OutlinedButton.icon(
+                          onPressed: () => _showQrDialog(context, joinToken),
+                          icon: const Icon(Icons.qr_code),
+                          label: Text(t.lobby.showQrButton),
+                        ),
+                      ),
                     Text(
                       t.lobby.readyCount(
                         ready: state.readyCount,
@@ -149,6 +175,32 @@ class _LobbyBody extends StatelessWidget {
               : Text(t.lobby.waitingForHost),
         ),
       ],
+    );
+  }
+
+  void _showQrDialog(BuildContext context, String joinToken) {
+    showDialog<void>(
+      context: context,
+      builder: (context) => Dialog(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              ),
+              _JoinQr(joinToken: joinToken),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

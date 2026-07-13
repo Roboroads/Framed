@@ -92,6 +92,7 @@
     "startTooFewPlayers": "Need at least 3 ready players",
     "waitingForHost": "Waiting for the host to start…",
     "changeMode": "Change mode",
+    "showQrButton": "Show join QR code",
     "errorGeneric": "Something went wrong. Check your connection and try again."
   },
   "ingame": {
