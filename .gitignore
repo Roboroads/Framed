@@ -34,6 +34,12 @@ migrate_working_dir/
 /android/build/
 /coverage/
 
+# Generated code (issue #57) — run `dart run build_runner build -d` after a
+# fresh clone, per this repo's CLAUDE.md
+**/*.freezed.dart
+lib/i18n/strings.g.dart
+lib/i18n/strings_en.g.dart
+
 # Symbolication related
 app.*.symbols
 
