@@ -129,9 +129,7 @@ void main() {
         cubit
           ..nameChanged('  Alice ')
           ..selfieChanged(Uint8List.fromList(List.generate(50, (i) => i)))
-          ..geofenceChanged(const LatLng(52.09, 5.12))
-          ..modeChanged(GameMode.lastManStanding)
-          ..geofenceRadiusChanged(500);
+          ..geofenceChanged(const LatLng(52.09, 5.12));
 
         await cubit.submit();
 
@@ -139,9 +137,11 @@ void main() {
         expect(cubit.state.gameId, _FakeLobbyRepository.gameId);
         expect(cubit.state.joinTokenForQr, _FakeLobbyRepository.joinToken);
 
-        // Settings reached the repository with the right shape.
-        expect(repository.capturedSettings!.mode, GameMode.lastManStanding);
-        expect(repository.capturedSettings!.geofenceRadiusM, 500);
+        // Only the GPS-derived center is submitted — everything else takes
+        // GameSettings' own defaults; mode/radius/timing move to the
+        // lobby's "Game settings" screen (#62).
+        expect(repository.capturedSettings!.mode, GameMode.mostFrames);
+        expect(repository.capturedSettings!.geofenceRadiusM, 200);
         expect(repository.capturedSettings!.geofenceLat, 52.09);
         expect(repository.capturedPlatform, isNotEmpty);
 

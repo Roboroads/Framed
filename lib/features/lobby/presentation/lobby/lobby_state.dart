@@ -38,6 +38,8 @@ sealed class LobbyState with _$LobbyState {
     @Default(5) int voteTimeoutMinutes,
     @Default(5) int frameCooldownMinutes,
     @Default(200) int geofenceRadiusM,
+    double? geofenceLat,
+    double? geofenceLng,
     @Default(false) bool starting,
     LobbyError? error,
     DateTime? dispersalEndsAt,

@@ -14,6 +14,7 @@ import '../../domain/game_mode.dart';
 import '../../domain/lobby_error.dart';
 import '../../domain/lobby_repository.dart';
 import 'lobby_bloc.dart';
+import 'lobby_settings_page.dart';
 import 'lobby_state.dart';
 
 /// The waiting room: live roster, settings, the join QR, and the start
@@ -153,6 +154,21 @@ class _LobbyBodyState extends State<_LobbyBody> {
                           label: Text(t.lobby.showQrButton),
                         ),
                       ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: OutlinedButton.icon(
+                        onPressed: () => Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => BlocProvider<LobbyBloc>.value(
+                              value: bloc,
+                              child: const LobbySettingsPage(),
+                            ),
+                          ),
+                        ),
+                        icon: const Icon(Icons.settings_outlined),
+                        label: Text(t.lobby.gameSettingsButton),
+                      ),
+                    ),
                     Text(
                       t.lobby.readyCount(
                         ready: state.readyCount,

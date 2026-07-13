@@ -68,6 +68,8 @@ class LobbyBloc extends Cubit<LobbyState> {
           voteTimeoutMinutes: snapshot.voteTimeoutMinutes,
           frameCooldownMinutes: snapshot.frameCooldownMinutes,
           geofenceRadiusM: snapshot.geofenceRadiusM,
+          geofenceLat: snapshot.geofenceLat,
+          geofenceLng: snapshot.geofenceLng,
         ),
       );
       _loaded = true;
@@ -187,6 +189,75 @@ class LobbyBloc extends Cubit<LobbyState> {
     await _repository.updateSettings(
       gameId: gameId,
       settings: {'mode': mode.wireValue},
+    );
+  }
+
+  // Game settings screen (#62) — same one-field-per-call shape as
+  // changeMode, one per editable field. geofence_lat/geofence_lng are
+  // deliberately never sent: the center always tracks GPS and isn't
+  // user-adjustable (#43); only the radius is.
+  //
+  // Every one of these must await internally, same reason as changeMode:
+  // the callers (Slider.onChanged, IconButton.onPressed) all discard the
+  // returned future, and supabase_flutter's rpc() builder is lazy — it
+  // never actually sends unless something awaits it. A first cut of these
+  // as tail-call expression bodies (`=> _repository.updateSettings(...)`)
+  // reached this method, returned a future nobody awaited, and silently
+  // never sent the request — caught live: the mode change (which already
+  // awaited) landed in the database, the radius/timing changes didn't.
+  Future<void> changeGeofenceRadius(int radiusM) async {
+    await _repository.updateSettings(
+      gameId: gameId,
+      settings: {'geofence_radius_m': radiusM},
+    );
+  }
+
+  Future<void> changeDisperseMinutes(int v) async {
+    await _repository.updateSettings(
+      gameId: gameId,
+      settings: {'disperse_minutes': v},
+    );
+  }
+
+  Future<void> changeSoftPunishmentMinutes(int v) async {
+    await _repository.updateSettings(
+      gameId: gameId,
+      settings: {'soft_punishment_minutes': v},
+    );
+  }
+
+  Future<void> changeHardPunishmentMinutes(int v) async {
+    await _repository.updateSettings(
+      gameId: gameId,
+      settings: {'hard_punishment_minutes': v},
+    );
+  }
+
+  Future<void> changeCompassUpdateIntervalMinutes(int v) async {
+    await _repository.updateSettings(
+      gameId: gameId,
+      settings: {'compass_update_interval_minutes': v},
+    );
+  }
+
+  Future<void> changeCompassViewSeconds(int v) async {
+    await _repository.updateSettings(
+      gameId: gameId,
+      settings: {'compass_view_seconds': v},
+    );
+  }
+
+  Future<void> changeVoteTimeoutMinutes(int v) async {
+    await _repository.updateSettings(
+      gameId: gameId,
+      settings: {'vote_timeout_minutes': v},
+    );
+  }
+
+  Future<void> changeFrameCooldownMinutes(int v) async {
+    await _repository.updateSettings(
+      gameId: gameId,
+      settings: {'frame_cooldown_minutes': v},
     );
   }
 

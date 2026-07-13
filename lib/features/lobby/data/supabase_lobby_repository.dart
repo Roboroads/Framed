@@ -107,7 +107,8 @@ class SupabaseLobbyRepository implements LobbyRepository {
           'host_player_id, join_token, mode, disperse_minutes, '
           'soft_punishment_minutes, hard_punishment_minutes, '
           'compass_update_interval_minutes, compass_view_seconds, '
-          'vote_timeout_minutes, frame_cooldown_minutes, geofence_radius_m',
+          'vote_timeout_minutes, frame_cooldown_minutes, geofence_radius_m, '
+          'geofence_lat, geofence_lng',
         )
         .eq('id', gameId)
         .single();
@@ -130,6 +131,8 @@ class SupabaseLobbyRepository implements LobbyRepository {
       voteTimeoutMinutes: game['vote_timeout_minutes'] as int,
       frameCooldownMinutes: game['frame_cooldown_minutes'] as int,
       geofenceRadiusM: game['geofence_radius_m'] as int,
+      geofenceLat: (game['geofence_lat'] as num).toDouble(),
+      geofenceLng: (game['geofence_lng'] as num).toDouble(),
       roster: [
         for (final p in players)
           LobbyRosterEntry(

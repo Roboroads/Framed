@@ -6,7 +6,6 @@ import 'package:latlong2/latlong.dart';
 import '../../../../core/crypto/game_crypto.dart';
 import '../../../../core/device/platform_name.dart';
 import '../../../../core/session/game_session.dart';
-import '../../domain/game_mode.dart';
 import '../../domain/game_settings.dart';
 import '../../domain/lobby_error.dart';
 import '../../domain/lobby_repository.dart';
@@ -23,34 +22,8 @@ class HostSetupCubit extends Cubit<HostSetupState> {
   final LobbyRepository _repository;
   final GameSession _session;
 
-  void modeChanged(GameMode mode) => emit(state.copyWith(mode: mode));
-
   void geofenceChanged(LatLng center) =>
       emit(state.copyWith(geofenceCenter: center));
-
-  void geofenceRadiusChanged(int radiusM) =>
-      emit(state.copyWith(geofenceRadiusM: radiusM));
-
-  void disperseMinutesChanged(int v) =>
-      emit(state.copyWith(disperseMinutes: v));
-
-  void softPunishmentMinutesChanged(int v) =>
-      emit(state.copyWith(softPunishmentMinutes: v));
-
-  void hardPunishmentMinutesChanged(int v) =>
-      emit(state.copyWith(hardPunishmentMinutes: v));
-
-  void compassUpdateIntervalMinutesChanged(int v) =>
-      emit(state.copyWith(compassUpdateIntervalMinutes: v));
-
-  void compassViewSecondsChanged(int v) =>
-      emit(state.copyWith(compassViewSeconds: v));
-
-  void voteTimeoutMinutesChanged(int v) =>
-      emit(state.copyWith(voteTimeoutMinutes: v));
-
-  void frameCooldownMinutesChanged(int v) =>
-      emit(state.copyWith(frameCooldownMinutes: v));
 
   void nameChanged(String name) => emit(state.copyWith(name: name));
 
@@ -66,18 +39,11 @@ class HostSetupCubit extends Cubit<HostSetupState> {
       final nameCiphertext = await crypto.encryptString(state.name.trim());
       final nameHmac = await crypto.nameHmac(state.name);
 
+      // Everything but the GPS-derived center takes GameSettings' own
+      // defaults — mode/radius/timing are edited later, in the lobby (#62).
       final settings = GameSettings(
-        mode: state.mode,
         geofenceLat: state.geofenceCenter!.latitude,
         geofenceLng: state.geofenceCenter!.longitude,
-        geofenceRadiusM: state.geofenceRadiusM,
-        disperseMinutes: state.disperseMinutes,
-        softPunishmentMinutes: state.softPunishmentMinutes,
-        hardPunishmentMinutes: state.hardPunishmentMinutes,
-        compassUpdateIntervalMinutes: state.compassUpdateIntervalMinutes,
-        compassViewSeconds: state.compassViewSeconds,
-        voteTimeoutMinutes: state.voteTimeoutMinutes,
-        frameCooldownMinutes: state.frameCooldownMinutes,
       );
 
       final (gameId, joinToken) = await _repository.createGame(

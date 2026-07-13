@@ -21,6 +21,8 @@ sealed class LobbySnapshot with _$LobbySnapshot {
     required int voteTimeoutMinutes,
     required int frameCooldownMinutes,
     required int geofenceRadiusM,
+    required double geofenceLat,
+    required double geofenceLng,
     required List<LobbyRosterEntry> roster,
   }) = _LobbySnapshot;
 }

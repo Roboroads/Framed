@@ -116,6 +116,8 @@ void main() {
       voteTimeoutMinutes: 5,
       frameCooldownMinutes: 5,
       geofenceRadiusM: 200,
+      geofenceLat: 52.0907,
+      geofenceLng: 5.1214,
       roster: roster,
     );
 
@@ -350,6 +352,45 @@ void main() {
       await bloc.changeMode(GameMode.lastManStanding);
 
       expect(repository.capturedSettings, {'mode': 'last_man_standing'});
+    });
+
+    test(
+      'changeGeofenceRadius sends the new radius to the repository',
+      () async {
+        repository.snapshot = snapshotWith();
+        final bloc = LobbyBloc(
+          repository: repository,
+          session: sessionAs('player-host'),
+          events: events.stream,
+          gameId: gameId,
+        );
+        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+
+        await bloc.changeGeofenceRadius(500);
+
+        expect(repository.capturedSettings, {'geofence_radius_m': 500});
+      },
+    );
+
+    test('settings_changed updates the geofence radius live', () async {
+      repository.snapshot = snapshotWith();
+      final bloc = LobbyBloc(
+        repository: repository,
+        session: sessionAs('player-host'),
+        events: events.stream,
+        gameId: gameId,
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+      expect(bloc.state.geofenceRadiusM, 200);
+
+      events.add(
+        const GameEvent.settingsChanged(settings: {'geofence_radius_m': 500}),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.geofenceRadiusM, 500);
     });
 
     test('canStart flips true only once 3 players are ready', () async {

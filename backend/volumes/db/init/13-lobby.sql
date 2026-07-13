@@ -255,15 +255,32 @@ begin
     jsonb_build_object('player_id', me.id));
 end $$;
 
+-- PostgREST computed columns (issue #62): geofence_center is a `geography`
+-- column PostgREST can't render usefully on its own, and framed_settings_json
+-- is deliberately not client-callable (below). The lobby-settings screen
+-- needs the read side of the coordinates framed_apply_settings already
+-- writes, to draw the (still non-adjustable, #43) play-area map.
+create or replace function geofence_lat(g public.games) returns double precision
+language sql stable set search_path = '' as $$
+  select public.st_y(g.geofence_center::public.geometry)
+$$;
+
+create or replace function geofence_lng(g public.games) returns double precision
+language sql stable set search_path = '' as $$
+  select public.st_x(g.geofence_center::public.geometry)
+$$;
+
 -- Only signed-in players call these; strip the default-ACL grants otherwise
 revoke execute on function
   framed_settings_json(public.games), framed_apply_settings(uuid, jsonb)
   from public, anon, authenticated;
 revoke execute on function
   create_game(jsonb), update_settings(uuid, jsonb),
-  join_game(text, text, text, text, text), leave_lobby(uuid), set_selfie(uuid, text)
+  join_game(text, text, text, text, text), leave_lobby(uuid), set_selfie(uuid, text),
+  geofence_lat(public.games), geofence_lng(public.games)
   from public, anon;
 grant execute on function
   create_game(jsonb), update_settings(uuid, jsonb),
-  join_game(text, text, text, text, text), leave_lobby(uuid), set_selfie(uuid, text)
+  join_game(text, text, text, text, text), leave_lobby(uuid), set_selfie(uuid, text),
+  geofence_lat(public.games), geofence_lng(public.games)
   to authenticated;
