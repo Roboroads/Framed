@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../i18n/strings.g.dart';
+import '../theme/app_theme.dart';
 import 'permission_rationale.dart';
 
 /// OSM map showing the game's geofence: a live view of [center] (always the
@@ -12,19 +13,30 @@ import 'permission_rationale.dart';
 /// alongside this widget). Not user-adjustable — the center tracks GPS, it
 /// isn't a free-placement picker.
 ///
-/// Bare wrapper, reused by the soft-punishment map (issue #18) — this widget
-/// only knows about center/radius, nothing game-specific.
+/// [targetMarker]/[targetLabel] are the soft-punishment map's addition
+/// (#18): the target's exact location, outside the circle by definition —
+/// unused (null) by the host-setup picker this was originally built for.
 class GeofenceMap extends StatelessWidget {
-  const GeofenceMap({required this.center, required this.radiusM, super.key});
+  const GeofenceMap({
+    required this.center,
+    required this.radiusM,
+    this.targetMarker,
+    this.targetLabel,
+    super.key,
+  });
 
   final LatLng center;
   final double radiusM;
+  final LatLng? targetMarker;
+  final String? targetLabel;
 
   @override
   Widget build(BuildContext context) {
+    final target = targetMarker;
+    final danger = Theme.of(context).extension<GameColors>()?.danger;
     return FlutterMap(
       options: MapOptions(
-        initialCenter: center,
+        initialCenter: target ?? center,
         initialZoom: 15,
         interactionOptions: const InteractionOptions(
           flags: InteractiveFlag.none,
@@ -59,6 +71,25 @@ class GeofenceMap extends StatelessWidget {
                 size: 36,
               ),
             ),
+            if (target != null)
+              Marker(
+                point: target,
+                width: 140,
+                height: 56,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (targetLabel != null)
+                      Text(
+                        targetLabel!,
+                        style: Theme.of(
+                          context,
+                        ).textTheme.labelSmall?.copyWith(color: danger),
+                      ),
+                    Icon(Icons.person_pin_circle, color: danger, size: 32),
+                  ],
+                ),
+              ),
           ],
         ),
       ],

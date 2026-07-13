@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:framed/core/crypto/game_crypto.dart';
 import 'package:framed/core/realtime/game_event.dart';
 import 'package:framed/features/game/domain/game_repository.dart';
+import 'package:framed/features/game/domain/geofence_info.dart';
 import 'package:framed/features/game/presentation/ingame/ingame_bloc.dart';
 import 'package:framed/features/game/presentation/ingame/ingame_state.dart';
 
@@ -35,6 +36,11 @@ class _FakeGameRepository implements GameRepository {
     required double lat,
     required double lng,
   }) async {}
+
+  @override
+  Future<GeofenceInfo> getGeofence(String gameId) async {
+    return const GeofenceInfo(lat: 0, lng: 0, radiusM: 200);
+  }
 }
 
 void main() {
@@ -314,5 +320,75 @@ void main() {
         expect(bloc.state.compass?.bearingDeg, 2);
       },
     );
+
+    test(
+      'target_location sets the panel and updates as ticks arrive',
+      () async {
+        final bloc = IngameBloc(
+          events: events.stream,
+          crypto: crypto,
+          repository: repository,
+          initialEndsAt: endsAt,
+          targetLocationTimeout: const Duration(milliseconds: 50),
+        );
+
+        events.add(const GameEvent.targetLocation(lat: 1, lng: 2));
+        await Future<void>.delayed(Duration.zero);
+        expect(
+          bloc.state.targetLocation,
+          const IngameTargetLocation(lat: 1, lng: 2),
+        );
+
+        events.add(const GameEvent.targetLocation(lat: 3, lng: 4));
+        await Future<void>.delayed(Duration.zero);
+        expect(
+          bloc.state.targetLocation,
+          const IngameTargetLocation(lat: 3, lng: 4),
+        );
+      },
+    );
+
+    test(
+      'the panel clears after the silence timeout with no new tick',
+      () async {
+        final bloc = IngameBloc(
+          events: events.stream,
+          crypto: crypto,
+          repository: repository,
+          initialEndsAt: endsAt,
+          targetLocationTimeout: const Duration(milliseconds: 30),
+        );
+
+        events.add(const GameEvent.targetLocation(lat: 1, lng: 2));
+        await Future<void>.delayed(Duration.zero);
+        expect(bloc.state.targetLocation, isNotNull);
+
+        await Future<void>.delayed(const Duration(milliseconds: 60));
+        expect(bloc.state.targetLocation, isNull);
+      },
+    );
+
+    test('a fresh tick resets the silence timeout clock', () async {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        initialEndsAt: endsAt,
+        targetLocationTimeout: const Duration(milliseconds: 50),
+      );
+
+      events.add(const GameEvent.targetLocation(lat: 1, lng: 2));
+      await Future<void>.delayed(const Duration(milliseconds: 30));
+      // A tick arrives before the 50ms timeout elapses — the clock restarts.
+      events.add(const GameEvent.targetLocation(lat: 5, lng: 6));
+      await Future<void>.delayed(const Duration(milliseconds: 30));
+
+      // 60ms have passed since the first tick (which would have expired by
+      // 50ms), but only 30ms since the second — still showing.
+      expect(
+        bloc.state.targetLocation,
+        const IngameTargetLocation(lat: 5, lng: 6),
+      );
+    });
   });
 }

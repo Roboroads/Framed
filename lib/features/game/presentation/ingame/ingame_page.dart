@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:latlong2/latlong.dart';
+
 import '../../../../core/di/injector.dart';
 import '../../../../core/location/compass_math.dart';
 import '../../../../core/location/heading.dart';
@@ -10,8 +12,10 @@ import '../../../../core/location/location_service.dart';
 import '../../../../core/realtime/game_channels.dart';
 import '../../../../core/session/game_session.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/geofence_map.dart';
 import '../../../../i18n/strings.g.dart';
 import '../../domain/game_repository.dart';
+import '../../domain/geofence_info.dart';
 import '../../domain/target.dart';
 import 'ingame_bloc.dart';
 import 'ingame_state.dart';
@@ -30,6 +34,11 @@ class IngamePage extends StatefulWidget {
 class _IngamePageState extends State<IngamePage> {
   late final IngameBloc _bloc;
   late final LocationService _locationService;
+
+  // Fetched once — the geofence is set at host setup and static for the
+  // whole game. Null until it resolves (or forever, on failure): the
+  // soft-punishment panel (#18) just stays hidden until then.
+  GeofenceInfo? _geofence;
 
   @override
   void initState() {
@@ -53,6 +62,12 @@ class _IngamePageState extends State<IngamePage> {
       gameEvents: channels.game(session.gameId),
       playerEvents: playerEvents,
     )..start();
+    repository
+        .getGeofence(session.gameId)
+        .then((geofence) {
+          if (mounted) setState(() => _geofence = geofence);
+        })
+        .catchError((_) {});
   }
 
   @override
@@ -64,12 +79,17 @@ class _IngamePageState extends State<IngamePage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(value: _bloc, child: const _IngameView());
+    return BlocProvider.value(
+      value: _bloc,
+      child: _IngameView(geofence: _geofence),
+    );
   }
 }
 
 class _IngameView extends StatelessWidget {
-  const _IngameView();
+  const _IngameView({required this.geofence});
+
+  final GeofenceInfo? geofence;
 
   @override
   Widget build(BuildContext context) {
@@ -91,6 +111,8 @@ class _IngameView extends StatelessWidget {
                     target: target,
                     compass: state.compass,
                     hasWarning: state.warning != null,
+                    targetLocation: state.targetLocation,
+                    geofence: geofence,
                   ),
                   IngameTargetLoadFailed() => Center(
                     child: Padding(
@@ -254,11 +276,15 @@ class _TargetCard extends StatelessWidget {
     required this.target,
     required this.compass,
     required this.hasWarning,
+    required this.targetLocation,
+    required this.geofence,
   });
 
   final Target target;
   final IngameCompass? compass;
   final bool hasWarning;
+  final IngameTargetLocation? targetLocation;
+  final GeofenceInfo? geofence;
 
   @override
   Widget build(BuildContext context) {
@@ -290,6 +316,11 @@ class _TargetCard extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           _CompassPanel(compass: compass, hasWarning: hasWarning),
+          if (targetLocation case final location?)
+            if (geofence case final geofence?) ...[
+              const SizedBox(height: 24),
+              _TargetLocationPanel(location: location, geofence: geofence),
+            ],
           const SizedBox(height: 24),
           // Placeholder for #21 — the frame camera wires this up.
           FilledButton.icon(
@@ -424,6 +455,44 @@ class _CompassArrowState extends State<_CompassArrow> {
           ],
         );
       },
+    );
+  }
+}
+
+/// The soft-punishment target map (#18) — only the target's assassin ever
+/// receives target_location, so this panel only ever renders for them.
+class _TargetLocationPanel extends StatelessWidget {
+  const _TargetLocationPanel({required this.location, required this.geofence});
+
+  final IngameTargetLocation location;
+  final GeofenceInfo geofence;
+
+  @override
+  Widget build(BuildContext context) {
+    final danger = Theme.of(context).extension<GameColors>()!.danger;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          t.ingame.targetLocationTitle,
+          textAlign: TextAlign.center,
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: danger),
+        ),
+        const SizedBox(height: 8),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: SizedBox(
+            height: 200,
+            child: GeofenceMap(
+              center: LatLng(geofence.lat, geofence.lng),
+              radiusM: geofence.radiusM.toDouble(),
+              targetMarker: LatLng(location.lat, location.lng),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

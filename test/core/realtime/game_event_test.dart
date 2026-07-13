@@ -144,6 +144,18 @@ void main() {
       );
     });
 
+    test('decodes target_location', () {
+      final event = GameEvent.fromBroadcast('target_location', {
+        'lat': 37.4219983,
+        'lng': -122.084,
+      });
+
+      expect(
+        event,
+        const GameEvent.targetLocation(lat: 37.4219983, lng: -122.084),
+      );
+    });
+
     test('falls back to unknown for a malformed known event', () {
       final event = GameEvent.fromBroadcast('player_left', {
         'wrong_key': 'oops',

@@ -14,8 +14,15 @@ class IngameBloc extends Cubit<IngameState> {
     required GameCrypto crypto,
     required GameRepository repository,
     required DateTime initialEndsAt,
+    // ponytail: no target_location_ended event exists (#13/#18) — the
+    // panel expires after this long without a fresh tick instead. Two
+    // tick intervals' worth of slack (65-70s against a 30s tick); if this
+    // ever proves flaky in practice, add the explicit server event rather
+    // than tuning this further. Overridable so tests don't wait 70s.
+    Duration targetLocationTimeout = const Duration(seconds: 70),
   }) : _crypto = crypto,
        _repository = repository,
+       _targetLocationTimeout = targetLocationTimeout,
        super(
          IngameState(phase: IngamePhase.dispersing(endsAt: initialEndsAt)),
        ) {
@@ -24,6 +31,7 @@ class IngameBloc extends Cubit<IngameState> {
 
   final GameCrypto _crypto;
   final GameRepository _repository;
+  final Duration _targetLocationTimeout;
   late final StreamSubscription<GameEvent> _subscription;
 
   // Bumped on every target_assigned so an in-flight download/decrypt from a
@@ -36,6 +44,8 @@ class IngameBloc extends Cubit<IngameState> {
   int _compassGeneration = 0;
   Timer? _compassTimer;
 
+  Timer? _targetLocationTimer;
+
   Future<void> _onEvent(GameEvent event) async {
     if (event is Warning) {
       _onWarning(event);
@@ -43,6 +53,10 @@ class IngameBloc extends Cubit<IngameState> {
     }
     if (event is CompassPulse) {
       _onCompassPulse(event);
+      return;
+    }
+    if (event is TargetLocation) {
+      _onTargetLocation(event);
       return;
     }
     if (event is! TargetAssigned) return;
@@ -114,10 +128,27 @@ class IngameBloc extends Cubit<IngameState> {
     }
   }
 
+  // No "punishment over" event exists — silence for _targetLocationTimeout
+  // is how the panel knows to clear (see the ponytail note on the
+  // constructor). Every fresh tick resets the clock.
+  void _onTargetLocation(TargetLocation event) {
+    _targetLocationTimer?.cancel();
+    emit(
+      state.copyWith(
+        targetLocation: IngameTargetLocation(lat: event.lat, lng: event.lng),
+      ),
+    );
+    _targetLocationTimer = Timer(_targetLocationTimeout, () {
+      if (isClosed) return;
+      emit(state.copyWith(targetLocation: null));
+    });
+  }
+
   @override
   Future<void> close() {
     _subscription.cancel();
     _compassTimer?.cancel();
+    _targetLocationTimer?.cancel();
     return super.close();
   }
 }

@@ -98,7 +98,8 @@
     "compassNoPulseWarning": "No compass while breaking rules",
     "compassNoPulseIdle": "Next pulse soon",
     "compassDistanceMeters": "$distance m",
-    "compassFallback": "$direction, $distance m"
+    "compassFallback": "$direction, $distance m",
+    "targetLocationTitle": "Your target left the play area — this is where they are"
   },
   "scan": {
     "title": "Scan to join",

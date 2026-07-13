@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'geofence_info.dart';
+
 /// Storage + location access for the game feature.
 abstract interface class GameRepository {
   /// Downloads the still-encrypted selfie at [path] (`selfies/{game_id}/{player_id}`,
@@ -14,4 +16,8 @@ abstract interface class GameRepository {
     required double lat,
     required double lng,
   });
+
+  /// The game's play area, for the soft-punishment target map (#18) — the
+  /// geofence is set once at host setup and static for the whole game.
+  Future<GeofenceInfo> getGeofence(String gameId);
 }

@@ -387,6 +387,9 @@ class Translations$ingame$en {
 
 	/// en: '$direction, $distance m'
 	String compassFallback({required Object direction, required Object distance}) => '${direction}, ${distance} m';
+
+	/// en: 'Your target left the play area — this is where they are'
+	String get targetLocationTitle => 'Your target left the play area — this is where they are';
 }
 
 // Path: scan
@@ -547,6 +550,7 @@ extension on Translations {
 			'ingame.compassNoPulseIdle' => 'Next pulse soon',
 			'ingame.compassDistanceMeters' => ({required Object distance}) => '${distance} m',
 			'ingame.compassFallback' => ({required Object direction, required Object distance}) => '${direction}, ${distance} m',
+			'ingame.targetLocationTitle' => 'Your target left the play area — this is where they are',
 			'scan.title' => 'Scan to join',
 			'scan.invalidCode' => 'That\'s not a valid Framed code — keep scanning.',
 			'camera.permissionDeniedBody' => 'Framed needs camera access for this. Grant it, then try again.',

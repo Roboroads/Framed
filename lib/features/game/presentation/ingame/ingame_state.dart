@@ -43,11 +43,21 @@ sealed class IngameCompass with _$IngameCompass {
   }) = _IngameCompass;
 }
 
+/// The target's exact location while soft-punished (#13, #18).
+@freezed
+sealed class IngameTargetLocation with _$IngameTargetLocation {
+  const factory IngameTargetLocation({
+    required double lat,
+    required double lng,
+  }) = _IngameTargetLocation;
+}
+
 @freezed
 sealed class IngameState with _$IngameState {
   const factory IngameState({
     required IngamePhase phase,
     IngameWarning? warning,
     IngameCompass? compass,
+    IngameTargetLocation? targetLocation,
   }) = _IngameState;
 }

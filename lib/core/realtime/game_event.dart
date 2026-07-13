@@ -69,6 +69,14 @@ sealed class GameEvent with _$GameEvent {
     required DateTime expiresAt,
   }) = CompassPulse;
 
+  /// player:{assassin_id} — the target's exact location, sent every tick
+  /// while they're soft-punished (#13, #18). No expiry field — the client
+  /// infers "punishment over" from silence (see IngameBloc).
+  const factory GameEvent.targetLocation({
+    required double lat,
+    required double lng,
+  }) = TargetLocation;
+
   /// game:{game_id} — the game is over.
   const factory GameEvent.gameFinished({
     required String winnerId,
@@ -136,6 +144,11 @@ sealed class GameEvent with _$GameEvent {
             bearingDeg: (payload['bearing_deg'] as num).toDouble(),
             distanceM: (payload['distance_m'] as num).toDouble(),
             expiresAt: DateTime.parse(payload['expires_at'] as String),
+          );
+        case 'target_location':
+          return GameEvent.targetLocation(
+            lat: (payload['lat'] as num).toDouble(),
+            lng: (payload['lng'] as num).toDouble(),
           );
         case 'game_finished':
           return GameEvent.gameFinished(
