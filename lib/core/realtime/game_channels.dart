@@ -20,9 +20,6 @@ class GameChannels {
   /// player:{player_id} — events for one player only.
   Stream<GameEvent> player(String playerId) => _topic('player:$playerId');
 
-  /// game:{game_id}:dead — dead chat.
-  Stream<GameEvent> dead(String gameId) => _topic('game:$gameId:dead');
-
   Stream<GameEvent> _topic(String topic) {
     final controller = StreamController<GameEvent>();
     RealtimeChannel? channel;

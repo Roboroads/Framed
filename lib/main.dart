@@ -14,14 +14,19 @@ import 'i18n/strings.g.dart';
 // so a failure always reaches the retry screen below instead of hanging.
 const _bootstrapTimeout = Duration(seconds: 15);
 
-void main() {
+void main() => runWithMcpToolkit(_bootstrap);
+
+/// Runs [body] inside a zone guarded by MCPToolkitBinding — the bindings
+/// this file and the debug-only lib/main_driver.dart both need before
+/// their own entrypoint logic.
+void runWithMcpToolkit(FutureOr<void> Function() body) {
   runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
       MCPToolkitBinding.instance
         ..initialize()
         ..initializeFlutterToolkit();
-      await _bootstrap();
+      await body();
     },
     (error, stack) => MCPToolkitBinding.instance.handleZoneError(error, stack),
   );

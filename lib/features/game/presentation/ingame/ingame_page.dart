@@ -135,16 +135,20 @@ class _IngameView extends StatelessWidget {
   }
 }
 
-class _WarningOverlay extends StatefulWidget {
-  const _WarningOverlay({required this.warning});
+/// Ticks once a second and renders the mm:ss remaining until [deadline] —
+/// shared by the warning overlay and the dispersal countdown, the only two
+/// places that need a live countdown.
+class _CountdownText extends StatefulWidget {
+  const _CountdownText({required this.deadline, required this.builder});
 
-  final IngameWarning warning;
+  final DateTime deadline;
+  final Widget Function(BuildContext context, String time) builder;
 
   @override
-  State<_WarningOverlay> createState() => _WarningOverlayState();
+  State<_CountdownText> createState() => _CountdownTextState();
 }
 
-class _WarningOverlayState extends State<_WarningOverlay> {
+class _CountdownTextState extends State<_CountdownText> {
   late Timer _ticker;
 
   @override
@@ -161,6 +165,21 @@ class _WarningOverlayState extends State<_WarningOverlay> {
     super.dispose();
   }
 
+  @override
+  Widget build(BuildContext context) {
+    final remaining = widget.deadline.difference(DateTime.now());
+    final clamped = remaining.isNegative ? Duration.zero : remaining;
+    final minutes = clamped.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final seconds = clamped.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return widget.builder(context, '$minutes:$seconds');
+  }
+}
+
+class _WarningOverlay extends StatelessWidget {
+  const _WarningOverlay({required this.warning});
+
+  final IngameWarning warning;
+
   String _reasonText(String reason) => switch (reason) {
     'geofence' => t.ingame.warningGeofence,
     'stale' => t.ingame.warningStale,
@@ -170,10 +189,6 @@ class _WarningOverlayState extends State<_WarningOverlay> {
   @override
   Widget build(BuildContext context) {
     final danger = Theme.of(context).extension<GameColors>()!.danger;
-    final remaining = widget.warning.hardDeadline.difference(DateTime.now());
-    final clamped = remaining.isNegative ? Duration.zero : remaining;
-    final minutes = clamped.inMinutes.remainder(60).toString().padLeft(2, '0');
-    final seconds = clamped.inSeconds.remainder(60).toString().padLeft(2, '0');
 
     return Positioned.fill(
       child: ColoredBox(
@@ -186,7 +201,7 @@ class _WarningOverlayState extends State<_WarningOverlay> {
               children: [
                 Icon(Icons.warning_amber_rounded, size: 48, color: danger),
                 const SizedBox(height: 16),
-                for (final reason in widget.warning.reasons)
+                for (final reason in warning.reasons)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 12),
                     child: Text(
@@ -196,11 +211,14 @@ class _WarningOverlayState extends State<_WarningOverlay> {
                     ),
                   ),
                 const SizedBox(height: 16),
-                Text(
-                  t.ingame.warningDeadline(time: '$minutes:$seconds'),
-                  style: Theme.of(
-                    context,
-                  ).textTheme.displaySmall?.copyWith(color: danger),
+                _CountdownText(
+                  deadline: warning.hardDeadline,
+                  builder: (context, time) => Text(
+                    t.ingame.warningDeadline(time: time),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.displaySmall?.copyWith(color: danger),
+                  ),
                 ),
               ],
             ),
@@ -211,39 +229,13 @@ class _WarningOverlayState extends State<_WarningOverlay> {
   }
 }
 
-class _DisperseCountdown extends StatefulWidget {
+class _DisperseCountdown extends StatelessWidget {
   const _DisperseCountdown({required this.endsAt});
 
   final DateTime endsAt;
 
   @override
-  State<_DisperseCountdown> createState() => _DisperseCountdownState();
-}
-
-class _DisperseCountdownState extends State<_DisperseCountdown> {
-  late Timer _ticker;
-
-  @override
-  void initState() {
-    super.initState();
-    _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (mounted) setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    _ticker.cancel();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final remaining = widget.endsAt.difference(DateTime.now());
-    final clamped = remaining.isNegative ? Duration.zero : remaining;
-    final minutes = clamped.inMinutes.remainder(60).toString().padLeft(2, '0');
-    final seconds = clamped.inSeconds.remainder(60).toString().padLeft(2, '0');
-
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -253,9 +245,10 @@ class _DisperseCountdownState extends State<_DisperseCountdown> {
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 16),
-          Text(
-            '$minutes:$seconds',
-            style: Theme.of(context).textTheme.displayLarge,
+          _CountdownText(
+            deadline: endsAt,
+            builder: (context, time) =>
+                Text(time, style: Theme.of(context).textTheme.displayLarge),
           ),
           const SizedBox(height: 16),
           Padding(
@@ -338,15 +331,10 @@ class _TargetCard extends StatelessWidget {
 /// ties into #15's warning, otherwise idle text — the client never computes
 /// when the next pulse is due, only the server knows.
 class _CompassPanel extends StatelessWidget {
-  const _CompassPanel({
-    required this.compass,
-    required this.hasWarning,
-    @visibleForTesting Heading? heading,
-  }) : _heading = heading;
+  const _CompassPanel({required this.compass, required this.hasWarning});
 
   final IngameCompass? compass;
   final bool hasWarning;
-  final Heading? _heading;
 
   @override
   Widget build(BuildContext context) {
@@ -360,15 +348,14 @@ class _CompassPanel extends StatelessWidget {
         style: Theme.of(context).textTheme.bodyMedium,
       );
     }
-    return _CompassArrow(compass: compass, heading: _heading ?? Heading());
+    return _CompassArrow(compass: compass);
   }
 }
 
 class _CompassArrow extends StatefulWidget {
-  const _CompassArrow({required this.compass, required this.heading});
+  const _CompassArrow({required this.compass});
 
   final IngameCompass compass;
-  final Heading heading;
 
   @override
   State<_CompassArrow> createState() => _CompassArrowState();
@@ -376,6 +363,7 @@ class _CompassArrow extends StatefulWidget {
 
 class _CompassArrowState extends State<_CompassArrow> {
   final _rotation = RotationTracker();
+  final _heading = Heading();
   late final Timer _ticker;
 
   @override
@@ -407,7 +395,7 @@ class _CompassArrowState extends State<_CompassArrow> {
     final distance = roundDistanceMeters(widget.compass.distanceM);
 
     return StreamBuilder<double>(
-      stream: widget.heading.stream,
+      stream: _heading.stream,
       builder: (context, snapshot) {
         final heading = snapshot.data;
         return Column(
