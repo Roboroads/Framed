@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../i18n/strings.g.dart';
 import '../widgets/permission_rationale.dart';
@@ -68,16 +69,21 @@ class _InAppCameraPageState extends State<InAppCameraPage>
       );
       if (!_rationaleShown) {
         _rationaleShown = true;
+        // Nothing to explain if the OS won't actually prompt — skip
+        // straight to initialize() when the permission's already granted.
+        final granted = (await Permission.camera.status).isGranted;
         if (!mounted || generation != _initGeneration) return;
-        final proceed = await showPermissionRationale(
-          context: context,
-          icon: Icons.camera_alt_outlined,
-          explanation: t.permissionRationale.cameraExplanation,
-        );
-        if (!mounted || generation != _initGeneration) return;
-        if (!proceed) {
-          setState(() => _status = _Status.permissionDenied);
-          return;
+        if (!granted) {
+          final proceed = await showPermissionRationale(
+            context: context,
+            icon: Icons.camera_alt_outlined,
+            explanation: t.permissionRationale.cameraExplanation,
+          );
+          if (!mounted || generation != _initGeneration) return;
+          if (!proceed) {
+            setState(() => _status = _Status.permissionDenied);
+            return;
+          }
         }
       }
       await controller.initialize().timeout(_initTimeout);

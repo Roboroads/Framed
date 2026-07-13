@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
@@ -15,6 +16,8 @@ enum _GateStatus { explaining, requesting, blocked }
 /// the geofence. Explains why before either platform's OS dialog appears,
 /// requests "while in use" then escalates toward background, and falls
 /// back to a blocked-state screen with a Settings deep link when denied.
+/// Already granted (most players, most of the time — this almost always
+/// runs after the upfront [PermissionGate]) skips the explainer entirely.
 class BackgroundLocationGate extends StatefulWidget {
   const BackgroundLocationGate({required this.initialEndsAt, super.key});
 
@@ -27,7 +30,10 @@ class BackgroundLocationGate extends StatefulWidget {
 
 class _BackgroundLocationGateState extends State<BackgroundLocationGate>
     with WidgetsBindingObserver {
-  _GateStatus _status = _GateStatus.explaining;
+  // Spinner while the silent pre-check below runs — the explainer is
+  // rationale for a dialog we're about to show, so it has no reason to
+  // appear if location's already granted (#50).
+  _GateStatus _status = _GateStatus.requesting;
 
   // The OS permission dialog itself cycles inactive->resumed, same as
   // actually backgrounding the app — the only way to tell "came back from
@@ -43,6 +49,22 @@ class _BackgroundLocationGateState extends State<BackgroundLocationGate>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    unawaited(_checkThenProceed());
+  }
+
+  /// Non-prompting check: skip the explainer straight to requesting (which
+  /// itself no-ops through to /ingame) when location's already granted.
+  Future<void> _checkThenProceed() async {
+    final location = await Geolocator.checkPermission();
+    final locationGranted =
+        location == LocationPermission.always ||
+        location == LocationPermission.whileInUse;
+    if (!mounted) return;
+    if (locationGranted) {
+      await _requestPermission();
+    } else {
+      setState(() => _status = _GateStatus.explaining);
+    }
   }
 
   @override
