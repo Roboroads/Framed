@@ -268,6 +268,14 @@ class _JoinQrState extends State<_JoinQr> {
           joinToken: widget.joinToken,
           keyBytes: keyBytes,
         );
+        // Debug-only: lets a driving tool (adb, flutter-mcp-toolkit) read
+        // the join link straight from the log instead of scanning the QR,
+        // for multi-device testing. Stripped in release builds (assert).
+        assert(() {
+          // ignore: avoid_print
+          print('QR_PAYLOAD_DEBUG: ${payload.encode()}');
+          return true;
+        }());
         return Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
