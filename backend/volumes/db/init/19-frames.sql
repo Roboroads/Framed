@@ -1,6 +1,11 @@
 -- Framed frame submission: held frames, cooldown, judge fan-out (issue #19).
 -- Idempotent. Resolution (votes, verdicts, deaths) is #20.
 
+-- Judge count per frame, frozen at creation: #20's vote math needs the
+-- judge count as of the frame's creation, not a live count, so a death
+-- mid-vote can't move the goalposts.
+alter table frames add column if not exists judge_count integer;
+
 -- Fan a pending frame out to every judge: all players but the assassin and
 -- target, alive or dead. Shared with #20, which calls this when a held
 -- frame is released and becomes pending.
@@ -70,12 +75,13 @@ begin
                   where target_id = me.id and status = 'pending');
 
   insert into public.frames
-    (game_id, assassin_id, target_id, photo_path, status, pending_since, resolves_at)
+    (game_id, assassin_id, target_id, photo_path, status, pending_since, resolves_at, judge_count)
   values (
     me.game_id, me.id, me.target_id, submit_frame.photo_path,
     case when held then 'held' else 'pending' end::public.frame_status,
     case when held then null else now() end,
-    case when held then null else now() + (g.vote_timeout_minutes || ' minutes')::interval end
+    case when held then null else now() + (g.vote_timeout_minutes || ' minutes')::interval end,
+    (select count(*) from public.players p2 where p2.game_id = me.game_id) - 2
   )
   returning id into new_id;
 

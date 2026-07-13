@@ -27,6 +27,7 @@ declare
   assassin_id uuid;
   new_target public.players%rowtype;
   killer_name text;
+  void_frame_id uuid;
 begin
   select * into victim from public.players where id = kill_player.player_id for update;
   if not found then raise exception using message = 'not_found'; end if;
@@ -40,8 +41,11 @@ begin
   where id = victim.id;
 
   -- the dead can't kill: void any frame the victim had in flight
-  update public.frames set status = 'void'
+  select id into void_frame_id from public.frames
     where frames.assassin_id = victim.id and status in ('held', 'pending');
+  if void_frame_id is not null then
+    perform public.cancel_frame(void_frame_id);
+  end if;
 
   -- relink the circle: victim's assassin inherits victim's target
   select id into assassin_id from public.players
