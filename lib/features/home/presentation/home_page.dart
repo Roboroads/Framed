@@ -56,12 +56,14 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 48),
               FilledButton(
-                onPressed: () => context.push('/scan'),
+                onPressed: () =>
+                    context.push('/permission-gate', extra: '/scan'),
                 child: Text(t.home.joinGame),
               ),
               const SizedBox(height: 16),
               OutlinedButton(
-                onPressed: () => context.push('/host-setup'),
+                onPressed: () =>
+                    context.push('/permission-gate', extra: '/host-setup'),
                 child: Text(t.home.hostGame),
               ),
               const SizedBox(height: 48),

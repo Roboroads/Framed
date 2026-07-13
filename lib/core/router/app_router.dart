@@ -9,6 +9,7 @@ import '../../features/lobby/presentation/lobby/lobby_page.dart';
 import '../../features/lobby/presentation/scan/scan_page.dart';
 import '../crypto/qr_payload.dart';
 import '../location/background_location_gate.dart';
+import '../permissions/permission_gate.dart';
 
 /// The app's declarative route table (issue #49).
 ///
@@ -25,6 +26,11 @@ final appRouter = GoRouter(
   redirect: _redirectJoinLink,
   routes: [
     GoRoute(path: '/', builder: (context, state) => const HomePage()),
+    GoRoute(
+      path: '/permission-gate',
+      builder: (context, state) =>
+          PermissionGate(nextRoute: state.extra! as String),
+    ),
     GoRoute(path: '/scan', builder: (context, state) => const ScanPage()),
     GoRoute(path: '/join', builder: _buildJoinPage),
     GoRoute(
