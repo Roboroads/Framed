@@ -94,7 +94,11 @@
     "errorTargetLoad": "Couldn't load your target. Try reopening the app.",
     "warningGeofence": "You're outside the play area — go back.",
     "warningStale": "We're not receiving your location. Check GPS, signal, and battery saver.",
-    "warningDeadline": "You die in $time"
+    "warningDeadline": "You die in $time",
+    "compassNoPulseWarning": "No compass while breaking rules",
+    "compassNoPulseIdle": "Next pulse soon",
+    "compassDistanceMeters": "$distance m",
+    "compassFallback": "$direction, $distance m"
   },
   "scan": {
     "title": "Scan to join",

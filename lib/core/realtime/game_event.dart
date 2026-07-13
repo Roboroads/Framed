@@ -61,6 +61,14 @@ sealed class GameEvent with _$GameEvent {
     DateTime? hardDeadline,
   }) = Warning;
 
+  /// player:{player_id} — the global compass pulse's snapshot for this
+  /// player (#16), a bearing/distance pair valid until [expiresAt].
+  const factory GameEvent.compassPulse({
+    required double bearingDeg,
+    required double distanceM,
+    required DateTime expiresAt,
+  }) = CompassPulse;
+
   /// game:{game_id} — the game is over.
   const factory GameEvent.gameFinished({
     required String winnerId,
@@ -122,6 +130,12 @@ sealed class GameEvent with _$GameEvent {
             hardDeadline: payload['hard_deadline'] != null
                 ? DateTime.parse(payload['hard_deadline'] as String)
                 : null,
+          );
+        case 'compass_pulse':
+          return GameEvent.compassPulse(
+            bearingDeg: (payload['bearing_deg'] as num).toDouble(),
+            distanceM: (payload['distance_m'] as num).toDouble(),
+            expiresAt: DateTime.parse(payload['expires_at'] as String),
           );
         case 'game_finished':
           return GameEvent.gameFinished(

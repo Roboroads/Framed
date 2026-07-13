@@ -108,6 +108,42 @@ void main() {
       expect(event, const GameEvent.warning(active: false));
     });
 
+    test('decodes compass_pulse', () {
+      final event = GameEvent.fromBroadcast('compass_pulse', {
+        'bearing_deg': 42.5,
+        'distance_m': 1234.6,
+        'expires_at': '2026-07-12T20:05:30.000Z',
+      });
+
+      expect(
+        event,
+        GameEvent.compassPulse(
+          bearingDeg: 42.5,
+          distanceM: 1234.6,
+          expiresAt: DateTime.parse('2026-07-12T20:05:30.000Z'),
+        ),
+      );
+    });
+
+    test('decodes compass_pulse with integer-valued fields', () {
+      // Postgres jsonb_build_object can emit whole numbers without a
+      // decimal point — the decoder must accept num, not just double.
+      final event = GameEvent.fromBroadcast('compass_pulse', {
+        'bearing_deg': 90,
+        'distance_m': 500,
+        'expires_at': '2026-07-12T20:05:30.000Z',
+      });
+
+      expect(
+        event,
+        GameEvent.compassPulse(
+          bearingDeg: 90,
+          distanceM: 500,
+          expiresAt: DateTime.parse('2026-07-12T20:05:30.000Z'),
+        ),
+      );
+    });
+
     test('falls back to unknown for a malformed known event', () {
       final event = GameEvent.fromBroadcast('player_left', {
         'wrong_key': 'oops',

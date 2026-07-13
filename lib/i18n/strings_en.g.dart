@@ -375,6 +375,18 @@ class Translations$ingame$en {
 
 	/// en: 'You die in $time'
 	String warningDeadline({required Object time}) => 'You die in ${time}';
+
+	/// en: 'No compass while breaking rules'
+	String get compassNoPulseWarning => 'No compass while breaking rules';
+
+	/// en: 'Next pulse soon'
+	String get compassNoPulseIdle => 'Next pulse soon';
+
+	/// en: '$distance m'
+	String compassDistanceMeters({required Object distance}) => '${distance} m';
+
+	/// en: '$direction, $distance m'
+	String compassFallback({required Object direction, required Object distance}) => '${direction}, ${distance} m';
 }
 
 // Path: scan
@@ -531,6 +543,10 @@ extension on Translations {
 			'ingame.warningGeofence' => 'You\'re outside the play area — go back.',
 			'ingame.warningStale' => 'We\'re not receiving your location. Check GPS, signal, and battery saver.',
 			'ingame.warningDeadline' => ({required Object time}) => 'You die in ${time}',
+			'ingame.compassNoPulseWarning' => 'No compass while breaking rules',
+			'ingame.compassNoPulseIdle' => 'Next pulse soon',
+			'ingame.compassDistanceMeters' => ({required Object distance}) => '${distance} m',
+			'ingame.compassFallback' => ({required Object direction, required Object distance}) => '${direction}, ${distance} m',
 			'scan.title' => 'Scan to join',
 			'scan.invalidCode' => 'That\'s not a valid Framed code — keep scanning.',
 			'camera.permissionDeniedBody' => 'Framed needs camera access for this. Grant it, then try again.',

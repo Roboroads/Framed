@@ -611,9 +611,269 @@ as DateTime,
 }
 
 /// @nodoc
+mixin _$IngameCompass {
+
+ double get bearingDeg; double get distanceM; DateTime get expiresAt; DateTime get receivedAt;
+/// Create a copy of IngameCompass
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$IngameCompassCopyWith<IngameCompass> get copyWith => _$IngameCompassCopyWithImpl<IngameCompass>(this as IngameCompass, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is IngameCompass&&(identical(other.bearingDeg, bearingDeg) || other.bearingDeg == bearingDeg)&&(identical(other.distanceM, distanceM) || other.distanceM == distanceM)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&(identical(other.receivedAt, receivedAt) || other.receivedAt == receivedAt));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,bearingDeg,distanceM,expiresAt,receivedAt);
+
+@override
+String toString() {
+  return 'IngameCompass(bearingDeg: $bearingDeg, distanceM: $distanceM, expiresAt: $expiresAt, receivedAt: $receivedAt)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $IngameCompassCopyWith<$Res>  {
+  factory $IngameCompassCopyWith(IngameCompass value, $Res Function(IngameCompass) _then) = _$IngameCompassCopyWithImpl;
+@useResult
+$Res call({
+ double bearingDeg, double distanceM, DateTime expiresAt, DateTime receivedAt
+});
+
+
+
+
+}
+/// @nodoc
+class _$IngameCompassCopyWithImpl<$Res>
+    implements $IngameCompassCopyWith<$Res> {
+  _$IngameCompassCopyWithImpl(this._self, this._then);
+
+  final IngameCompass _self;
+  final $Res Function(IngameCompass) _then;
+
+/// Create a copy of IngameCompass
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? bearingDeg = null,Object? distanceM = null,Object? expiresAt = null,Object? receivedAt = null,}) {
+  return _then(_self.copyWith(
+bearingDeg: null == bearingDeg ? _self.bearingDeg : bearingDeg // ignore: cast_nullable_to_non_nullable
+as double,distanceM: null == distanceM ? _self.distanceM : distanceM // ignore: cast_nullable_to_non_nullable
+as double,expiresAt: null == expiresAt ? _self.expiresAt : expiresAt // ignore: cast_nullable_to_non_nullable
+as DateTime,receivedAt: null == receivedAt ? _self.receivedAt : receivedAt // ignore: cast_nullable_to_non_nullable
+as DateTime,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [IngameCompass].
+extension IngameCompassPatterns on IngameCompass {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _IngameCompass value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _IngameCompass() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _IngameCompass value)  $default,){
+final _that = this;
+switch (_that) {
+case _IngameCompass():
+return $default(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _IngameCompass value)?  $default,){
+final _that = this;
+switch (_that) {
+case _IngameCompass() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( double bearingDeg,  double distanceM,  DateTime expiresAt,  DateTime receivedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _IngameCompass() when $default != null:
+return $default(_that.bearingDeg,_that.distanceM,_that.expiresAt,_that.receivedAt);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( double bearingDeg,  double distanceM,  DateTime expiresAt,  DateTime receivedAt)  $default,) {final _that = this;
+switch (_that) {
+case _IngameCompass():
+return $default(_that.bearingDeg,_that.distanceM,_that.expiresAt,_that.receivedAt);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( double bearingDeg,  double distanceM,  DateTime expiresAt,  DateTime receivedAt)?  $default,) {final _that = this;
+switch (_that) {
+case _IngameCompass() when $default != null:
+return $default(_that.bearingDeg,_that.distanceM,_that.expiresAt,_that.receivedAt);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _IngameCompass implements IngameCompass {
+  const _IngameCompass({required this.bearingDeg, required this.distanceM, required this.expiresAt, required this.receivedAt});
+  
+
+@override final  double bearingDeg;
+@override final  double distanceM;
+@override final  DateTime expiresAt;
+@override final  DateTime receivedAt;
+
+/// Create a copy of IngameCompass
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$IngameCompassCopyWith<_IngameCompass> get copyWith => __$IngameCompassCopyWithImpl<_IngameCompass>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _IngameCompass&&(identical(other.bearingDeg, bearingDeg) || other.bearingDeg == bearingDeg)&&(identical(other.distanceM, distanceM) || other.distanceM == distanceM)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&(identical(other.receivedAt, receivedAt) || other.receivedAt == receivedAt));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,bearingDeg,distanceM,expiresAt,receivedAt);
+
+@override
+String toString() {
+  return 'IngameCompass(bearingDeg: $bearingDeg, distanceM: $distanceM, expiresAt: $expiresAt, receivedAt: $receivedAt)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$IngameCompassCopyWith<$Res> implements $IngameCompassCopyWith<$Res> {
+  factory _$IngameCompassCopyWith(_IngameCompass value, $Res Function(_IngameCompass) _then) = __$IngameCompassCopyWithImpl;
+@override @useResult
+$Res call({
+ double bearingDeg, double distanceM, DateTime expiresAt, DateTime receivedAt
+});
+
+
+
+
+}
+/// @nodoc
+class __$IngameCompassCopyWithImpl<$Res>
+    implements _$IngameCompassCopyWith<$Res> {
+  __$IngameCompassCopyWithImpl(this._self, this._then);
+
+  final _IngameCompass _self;
+  final $Res Function(_IngameCompass) _then;
+
+/// Create a copy of IngameCompass
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? bearingDeg = null,Object? distanceM = null,Object? expiresAt = null,Object? receivedAt = null,}) {
+  return _then(_IngameCompass(
+bearingDeg: null == bearingDeg ? _self.bearingDeg : bearingDeg // ignore: cast_nullable_to_non_nullable
+as double,distanceM: null == distanceM ? _self.distanceM : distanceM // ignore: cast_nullable_to_non_nullable
+as double,expiresAt: null == expiresAt ? _self.expiresAt : expiresAt // ignore: cast_nullable_to_non_nullable
+as DateTime,receivedAt: null == receivedAt ? _self.receivedAt : receivedAt // ignore: cast_nullable_to_non_nullable
+as DateTime,
+  ));
+}
+
+
+}
+
+/// @nodoc
 mixin _$IngameState {
 
- IngamePhase get phase; IngameWarning? get warning;
+ IngamePhase get phase; IngameWarning? get warning; IngameCompass? get compass;
 /// Create a copy of IngameState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -624,16 +884,16 @@ $IngameStateCopyWith<IngameState> get copyWith => _$IngameStateCopyWithImpl<Inga
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is IngameState&&(identical(other.phase, phase) || other.phase == phase)&&(identical(other.warning, warning) || other.warning == warning));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is IngameState&&(identical(other.phase, phase) || other.phase == phase)&&(identical(other.warning, warning) || other.warning == warning)&&(identical(other.compass, compass) || other.compass == compass));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,phase,warning);
+int get hashCode => Object.hash(runtimeType,phase,warning,compass);
 
 @override
 String toString() {
-  return 'IngameState(phase: $phase, warning: $warning)';
+  return 'IngameState(phase: $phase, warning: $warning, compass: $compass)';
 }
 
 
@@ -644,11 +904,11 @@ abstract mixin class $IngameStateCopyWith<$Res>  {
   factory $IngameStateCopyWith(IngameState value, $Res Function(IngameState) _then) = _$IngameStateCopyWithImpl;
 @useResult
 $Res call({
- IngamePhase phase, IngameWarning? warning
+ IngamePhase phase, IngameWarning? warning, IngameCompass? compass
 });
 
 
-$IngamePhaseCopyWith<$Res> get phase;$IngameWarningCopyWith<$Res>? get warning;
+$IngamePhaseCopyWith<$Res> get phase;$IngameWarningCopyWith<$Res>? get warning;$IngameCompassCopyWith<$Res>? get compass;
 
 }
 /// @nodoc
@@ -661,11 +921,12 @@ class _$IngameStateCopyWithImpl<$Res>
 
 /// Create a copy of IngameState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? phase = null,Object? warning = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? phase = null,Object? warning = freezed,Object? compass = freezed,}) {
   return _then(_self.copyWith(
 phase: null == phase ? _self.phase : phase // ignore: cast_nullable_to_non_nullable
 as IngamePhase,warning: freezed == warning ? _self.warning : warning // ignore: cast_nullable_to_non_nullable
-as IngameWarning?,
+as IngameWarning?,compass: freezed == compass ? _self.compass : compass // ignore: cast_nullable_to_non_nullable
+as IngameCompass?,
   ));
 }
 /// Create a copy of IngameState
@@ -688,6 +949,18 @@ $IngameWarningCopyWith<$Res>? get warning {
 
   return $IngameWarningCopyWith<$Res>(_self.warning!, (value) {
     return _then(_self.copyWith(warning: value));
+  });
+}/// Create a copy of IngameState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$IngameCompassCopyWith<$Res>? get compass {
+    if (_self.compass == null) {
+    return null;
+  }
+
+  return $IngameCompassCopyWith<$Res>(_self.compass!, (value) {
+    return _then(_self.copyWith(compass: value));
   });
 }
 }
@@ -768,10 +1041,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( IngamePhase phase,  IngameWarning? warning)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( IngamePhase phase,  IngameWarning? warning,  IngameCompass? compass)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _IngameState() when $default != null:
-return $default(_that.phase,_that.warning);case _:
+return $default(_that.phase,_that.warning,_that.compass);case _:
   return orElse();
 
 }
@@ -789,10 +1062,10 @@ return $default(_that.phase,_that.warning);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( IngamePhase phase,  IngameWarning? warning)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( IngamePhase phase,  IngameWarning? warning,  IngameCompass? compass)  $default,) {final _that = this;
 switch (_that) {
 case _IngameState():
-return $default(_that.phase,_that.warning);}
+return $default(_that.phase,_that.warning,_that.compass);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -806,10 +1079,10 @@ return $default(_that.phase,_that.warning);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( IngamePhase phase,  IngameWarning? warning)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( IngamePhase phase,  IngameWarning? warning,  IngameCompass? compass)?  $default,) {final _that = this;
 switch (_that) {
 case _IngameState() when $default != null:
-return $default(_that.phase,_that.warning);case _:
+return $default(_that.phase,_that.warning,_that.compass);case _:
   return null;
 
 }
@@ -821,11 +1094,12 @@ return $default(_that.phase,_that.warning);case _:
 
 
 class _IngameState implements IngameState {
-  const _IngameState({required this.phase, this.warning});
+  const _IngameState({required this.phase, this.warning, this.compass});
   
 
 @override final  IngamePhase phase;
 @override final  IngameWarning? warning;
+@override final  IngameCompass? compass;
 
 /// Create a copy of IngameState
 /// with the given fields replaced by the non-null parameter values.
@@ -837,16 +1111,16 @@ _$IngameStateCopyWith<_IngameState> get copyWith => __$IngameStateCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _IngameState&&(identical(other.phase, phase) || other.phase == phase)&&(identical(other.warning, warning) || other.warning == warning));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _IngameState&&(identical(other.phase, phase) || other.phase == phase)&&(identical(other.warning, warning) || other.warning == warning)&&(identical(other.compass, compass) || other.compass == compass));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,phase,warning);
+int get hashCode => Object.hash(runtimeType,phase,warning,compass);
 
 @override
 String toString() {
-  return 'IngameState(phase: $phase, warning: $warning)';
+  return 'IngameState(phase: $phase, warning: $warning, compass: $compass)';
 }
 
 
@@ -857,11 +1131,11 @@ abstract mixin class _$IngameStateCopyWith<$Res> implements $IngameStateCopyWith
   factory _$IngameStateCopyWith(_IngameState value, $Res Function(_IngameState) _then) = __$IngameStateCopyWithImpl;
 @override @useResult
 $Res call({
- IngamePhase phase, IngameWarning? warning
+ IngamePhase phase, IngameWarning? warning, IngameCompass? compass
 });
 
 
-@override $IngamePhaseCopyWith<$Res> get phase;@override $IngameWarningCopyWith<$Res>? get warning;
+@override $IngamePhaseCopyWith<$Res> get phase;@override $IngameWarningCopyWith<$Res>? get warning;@override $IngameCompassCopyWith<$Res>? get compass;
 
 }
 /// @nodoc
@@ -874,11 +1148,12 @@ class __$IngameStateCopyWithImpl<$Res>
 
 /// Create a copy of IngameState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? phase = null,Object? warning = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? phase = null,Object? warning = freezed,Object? compass = freezed,}) {
   return _then(_IngameState(
 phase: null == phase ? _self.phase : phase // ignore: cast_nullable_to_non_nullable
 as IngamePhase,warning: freezed == warning ? _self.warning : warning // ignore: cast_nullable_to_non_nullable
-as IngameWarning?,
+as IngameWarning?,compass: freezed == compass ? _self.compass : compass // ignore: cast_nullable_to_non_nullable
+as IngameCompass?,
   ));
 }
 
@@ -902,6 +1177,18 @@ $IngameWarningCopyWith<$Res>? get warning {
 
   return $IngameWarningCopyWith<$Res>(_self.warning!, (value) {
     return _then(_self.copyWith(warning: value));
+  });
+}/// Create a copy of IngameState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$IngameCompassCopyWith<$Res>? get compass {
+    if (_self.compass == null) {
+    return null;
+  }
+
+  return $IngameCompassCopyWith<$Res>(_self.compass!, (value) {
+    return _then(_self.copyWith(compass: value));
   });
 }
 }

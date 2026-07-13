@@ -31,9 +31,18 @@ class IngameBloc extends Cubit<IngameState> {
   // after a newer one already did.
   int _targetGeneration = 0;
 
+  // Same idea for the compass: bumped on every pulse so a stale expiry
+  // timer from an earlier pulse can't clear a newer one.
+  int _compassGeneration = 0;
+  Timer? _compassTimer;
+
   Future<void> _onEvent(GameEvent event) async {
     if (event is Warning) {
       _onWarning(event);
+      return;
+    }
+    if (event is CompassPulse) {
+      _onCompassPulse(event);
       return;
     }
     if (event is! TargetAssigned) return;
@@ -78,9 +87,37 @@ class IngameBloc extends Cubit<IngameState> {
     );
   }
 
+  // The client never asks the server when a pulse expires — expiresAt came
+  // with the pulse itself, so a local timer clears it right on schedule.
+  void _onCompassPulse(CompassPulse event) {
+    final generation = ++_compassGeneration;
+    _compassTimer?.cancel();
+
+    final remaining = event.expiresAt.difference(DateTime.now());
+    // The app may have been closed/backgrounded through the whole pulse —
+    // an already-expired snapshot on arrival is simply dropped.
+    if (!remaining.isNegative) {
+      emit(
+        state.copyWith(
+          compass: IngameCompass(
+            bearingDeg: event.bearingDeg,
+            distanceM: event.distanceM,
+            expiresAt: event.expiresAt,
+            receivedAt: DateTime.now(),
+          ),
+        ),
+      );
+      _compassTimer = Timer(remaining, () {
+        if (isClosed || generation != _compassGeneration) return;
+        emit(state.copyWith(compass: null));
+      });
+    }
+  }
+
   @override
   Future<void> close() {
     _subscription.cancel();
+    _compassTimer?.cancel();
     return super.close();
   }
 }

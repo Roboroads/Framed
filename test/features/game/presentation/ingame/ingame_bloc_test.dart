@@ -235,5 +235,84 @@ void main() {
 
       expect(bloc.state.warning, isNull);
     });
+
+    test('compass_pulse sets the snapshot until it expires', () async {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        initialEndsAt: endsAt,
+      );
+
+      events.add(
+        GameEvent.compassPulse(
+          bearingDeg: 42,
+          distanceM: 1234,
+          expiresAt: DateTime.now().add(const Duration(milliseconds: 50)),
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      final compass = bloc.state.compass;
+      expect(compass, isNotNull);
+      expect(compass!.bearingDeg, 42);
+      expect(compass.distanceM, 1234);
+
+      await Future<void>.delayed(const Duration(milliseconds: 80));
+      expect(bloc.state.compass, isNull);
+    });
+
+    test('an already-expired compass_pulse on arrival is dropped', () async {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        initialEndsAt: endsAt,
+      );
+
+      events.add(
+        GameEvent.compassPulse(
+          bearingDeg: 42,
+          distanceM: 1234,
+          expiresAt: DateTime.now().subtract(const Duration(seconds: 1)),
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.compass, isNull);
+    });
+
+    test(
+      'a newer compass_pulse is not cleared by an older one\'s timer',
+      () async {
+        final bloc = IngameBloc(
+          events: events.stream,
+          crypto: crypto,
+          repository: repository,
+          initialEndsAt: endsAt,
+        );
+
+        events.add(
+          GameEvent.compassPulse(
+            bearingDeg: 1,
+            distanceM: 100,
+            expiresAt: DateTime.now().add(const Duration(milliseconds: 30)),
+          ),
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+        events.add(
+          GameEvent.compassPulse(
+            bearingDeg: 2,
+            distanceM: 200,
+            expiresAt: DateTime.now().add(const Duration(milliseconds: 200)),
+          ),
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 60));
+
+        // The first pulse's timer would have fired by now; the second pulse
+        // must still be showing.
+        expect(bloc.state.compass?.bearingDeg, 2);
+      },
+    );
   });
 }

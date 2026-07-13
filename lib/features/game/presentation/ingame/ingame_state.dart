@@ -30,10 +30,24 @@ sealed class IngameWarning with _$IngameWarning {
   }) = _IngameWarning;
 }
 
+/// The current compass pulse snapshot (#16), valid until [expiresAt].
+/// [receivedAt] is stamped locally (not sent by the server) purely so the
+/// UI can render a countdown progress bar for the remaining view time.
+@freezed
+sealed class IngameCompass with _$IngameCompass {
+  const factory IngameCompass({
+    required double bearingDeg,
+    required double distanceM,
+    required DateTime expiresAt,
+    required DateTime receivedAt,
+  }) = _IngameCompass;
+}
+
 @freezed
 sealed class IngameState with _$IngameState {
   const factory IngameState({
     required IngamePhase phase,
     IngameWarning? warning,
+    IngameCompass? compass,
   }) = _IngameState;
 }
