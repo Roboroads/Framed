@@ -1421,9 +1421,301 @@ as DateTime,
 }
 
 /// @nodoc
+mixin _$IngameJudgingEntry {
+
+ String get frameId; String get photoPath; String get targetNameCiphertext; String get targetSelfiePath; JudgingFrame? get loaded; bool get failed;
+/// Create a copy of IngameJudgingEntry
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$IngameJudgingEntryCopyWith<IngameJudgingEntry> get copyWith => _$IngameJudgingEntryCopyWithImpl<IngameJudgingEntry>(this as IngameJudgingEntry, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is IngameJudgingEntry&&(identical(other.frameId, frameId) || other.frameId == frameId)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath)&&(identical(other.targetNameCiphertext, targetNameCiphertext) || other.targetNameCiphertext == targetNameCiphertext)&&(identical(other.targetSelfiePath, targetSelfiePath) || other.targetSelfiePath == targetSelfiePath)&&(identical(other.loaded, loaded) || other.loaded == loaded)&&(identical(other.failed, failed) || other.failed == failed));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,frameId,photoPath,targetNameCiphertext,targetSelfiePath,loaded,failed);
+
+@override
+String toString() {
+  return 'IngameJudgingEntry(frameId: $frameId, photoPath: $photoPath, targetNameCiphertext: $targetNameCiphertext, targetSelfiePath: $targetSelfiePath, loaded: $loaded, failed: $failed)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $IngameJudgingEntryCopyWith<$Res>  {
+  factory $IngameJudgingEntryCopyWith(IngameJudgingEntry value, $Res Function(IngameJudgingEntry) _then) = _$IngameJudgingEntryCopyWithImpl;
+@useResult
+$Res call({
+ String frameId, String photoPath, String targetNameCiphertext, String targetSelfiePath, JudgingFrame? loaded, bool failed
+});
+
+
+$JudgingFrameCopyWith<$Res>? get loaded;
+
+}
+/// @nodoc
+class _$IngameJudgingEntryCopyWithImpl<$Res>
+    implements $IngameJudgingEntryCopyWith<$Res> {
+  _$IngameJudgingEntryCopyWithImpl(this._self, this._then);
+
+  final IngameJudgingEntry _self;
+  final $Res Function(IngameJudgingEntry) _then;
+
+/// Create a copy of IngameJudgingEntry
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? frameId = null,Object? photoPath = null,Object? targetNameCiphertext = null,Object? targetSelfiePath = null,Object? loaded = freezed,Object? failed = null,}) {
+  return _then(_self.copyWith(
+frameId: null == frameId ? _self.frameId : frameId // ignore: cast_nullable_to_non_nullable
+as String,photoPath: null == photoPath ? _self.photoPath : photoPath // ignore: cast_nullable_to_non_nullable
+as String,targetNameCiphertext: null == targetNameCiphertext ? _self.targetNameCiphertext : targetNameCiphertext // ignore: cast_nullable_to_non_nullable
+as String,targetSelfiePath: null == targetSelfiePath ? _self.targetSelfiePath : targetSelfiePath // ignore: cast_nullable_to_non_nullable
+as String,loaded: freezed == loaded ? _self.loaded : loaded // ignore: cast_nullable_to_non_nullable
+as JudgingFrame?,failed: null == failed ? _self.failed : failed // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+/// Create a copy of IngameJudgingEntry
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$JudgingFrameCopyWith<$Res>? get loaded {
+    if (_self.loaded == null) {
+    return null;
+  }
+
+  return $JudgingFrameCopyWith<$Res>(_self.loaded!, (value) {
+    return _then(_self.copyWith(loaded: value));
+  });
+}
+}
+
+
+/// Adds pattern-matching-related methods to [IngameJudgingEntry].
+extension IngameJudgingEntryPatterns on IngameJudgingEntry {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _IngameJudgingEntry value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _IngameJudgingEntry() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _IngameJudgingEntry value)  $default,){
+final _that = this;
+switch (_that) {
+case _IngameJudgingEntry():
+return $default(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _IngameJudgingEntry value)?  $default,){
+final _that = this;
+switch (_that) {
+case _IngameJudgingEntry() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String frameId,  String photoPath,  String targetNameCiphertext,  String targetSelfiePath,  JudgingFrame? loaded,  bool failed)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _IngameJudgingEntry() when $default != null:
+return $default(_that.frameId,_that.photoPath,_that.targetNameCiphertext,_that.targetSelfiePath,_that.loaded,_that.failed);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String frameId,  String photoPath,  String targetNameCiphertext,  String targetSelfiePath,  JudgingFrame? loaded,  bool failed)  $default,) {final _that = this;
+switch (_that) {
+case _IngameJudgingEntry():
+return $default(_that.frameId,_that.photoPath,_that.targetNameCiphertext,_that.targetSelfiePath,_that.loaded,_that.failed);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String frameId,  String photoPath,  String targetNameCiphertext,  String targetSelfiePath,  JudgingFrame? loaded,  bool failed)?  $default,) {final _that = this;
+switch (_that) {
+case _IngameJudgingEntry() when $default != null:
+return $default(_that.frameId,_that.photoPath,_that.targetNameCiphertext,_that.targetSelfiePath,_that.loaded,_that.failed);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _IngameJudgingEntry implements IngameJudgingEntry {
+  const _IngameJudgingEntry({required this.frameId, required this.photoPath, required this.targetNameCiphertext, required this.targetSelfiePath, this.loaded, this.failed = false});
+  
+
+@override final  String frameId;
+@override final  String photoPath;
+@override final  String targetNameCiphertext;
+@override final  String targetSelfiePath;
+@override final  JudgingFrame? loaded;
+@override@JsonKey() final  bool failed;
+
+/// Create a copy of IngameJudgingEntry
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$IngameJudgingEntryCopyWith<_IngameJudgingEntry> get copyWith => __$IngameJudgingEntryCopyWithImpl<_IngameJudgingEntry>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _IngameJudgingEntry&&(identical(other.frameId, frameId) || other.frameId == frameId)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath)&&(identical(other.targetNameCiphertext, targetNameCiphertext) || other.targetNameCiphertext == targetNameCiphertext)&&(identical(other.targetSelfiePath, targetSelfiePath) || other.targetSelfiePath == targetSelfiePath)&&(identical(other.loaded, loaded) || other.loaded == loaded)&&(identical(other.failed, failed) || other.failed == failed));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,frameId,photoPath,targetNameCiphertext,targetSelfiePath,loaded,failed);
+
+@override
+String toString() {
+  return 'IngameJudgingEntry(frameId: $frameId, photoPath: $photoPath, targetNameCiphertext: $targetNameCiphertext, targetSelfiePath: $targetSelfiePath, loaded: $loaded, failed: $failed)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$IngameJudgingEntryCopyWith<$Res> implements $IngameJudgingEntryCopyWith<$Res> {
+  factory _$IngameJudgingEntryCopyWith(_IngameJudgingEntry value, $Res Function(_IngameJudgingEntry) _then) = __$IngameJudgingEntryCopyWithImpl;
+@override @useResult
+$Res call({
+ String frameId, String photoPath, String targetNameCiphertext, String targetSelfiePath, JudgingFrame? loaded, bool failed
+});
+
+
+@override $JudgingFrameCopyWith<$Res>? get loaded;
+
+}
+/// @nodoc
+class __$IngameJudgingEntryCopyWithImpl<$Res>
+    implements _$IngameJudgingEntryCopyWith<$Res> {
+  __$IngameJudgingEntryCopyWithImpl(this._self, this._then);
+
+  final _IngameJudgingEntry _self;
+  final $Res Function(_IngameJudgingEntry) _then;
+
+/// Create a copy of IngameJudgingEntry
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? frameId = null,Object? photoPath = null,Object? targetNameCiphertext = null,Object? targetSelfiePath = null,Object? loaded = freezed,Object? failed = null,}) {
+  return _then(_IngameJudgingEntry(
+frameId: null == frameId ? _self.frameId : frameId // ignore: cast_nullable_to_non_nullable
+as String,photoPath: null == photoPath ? _self.photoPath : photoPath // ignore: cast_nullable_to_non_nullable
+as String,targetNameCiphertext: null == targetNameCiphertext ? _self.targetNameCiphertext : targetNameCiphertext // ignore: cast_nullable_to_non_nullable
+as String,targetSelfiePath: null == targetSelfiePath ? _self.targetSelfiePath : targetSelfiePath // ignore: cast_nullable_to_non_nullable
+as String,loaded: freezed == loaded ? _self.loaded : loaded // ignore: cast_nullable_to_non_nullable
+as JudgingFrame?,failed: null == failed ? _self.failed : failed // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+/// Create a copy of IngameJudgingEntry
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$JudgingFrameCopyWith<$Res>? get loaded {
+    if (_self.loaded == null) {
+    return null;
+  }
+
+  return $JudgingFrameCopyWith<$Res>(_self.loaded!, (value) {
+    return _then(_self.copyWith(loaded: value));
+  });
+}
+}
+
+/// @nodoc
 mixin _$IngameState {
 
- IngamePhase get phase; IngameWarning? get warning; IngameCompass? get compass; IngameTargetLocation? get targetLocation; IngameFrameStatus get frameStatus;
+ IngamePhase get phase; IngameWarning? get warning; IngameCompass? get compass; IngameTargetLocation? get targetLocation; IngameFrameStatus get frameStatus;// Oldest first (#22) — only the front is ever shown or loaded; queued
+// behind it just means another assassin's frame is already pending.
+ List<IngameJudgingEntry> get judgingQueue;
 /// Create a copy of IngameState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1434,16 +1726,16 @@ $IngameStateCopyWith<IngameState> get copyWith => _$IngameStateCopyWithImpl<Inga
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is IngameState&&(identical(other.phase, phase) || other.phase == phase)&&(identical(other.warning, warning) || other.warning == warning)&&(identical(other.compass, compass) || other.compass == compass)&&(identical(other.targetLocation, targetLocation) || other.targetLocation == targetLocation)&&(identical(other.frameStatus, frameStatus) || other.frameStatus == frameStatus));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is IngameState&&(identical(other.phase, phase) || other.phase == phase)&&(identical(other.warning, warning) || other.warning == warning)&&(identical(other.compass, compass) || other.compass == compass)&&(identical(other.targetLocation, targetLocation) || other.targetLocation == targetLocation)&&(identical(other.frameStatus, frameStatus) || other.frameStatus == frameStatus)&&const DeepCollectionEquality().equals(other.judgingQueue, judgingQueue));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,phase,warning,compass,targetLocation,frameStatus);
+int get hashCode => Object.hash(runtimeType,phase,warning,compass,targetLocation,frameStatus,const DeepCollectionEquality().hash(judgingQueue));
 
 @override
 String toString() {
-  return 'IngameState(phase: $phase, warning: $warning, compass: $compass, targetLocation: $targetLocation, frameStatus: $frameStatus)';
+  return 'IngameState(phase: $phase, warning: $warning, compass: $compass, targetLocation: $targetLocation, frameStatus: $frameStatus, judgingQueue: $judgingQueue)';
 }
 
 
@@ -1454,7 +1746,7 @@ abstract mixin class $IngameStateCopyWith<$Res>  {
   factory $IngameStateCopyWith(IngameState value, $Res Function(IngameState) _then) = _$IngameStateCopyWithImpl;
 @useResult
 $Res call({
- IngamePhase phase, IngameWarning? warning, IngameCompass? compass, IngameTargetLocation? targetLocation, IngameFrameStatus frameStatus
+ IngamePhase phase, IngameWarning? warning, IngameCompass? compass, IngameTargetLocation? targetLocation, IngameFrameStatus frameStatus, List<IngameJudgingEntry> judgingQueue
 });
 
 
@@ -1471,14 +1763,15 @@ class _$IngameStateCopyWithImpl<$Res>
 
 /// Create a copy of IngameState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? phase = null,Object? warning = freezed,Object? compass = freezed,Object? targetLocation = freezed,Object? frameStatus = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? phase = null,Object? warning = freezed,Object? compass = freezed,Object? targetLocation = freezed,Object? frameStatus = null,Object? judgingQueue = null,}) {
   return _then(_self.copyWith(
 phase: null == phase ? _self.phase : phase // ignore: cast_nullable_to_non_nullable
 as IngamePhase,warning: freezed == warning ? _self.warning : warning // ignore: cast_nullable_to_non_nullable
 as IngameWarning?,compass: freezed == compass ? _self.compass : compass // ignore: cast_nullable_to_non_nullable
 as IngameCompass?,targetLocation: freezed == targetLocation ? _self.targetLocation : targetLocation // ignore: cast_nullable_to_non_nullable
 as IngameTargetLocation?,frameStatus: null == frameStatus ? _self.frameStatus : frameStatus // ignore: cast_nullable_to_non_nullable
-as IngameFrameStatus,
+as IngameFrameStatus,judgingQueue: null == judgingQueue ? _self.judgingQueue : judgingQueue // ignore: cast_nullable_to_non_nullable
+as List<IngameJudgingEntry>,
   ));
 }
 /// Create a copy of IngameState
@@ -1614,10 +1907,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( IngamePhase phase,  IngameWarning? warning,  IngameCompass? compass,  IngameTargetLocation? targetLocation,  IngameFrameStatus frameStatus)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( IngamePhase phase,  IngameWarning? warning,  IngameCompass? compass,  IngameTargetLocation? targetLocation,  IngameFrameStatus frameStatus,  List<IngameJudgingEntry> judgingQueue)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _IngameState() when $default != null:
-return $default(_that.phase,_that.warning,_that.compass,_that.targetLocation,_that.frameStatus);case _:
+return $default(_that.phase,_that.warning,_that.compass,_that.targetLocation,_that.frameStatus,_that.judgingQueue);case _:
   return orElse();
 
 }
@@ -1635,10 +1928,10 @@ return $default(_that.phase,_that.warning,_that.compass,_that.targetLocation,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( IngamePhase phase,  IngameWarning? warning,  IngameCompass? compass,  IngameTargetLocation? targetLocation,  IngameFrameStatus frameStatus)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( IngamePhase phase,  IngameWarning? warning,  IngameCompass? compass,  IngameTargetLocation? targetLocation,  IngameFrameStatus frameStatus,  List<IngameJudgingEntry> judgingQueue)  $default,) {final _that = this;
 switch (_that) {
 case _IngameState():
-return $default(_that.phase,_that.warning,_that.compass,_that.targetLocation,_that.frameStatus);}
+return $default(_that.phase,_that.warning,_that.compass,_that.targetLocation,_that.frameStatus,_that.judgingQueue);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -1652,10 +1945,10 @@ return $default(_that.phase,_that.warning,_that.compass,_that.targetLocation,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( IngamePhase phase,  IngameWarning? warning,  IngameCompass? compass,  IngameTargetLocation? targetLocation,  IngameFrameStatus frameStatus)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( IngamePhase phase,  IngameWarning? warning,  IngameCompass? compass,  IngameTargetLocation? targetLocation,  IngameFrameStatus frameStatus,  List<IngameJudgingEntry> judgingQueue)?  $default,) {final _that = this;
 switch (_that) {
 case _IngameState() when $default != null:
-return $default(_that.phase,_that.warning,_that.compass,_that.targetLocation,_that.frameStatus);case _:
+return $default(_that.phase,_that.warning,_that.compass,_that.targetLocation,_that.frameStatus,_that.judgingQueue);case _:
   return null;
 
 }
@@ -1667,7 +1960,7 @@ return $default(_that.phase,_that.warning,_that.compass,_that.targetLocation,_th
 
 
 class _IngameState implements IngameState {
-  const _IngameState({required this.phase, this.warning, this.compass, this.targetLocation, this.frameStatus = const IngameFrameStatus.ready()});
+  const _IngameState({required this.phase, this.warning, this.compass, this.targetLocation, this.frameStatus = const IngameFrameStatus.ready(), final  List<IngameJudgingEntry> judgingQueue = const []}): _judgingQueue = judgingQueue;
   
 
 @override final  IngamePhase phase;
@@ -1675,6 +1968,17 @@ class _IngameState implements IngameState {
 @override final  IngameCompass? compass;
 @override final  IngameTargetLocation? targetLocation;
 @override@JsonKey() final  IngameFrameStatus frameStatus;
+// Oldest first (#22) — only the front is ever shown or loaded; queued
+// behind it just means another assassin's frame is already pending.
+ final  List<IngameJudgingEntry> _judgingQueue;
+// Oldest first (#22) — only the front is ever shown or loaded; queued
+// behind it just means another assassin's frame is already pending.
+@override@JsonKey() List<IngameJudgingEntry> get judgingQueue {
+  if (_judgingQueue is EqualUnmodifiableListView) return _judgingQueue;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_judgingQueue);
+}
+
 
 /// Create a copy of IngameState
 /// with the given fields replaced by the non-null parameter values.
@@ -1686,16 +1990,16 @@ _$IngameStateCopyWith<_IngameState> get copyWith => __$IngameStateCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _IngameState&&(identical(other.phase, phase) || other.phase == phase)&&(identical(other.warning, warning) || other.warning == warning)&&(identical(other.compass, compass) || other.compass == compass)&&(identical(other.targetLocation, targetLocation) || other.targetLocation == targetLocation)&&(identical(other.frameStatus, frameStatus) || other.frameStatus == frameStatus));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _IngameState&&(identical(other.phase, phase) || other.phase == phase)&&(identical(other.warning, warning) || other.warning == warning)&&(identical(other.compass, compass) || other.compass == compass)&&(identical(other.targetLocation, targetLocation) || other.targetLocation == targetLocation)&&(identical(other.frameStatus, frameStatus) || other.frameStatus == frameStatus)&&const DeepCollectionEquality().equals(other._judgingQueue, _judgingQueue));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,phase,warning,compass,targetLocation,frameStatus);
+int get hashCode => Object.hash(runtimeType,phase,warning,compass,targetLocation,frameStatus,const DeepCollectionEquality().hash(_judgingQueue));
 
 @override
 String toString() {
-  return 'IngameState(phase: $phase, warning: $warning, compass: $compass, targetLocation: $targetLocation, frameStatus: $frameStatus)';
+  return 'IngameState(phase: $phase, warning: $warning, compass: $compass, targetLocation: $targetLocation, frameStatus: $frameStatus, judgingQueue: $judgingQueue)';
 }
 
 
@@ -1706,7 +2010,7 @@ abstract mixin class _$IngameStateCopyWith<$Res> implements $IngameStateCopyWith
   factory _$IngameStateCopyWith(_IngameState value, $Res Function(_IngameState) _then) = __$IngameStateCopyWithImpl;
 @override @useResult
 $Res call({
- IngamePhase phase, IngameWarning? warning, IngameCompass? compass, IngameTargetLocation? targetLocation, IngameFrameStatus frameStatus
+ IngamePhase phase, IngameWarning? warning, IngameCompass? compass, IngameTargetLocation? targetLocation, IngameFrameStatus frameStatus, List<IngameJudgingEntry> judgingQueue
 });
 
 
@@ -1723,14 +2027,15 @@ class __$IngameStateCopyWithImpl<$Res>
 
 /// Create a copy of IngameState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? phase = null,Object? warning = freezed,Object? compass = freezed,Object? targetLocation = freezed,Object? frameStatus = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? phase = null,Object? warning = freezed,Object? compass = freezed,Object? targetLocation = freezed,Object? frameStatus = null,Object? judgingQueue = null,}) {
   return _then(_IngameState(
 phase: null == phase ? _self.phase : phase // ignore: cast_nullable_to_non_nullable
 as IngamePhase,warning: freezed == warning ? _self.warning : warning // ignore: cast_nullable_to_non_nullable
 as IngameWarning?,compass: freezed == compass ? _self.compass : compass // ignore: cast_nullable_to_non_nullable
 as IngameCompass?,targetLocation: freezed == targetLocation ? _self.targetLocation : targetLocation // ignore: cast_nullable_to_non_nullable
 as IngameTargetLocation?,frameStatus: null == frameStatus ? _self.frameStatus : frameStatus // ignore: cast_nullable_to_non_nullable
-as IngameFrameStatus,
+as IngameFrameStatus,judgingQueue: null == judgingQueue ? _self._judgingQueue : judgingQueue // ignore: cast_nullable_to_non_nullable
+as List<IngameJudgingEntry>,
   ));
 }
 

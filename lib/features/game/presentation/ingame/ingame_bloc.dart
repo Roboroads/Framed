@@ -7,6 +7,7 @@ import '../../../../core/crypto/game_crypto.dart';
 import '../../../../core/realtime/game_event.dart';
 import '../../domain/frame_error.dart';
 import '../../domain/game_repository.dart';
+import '../../domain/judging_frame.dart';
 import '../../domain/target.dart';
 import 'ingame_state.dart';
 
@@ -40,6 +41,12 @@ class IngameBloc extends Cubit<IngameState> {
   late final StreamSubscription<GameEvent> _subscription;
   Timer? _cooldownTimer;
 
+  // Only the queue's front entry is ever loading — set to its frameId so a
+  // completion that lands after that entry stopped being the front (voted,
+  // cancelled, or overtaken) knows to discard itself instead of writing
+  // stale state.
+  String? _loadingFrameId;
+
   // Bumped on every target_assigned so an in-flight download/decrypt from a
   // superseded assignment (e.g. a target reassigned after dying) can't land
   // after a newer one already did.
@@ -67,6 +74,14 @@ class IngameBloc extends Cubit<IngameState> {
     }
     if (event is FrameVerdict) {
       _onFrameVerdict(event);
+      return;
+    }
+    if (event is FrameToJudge) {
+      await _onFrameToJudge(event);
+      return;
+    }
+    if (event is FrameCancelled) {
+      _onFrameCancelled(event);
       return;
     }
     if (event is! TargetAssigned) return;
@@ -205,6 +220,121 @@ class IngameBloc extends Cubit<IngameState> {
       if (isClosed) return;
       emit(state.copyWith(frameStatus: const IngameFrameStatus.ready()));
     });
+  }
+
+  // Just enqueues the raw event — loading (and retrying) only ever
+  // happens for whichever entry is currently at the front, see
+  // _loadFrontIfNeeded.
+  Future<void> _onFrameToJudge(FrameToJudge event) async {
+    emit(
+      state.copyWith(
+        judgingQueue: [
+          ...state.judgingQueue,
+          IngameJudgingEntry(
+            frameId: event.frameId,
+            photoPath: event.photoPath,
+            targetNameCiphertext: event.targetNameCiphertext,
+            targetSelfiePath: event.targetSelfiePath,
+          ),
+        ],
+      ),
+    );
+    _loadFrontIfNeeded();
+  }
+
+  void _onFrameCancelled(FrameCancelled event) {
+    emit(
+      state.copyWith(
+        judgingQueue: state.judgingQueue
+            .where((f) => f.frameId != event.frameId)
+            .toList(),
+      ),
+    );
+    _loadFrontIfNeeded();
+  }
+
+  // One tap, no changing your mind: the frame leaves the queue immediately
+  // regardless of what the server does with the vote. A vote that arrives
+  // too late is a silent no-op there too (#20) — nothing to reconcile here.
+  Future<void> castVote({required String frameId, required bool vote}) async {
+    emit(
+      state.copyWith(
+        judgingQueue: state.judgingQueue
+            .where((f) => f.frameId != frameId)
+            .toList(),
+      ),
+    );
+    _loadFrontIfNeeded();
+    try {
+      await _repository.castVote(frameId: frameId, vote: vote);
+    } catch (_) {
+      // the modal already closed; nothing left to retry against
+    }
+  }
+
+  // A field with bad signal shouldn't cost a judge their vote — a failed
+  // image load keeps its queue slot with [IngameJudgingEntry.failed] set,
+  // rather than dropping it, so the modal can offer a retry.
+  void retryFrontLoad() => _loadFrontIfNeeded(forceRetry: true);
+
+  void _loadFrontIfNeeded({bool forceRetry = false}) {
+    final queue = state.judgingQueue;
+    if (queue.isEmpty) return;
+    final front = queue.first;
+    if (front.loaded != null) return;
+    if (front.failed && !forceRetry) return;
+    if (_loadingFrameId == front.frameId && !forceRetry) return;
+
+    _loadingFrameId = front.frameId;
+    if (front.failed) {
+      emit(
+        state.copyWith(
+          judgingQueue: [front.copyWith(failed: false), ...queue.skip(1)],
+        ),
+      );
+    }
+    unawaited(_loadEntry(front));
+  }
+
+  Future<void> _loadEntry(IngameJudgingEntry entry) async {
+    JudgingFrame? loaded;
+    try {
+      final targetName = await _crypto.decryptString(
+        entry.targetNameCiphertext,
+      );
+      final encryptedPhoto = await _repository.downloadFramePhoto(
+        entry.photoPath,
+      );
+      final photoBytes = await _crypto.decryptBytes(encryptedPhoto);
+      final encryptedSelfie = await _repository.downloadSelfie(
+        entry.targetSelfiePath,
+      );
+      final selfieBytes = await _crypto.decryptBytes(encryptedSelfie);
+      loaded = JudgingFrame(
+        frameId: entry.frameId,
+        photoBytes: photoBytes,
+        targetName: targetName,
+        targetSelfieBytes: selfieBytes,
+      );
+    } catch (_) {
+      // handled below — loaded stays null, entry gets marked failed
+    }
+    if (_loadingFrameId == entry.frameId) _loadingFrameId = null;
+    if (isClosed) return;
+
+    final queue = state.judgingQueue;
+    // The entry may no longer be at the front (voted/cancelled while this
+    // was in flight) — or gone entirely. Either way, only write back if
+    // it's still exactly where we left it.
+    if (queue.isEmpty || queue.first.frameId != entry.frameId) return;
+    emit(
+      state.copyWith(
+        judgingQueue: [
+          queue.first.copyWith(loaded: loaded, failed: loaded == null),
+          ...queue.skip(1),
+        ],
+      ),
+    );
   }
 
   @override

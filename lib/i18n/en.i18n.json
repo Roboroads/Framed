@@ -98,7 +98,13 @@
     "compassNoPulseIdle": "Next pulse soon",
     "compassDistanceMeters": "$distance m",
     "compassFallback": "$direction, $distance m",
-    "targetLocationTitle": "Your target left the play area — this is where they are"
+    "targetLocationTitle": "Your target left the play area — this is where they are",
+    "judgingTitle": "Is this $name?",
+    "judgingNudge": "Skip this and you'll miss your next compass pulse.",
+    "judgingLoadError": "Couldn't load this frame.",
+    "judgingRetry": "Retry",
+    "judgingYes": "Yes",
+    "judgingNo": "No"
   },
   "scan": {
     "title": "Scan to join",

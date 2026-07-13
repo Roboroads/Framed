@@ -25,6 +25,12 @@ class _FakeGameRepository implements GameRepository {
   String? lastUploadedPhotoPath;
   String? lastSubmittedPhotoPath;
 
+  Uint8List? framePhotoBytes;
+  Object? framePhotoFailure;
+  String? lastVotedFrameId;
+  bool? lastVote;
+  int downloadFramePhotoCalls = 0;
+
   @override
   Future<Uint8List> downloadSelfie(String path) {
     if (failure != null) throw failure!;
@@ -64,6 +70,19 @@ class _FakeGameRepository implements GameRepository {
   }) async {
     if (frameFailure != null) throw frameFailure!;
     lastSubmittedPhotoPath = photoPath;
+  }
+
+  @override
+  Future<Uint8List> downloadFramePhoto(String path) async {
+    downloadFramePhotoCalls++;
+    if (framePhotoFailure != null) throw framePhotoFailure!;
+    return framePhotoBytes!;
+  }
+
+  @override
+  Future<void> castVote({required String frameId, required bool vote}) async {
+    lastVotedFrameId = frameId;
+    lastVote = vote;
   }
 }
 
@@ -551,6 +570,197 @@ void main() {
 
         await Future<void>.delayed(const Duration(milliseconds: 80));
         expect(bloc.state.frameStatus, const IngameFrameStatus.ready());
+      },
+    );
+
+    test('frame_to_judge loads and joins the queue', () async {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        gameId: 'game-1',
+        initialEndsAt: endsAt,
+      );
+      final photoBytes = Uint8List.fromList([9, 9, 9]);
+      repository.framePhotoBytes = await crypto.encryptBytes(photoBytes);
+      repository.selfieBytes = await crypto.encryptBytes(
+        Uint8List.fromList([8, 8]),
+      );
+
+      events.add(
+        GameEvent.frameToJudge(
+          frameId: 'frame-1',
+          photoPath: 'game-1/uuid-x',
+          targetNameCiphertext: await crypto.encryptString('Bob'),
+          targetSelfiePath: 'game-1/bob',
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.judgingQueue, hasLength(1));
+      final loaded = bloc.state.judgingQueue.first.loaded;
+      expect(loaded, isNotNull);
+      expect(loaded!.targetName, 'Bob');
+      expect(loaded.photoBytes, photoBytes);
+    });
+
+    test('a second frame_to_judge queues behind the first, unloaded', () async {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        gameId: 'game-1',
+        initialEndsAt: endsAt,
+      );
+      repository.controlled = true;
+      repository.framePhotoBytes = await crypto.encryptBytes(
+        Uint8List.fromList([1]),
+      );
+
+      events.add(
+        GameEvent.frameToJudge(
+          frameId: 'frame-1',
+          photoPath: 'game-1/uuid-1',
+          targetNameCiphertext: await crypto.encryptString('Bob'),
+          targetSelfiePath: 'game-1/bob',
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      events.add(
+        GameEvent.frameToJudge(
+          frameId: 'frame-2',
+          photoPath: 'game-1/uuid-2',
+          targetNameCiphertext: await crypto.encryptString('Carol'),
+          targetSelfiePath: 'game-1/carol',
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.judgingQueue, hasLength(2));
+      expect(bloc.state.judgingQueue.first.loaded, isNull);
+      expect(bloc.state.judgingQueue.last.loaded, isNull);
+      // only the front's download ever started
+      expect(repository.downloadFramePhotoCalls, 1);
+    });
+
+    test('castVote removes the front and loads the next one', () async {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        gameId: 'game-1',
+        initialEndsAt: endsAt,
+      );
+      repository.framePhotoBytes = await crypto.encryptBytes(
+        Uint8List.fromList([1]),
+      );
+      repository.selfieBytes = await crypto.encryptBytes(
+        Uint8List.fromList([2]),
+      );
+
+      events.add(
+        GameEvent.frameToJudge(
+          frameId: 'frame-1',
+          photoPath: 'game-1/uuid-1',
+          targetNameCiphertext: await crypto.encryptString('Bob'),
+          targetSelfiePath: 'game-1/bob',
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+      events.add(
+        GameEvent.frameToJudge(
+          frameId: 'frame-2',
+          photoPath: 'game-1/uuid-2',
+          targetNameCiphertext: await crypto.encryptString('Carol'),
+          targetSelfiePath: 'game-1/carol',
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      await bloc.castVote(frameId: 'frame-1', vote: true);
+
+      expect(repository.lastVotedFrameId, 'frame-1');
+      expect(repository.lastVote, true);
+      expect(bloc.state.judgingQueue, hasLength(1));
+      expect(bloc.state.judgingQueue.first.frameId, 'frame-2');
+      await Future<void>.delayed(Duration.zero);
+      expect(bloc.state.judgingQueue.first.loaded?.targetName, 'Carol');
+    });
+
+    test('frame_cancelled drops the matching entry from the queue', () async {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        gameId: 'game-1',
+        initialEndsAt: endsAt,
+      );
+      repository.framePhotoBytes = await crypto.encryptBytes(
+        Uint8List.fromList([1]),
+      );
+      repository.selfieBytes = await crypto.encryptBytes(
+        Uint8List.fromList([2]),
+      );
+
+      events.add(
+        GameEvent.frameToJudge(
+          frameId: 'frame-1',
+          photoPath: 'game-1/uuid-1',
+          targetNameCiphertext: await crypto.encryptString('Bob'),
+          targetSelfiePath: 'game-1/bob',
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      events.add(const GameEvent.frameCancelled(frameId: 'frame-1'));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.judgingQueue, isEmpty);
+    });
+
+    test(
+      'a failed image load marks the entry failed; retryFrontLoad recovers',
+      () async {
+        final bloc = IngameBloc(
+          events: events.stream,
+          crypto: crypto,
+          repository: repository,
+          gameId: 'game-1',
+          initialEndsAt: endsAt,
+        );
+        repository.framePhotoFailure = Exception('offline');
+
+        events.add(
+          GameEvent.frameToJudge(
+            frameId: 'frame-1',
+            photoPath: 'game-1/uuid-1',
+            targetNameCiphertext: await crypto.encryptString('Bob'),
+            targetSelfiePath: 'game-1/bob',
+          ),
+        );
+        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+
+        expect(bloc.state.judgingQueue.first.failed, isTrue);
+        expect(bloc.state.judgingQueue.first.loaded, isNull);
+
+        repository.framePhotoFailure = null;
+        repository.framePhotoBytes = await crypto.encryptBytes(
+          Uint8List.fromList([3]),
+        );
+        repository.selfieBytes = await crypto.encryptBytes(
+          Uint8List.fromList([4]),
+        );
+        bloc.retryFrontLoad();
+        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+
+        expect(bloc.state.judgingQueue.first.failed, isFalse);
+        expect(bloc.state.judgingQueue.first.loaded, isNotNull);
       },
     );
   });

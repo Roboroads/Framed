@@ -132,6 +132,8 @@ class _IngameView extends StatelessWidget {
                 },
                 if (state.warning case final warning?)
                   _WarningOverlay(warning: warning),
+                if (state.judgingQueue.isNotEmpty)
+                  _JudgingOverlay(entry: state.judgingQueue.first),
               ],
             ),
           ),
@@ -228,6 +230,128 @@ class _WarningOverlay extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The judging modal (#22): frame photo next to the target's reference
+/// selfie, "Is this {name}?", one tap on either icon casts the vote and
+/// closes. Only ever shows the queue's front entry — a second pending
+/// frame from another assassin waits its turn (see [IngameJudgingEntry]).
+class _JudgingOverlay extends StatelessWidget {
+  const _JudgingOverlay({required this.entry});
+
+  final IngameJudgingEntry entry;
+
+  @override
+  Widget build(BuildContext context) {
+    final alive = Theme.of(context).extension<GameColors>()!.alive;
+    final danger = Theme.of(context).extension<GameColors>()!.danger;
+    final bloc = context.read<IngameBloc>();
+    final loaded = entry.loaded;
+
+    return Positioned.fill(
+      child: ColoredBox(
+        color: Theme.of(context).colorScheme.surface,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: loaded == null
+                ? Center(
+                    child: entry.failed
+                        ? Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                t.ingame.judgingLoadError,
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 16),
+                              FilledButton(
+                                onPressed: bloc.retryFrontLoad,
+                                child: Text(t.ingame.judgingRetry),
+                              ),
+                            ],
+                          )
+                        : const CircularProgressIndicator(),
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        t.ingame.judgingTitle(name: loaded.targetName),
+                        style: Theme.of(context).textTheme.titleLarge,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.memory(
+                                  loaded.photoBytes,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.memory(
+                                  loaded.targetSelfieBytes,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        t.ingame.judgingNudge,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: FilledButton.icon(
+                              style: FilledButton.styleFrom(
+                                backgroundColor: danger,
+                              ),
+                              onPressed: () => bloc.castVote(
+                                frameId: entry.frameId,
+                                vote: false,
+                              ),
+                              icon: const Icon(Icons.close),
+                              label: Text(t.ingame.judgingNo),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: FilledButton.icon(
+                              style: FilledButton.styleFrom(
+                                backgroundColor: alive,
+                              ),
+                              onPressed: () => bloc.castVote(
+                                frameId: entry.frameId,
+                                vote: true,
+                              ),
+                              icon: const Icon(Icons.check),
+                              label: Text(t.ingame.judgingYes),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
           ),
         ),
       ),

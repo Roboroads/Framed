@@ -77,6 +77,20 @@ sealed class GameEvent with _$GameEvent {
     required double lng,
   }) = TargetLocation;
 
+  /// player:{judge_id} — a frame awaiting your vote (#19). Fanned out to
+  /// every player but the assassin and the target, alive or dead.
+  const factory GameEvent.frameToJudge({
+    required String frameId,
+    required String photoPath,
+    required String targetNameCiphertext,
+    required String targetSelfiePath,
+  }) = FrameToJudge;
+
+  /// player:{judge_id} — a frame you hadn't voted on (or whose outcome your
+  /// vote no longer affects) was voided before it resolved (#20).
+  const factory GameEvent.frameCancelled({required String frameId}) =
+      FrameCancelled;
+
   /// player:{assassin_id} — the verdict on your one open frame (#20).
   /// [cooldownUntil] is only present when [passed] is false.
   const factory GameEvent.frameVerdict({
@@ -156,6 +170,17 @@ sealed class GameEvent with _$GameEvent {
           return GameEvent.targetLocation(
             lat: (payload['lat'] as num).toDouble(),
             lng: (payload['lng'] as num).toDouble(),
+          );
+        case 'frame_to_judge':
+          return GameEvent.frameToJudge(
+            frameId: payload['frame_id'] as String,
+            photoPath: payload['photo_path'] as String,
+            targetNameCiphertext: payload['target_name_ciphertext'] as String,
+            targetSelfiePath: payload['target_selfie_path'] as String,
+          );
+        case 'frame_cancelled':
+          return GameEvent.frameCancelled(
+            frameId: payload['frame_id'] as String,
           );
         case 'frame_verdict':
           return GameEvent.frameVerdict(

@@ -33,4 +33,12 @@ abstract interface class GameRepository {
   /// uploaded at that path. Throws [PostgrestException] on any guard
   /// failure; see [FrameError] for the stable codes.
   Future<void> submitFrame({required String gameId, required String photoPath});
+
+  /// Downloads the still-encrypted frame photo at [path]
+  /// (`frames/{game_id}/{uuid}`) — callers decrypt it with the game key.
+  Future<Uint8List> downloadFramePhoto(String path);
+
+  /// `cast_vote(frame_id, vote)` (#20). A vote on an already-resolved or
+  /// voided frame is a silent server-side no-op, not an error.
+  Future<void> castVote({required String frameId, required bool vote});
 }

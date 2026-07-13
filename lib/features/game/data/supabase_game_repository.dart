@@ -63,4 +63,14 @@ class SupabaseGameRepository implements GameRepository {
       params: {'game_id': gameId, 'photo_path': photoPath},
     );
   }
+
+  @override
+  Future<Uint8List> downloadFramePhoto(String path) {
+    return _client.storage.from('frames').download(path);
+  }
+
+  @override
+  Future<void> castVote({required String frameId, required bool vote}) async {
+    await _client.rpc('cast_vote', params: {'frame_id': frameId, 'vote': vote});
+  }
 }

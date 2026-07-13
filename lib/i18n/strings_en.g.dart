@@ -388,6 +388,24 @@ class Translations$ingame$en {
 
 	/// en: 'Your target left the play area — this is where they are'
 	String get targetLocationTitle => 'Your target left the play area — this is where they are';
+
+	/// en: 'Is this $name?'
+	String judgingTitle({required Object name}) => 'Is this ${name}?';
+
+	/// en: 'Skip this and you'll miss your next compass pulse.'
+	String get judgingNudge => 'Skip this and you\'ll miss your next compass pulse.';
+
+	/// en: 'Couldn't load this frame.'
+	String get judgingLoadError => 'Couldn\'t load this frame.';
+
+	/// en: 'Retry'
+	String get judgingRetry => 'Retry';
+
+	/// en: 'Yes'
+	String get judgingYes => 'Yes';
+
+	/// en: 'No'
+	String get judgingNo => 'No';
 }
 
 // Path: scan
@@ -587,6 +605,12 @@ extension on Translations {
 			'ingame.compassDistanceMeters' => ({required Object distance}) => '${distance} m',
 			'ingame.compassFallback' => ({required Object direction, required Object distance}) => '${direction}, ${distance} m',
 			'ingame.targetLocationTitle' => 'Your target left the play area — this is where they are',
+			'ingame.judgingTitle' => ({required Object name}) => 'Is this ${name}?',
+			'ingame.judgingNudge' => 'Skip this and you\'ll miss your next compass pulse.',
+			'ingame.judgingLoadError' => 'Couldn\'t load this frame.',
+			'ingame.judgingRetry' => 'Retry',
+			'ingame.judgingYes' => 'Yes',
+			'ingame.judgingNo' => 'No',
 			'scan.title' => 'Scan to join',
 			'scan.invalidCode' => 'That\'s not a valid Framed code — keep scanning.',
 			'frame.button' => 'Frame',

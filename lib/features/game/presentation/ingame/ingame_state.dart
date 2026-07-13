@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../domain/judging_frame.dart';
 import '../../domain/target.dart';
 
 part 'ingame_state.freezed.dart';
@@ -62,6 +63,21 @@ sealed class IngameFrameStatus with _$IngameFrameStatus {
       FrameCooldown;
 }
 
+/// One entry in the judging queue (#22). Holds the raw event fields so a
+/// failed or not-yet-attempted load can be (re)started without asking the
+/// server again — only [loaded] and [failed] change as that happens.
+@freezed
+sealed class IngameJudgingEntry with _$IngameJudgingEntry {
+  const factory IngameJudgingEntry({
+    required String frameId,
+    required String photoPath,
+    required String targetNameCiphertext,
+    required String targetSelfiePath,
+    JudgingFrame? loaded,
+    @Default(false) bool failed,
+  }) = _IngameJudgingEntry;
+}
+
 @freezed
 sealed class IngameState with _$IngameState {
   const factory IngameState({
@@ -70,5 +86,8 @@ sealed class IngameState with _$IngameState {
     IngameCompass? compass,
     IngameTargetLocation? targetLocation,
     @Default(IngameFrameStatus.ready()) IngameFrameStatus frameStatus,
+    // Oldest first (#22) — only the front is ever shown or loaded; queued
+    // behind it just means another assassin's frame is already pending.
+    @Default([]) List<IngameJudgingEntry> judgingQueue,
   }) = _IngameState;
 }
