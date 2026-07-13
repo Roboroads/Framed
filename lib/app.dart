@@ -6,11 +6,17 @@ import 'features/home/presentation/home_page.dart';
 import 'i18n/strings.g.dart';
 
 class FramedApp extends StatelessWidget {
-  const FramedApp({super.key});
+  const FramedApp({this.navigatorKey, super.key});
+
+  /// Lets a deep link (DeepLinkService) push a route without a
+  /// [BuildContext] of its own. Null outside the real entrypoint (e.g. the
+  /// debug driver) — those don't need to handle incoming links.
+  final GlobalKey<NavigatorState>? navigatorKey;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       title: t.app.title,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,

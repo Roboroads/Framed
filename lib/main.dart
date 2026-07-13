@@ -6,7 +6,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app.dart';
 import 'core/config/env.dart';
+import 'core/deeplink/deep_link_service.dart';
 import 'core/di/injector.dart';
+import 'features/lobby/presentation/join/join_page.dart';
 import 'i18n/strings.g.dart';
 
 // A real server outage or a bad connection shouldn't leave the user staring
@@ -47,7 +49,20 @@ Future<void> _bootstrap() async {
       );
     }
     configureDependencies();
-    runApp(TranslationProvider(child: const FramedApp()));
+    final navigatorKey = GlobalKey<NavigatorState>();
+    unawaited(
+      DeepLinkService((payload) {
+        navigatorKey.currentState?.push(
+          MaterialPageRoute(
+            builder: (_) => JoinPage(
+              joinToken: payload.joinToken,
+              gameKeyBytes: payload.keyBytes,
+            ),
+          ),
+        );
+      }).start(),
+    );
+    runApp(TranslationProvider(child: FramedApp(navigatorKey: navigatorKey)));
   } catch (_) {
     runApp(TranslationProvider(child: _BootstrapErrorApp(onRetry: _bootstrap)));
   }
