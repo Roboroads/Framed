@@ -263,13 +263,38 @@ class _InfoIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Tooltip(
-      message: message,
-      triggerMode: TooltipTriggerMode.tap,
-      child: Icon(
-        Icons.info_outline,
-        size: 18,
-        color: Theme.of(context).colorScheme.onSurfaceVariant,
+    return InkWell(
+      customBorder: const CircleBorder(),
+      onTap: () => showDialog<void>(
+        context: context,
+        builder: (context) => Dialog(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ],
+                ),
+                Text(message),
+              ],
+            ),
+          ),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(4),
+        child: Icon(
+          Icons.info_outline,
+          size: 18,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
       ),
     );
   }
