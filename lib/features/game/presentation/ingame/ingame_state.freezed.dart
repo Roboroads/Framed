@@ -55,13 +55,14 @@ extension IngamePhasePatterns on IngamePhase {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( IngameDispersing value)?  dispersing,TResult Function( IngamePlaying value)?  playing,TResult Function( IngameTargetLoadFailed value)?  targetLoadFailed,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( IngameDispersing value)?  dispersing,TResult Function( IngamePlaying value)?  playing,TResult Function( IngameTargetLoadFailed value)?  targetLoadFailed,TResult Function( IngameDead value)?  dead,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case IngameDispersing() when dispersing != null:
 return dispersing(_that);case IngamePlaying() when playing != null:
 return playing(_that);case IngameTargetLoadFailed() when targetLoadFailed != null:
-return targetLoadFailed(_that);case _:
+return targetLoadFailed(_that);case IngameDead() when dead != null:
+return dead(_that);case _:
   return orElse();
 
 }
@@ -79,13 +80,14 @@ return targetLoadFailed(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( IngameDispersing value)  dispersing,required TResult Function( IngamePlaying value)  playing,required TResult Function( IngameTargetLoadFailed value)  targetLoadFailed,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( IngameDispersing value)  dispersing,required TResult Function( IngamePlaying value)  playing,required TResult Function( IngameTargetLoadFailed value)  targetLoadFailed,required TResult Function( IngameDead value)  dead,}){
 final _that = this;
 switch (_that) {
 case IngameDispersing():
 return dispersing(_that);case IngamePlaying():
 return playing(_that);case IngameTargetLoadFailed():
-return targetLoadFailed(_that);}
+return targetLoadFailed(_that);case IngameDead():
+return dead(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -99,13 +101,14 @@ return targetLoadFailed(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( IngameDispersing value)?  dispersing,TResult? Function( IngamePlaying value)?  playing,TResult? Function( IngameTargetLoadFailed value)?  targetLoadFailed,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( IngameDispersing value)?  dispersing,TResult? Function( IngamePlaying value)?  playing,TResult? Function( IngameTargetLoadFailed value)?  targetLoadFailed,TResult? Function( IngameDead value)?  dead,}){
 final _that = this;
 switch (_that) {
 case IngameDispersing() when dispersing != null:
 return dispersing(_that);case IngamePlaying() when playing != null:
 return playing(_that);case IngameTargetLoadFailed() when targetLoadFailed != null:
-return targetLoadFailed(_that);case _:
+return targetLoadFailed(_that);case IngameDead() when dead != null:
+return dead(_that);case _:
   return null;
 
 }
@@ -122,12 +125,13 @@ return targetLoadFailed(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( DateTime endsAt)?  dispersing,TResult Function( Target target)?  playing,TResult Function()?  targetLoadFailed,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( DateTime endsAt)?  dispersing,TResult Function( Target target)?  playing,TResult Function()?  targetLoadFailed,TResult Function( String cause,  String? killerName,  int survivedSeconds)?  dead,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case IngameDispersing() when dispersing != null:
 return dispersing(_that.endsAt);case IngamePlaying() when playing != null:
 return playing(_that.target);case IngameTargetLoadFailed() when targetLoadFailed != null:
-return targetLoadFailed();case _:
+return targetLoadFailed();case IngameDead() when dead != null:
+return dead(_that.cause,_that.killerName,_that.survivedSeconds);case _:
   return orElse();
 
 }
@@ -145,12 +149,13 @@ return targetLoadFailed();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( DateTime endsAt)  dispersing,required TResult Function( Target target)  playing,required TResult Function()  targetLoadFailed,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( DateTime endsAt)  dispersing,required TResult Function( Target target)  playing,required TResult Function()  targetLoadFailed,required TResult Function( String cause,  String? killerName,  int survivedSeconds)  dead,}) {final _that = this;
 switch (_that) {
 case IngameDispersing():
 return dispersing(_that.endsAt);case IngamePlaying():
 return playing(_that.target);case IngameTargetLoadFailed():
-return targetLoadFailed();}
+return targetLoadFailed();case IngameDead():
+return dead(_that.cause,_that.killerName,_that.survivedSeconds);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -164,12 +169,13 @@ return targetLoadFailed();}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( DateTime endsAt)?  dispersing,TResult? Function( Target target)?  playing,TResult? Function()?  targetLoadFailed,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( DateTime endsAt)?  dispersing,TResult? Function( Target target)?  playing,TResult? Function()?  targetLoadFailed,TResult? Function( String cause,  String? killerName,  int survivedSeconds)?  dead,}) {final _that = this;
 switch (_that) {
 case IngameDispersing() when dispersing != null:
 return dispersing(_that.endsAt);case IngamePlaying() when playing != null:
 return playing(_that.target);case IngameTargetLoadFailed() when targetLoadFailed != null:
-return targetLoadFailed();case _:
+return targetLoadFailed();case IngameDead() when dead != null:
+return dead(_that.cause,_that.killerName,_that.survivedSeconds);case _:
   return null;
 
 }
@@ -349,6 +355,76 @@ String toString() {
 
 
 
+
+/// @nodoc
+
+
+class IngameDead implements IngamePhase {
+  const IngameDead({required this.cause, this.killerName, required this.survivedSeconds});
+  
+
+ final  String cause;
+ final  String? killerName;
+ final  int survivedSeconds;
+
+/// Create a copy of IngamePhase
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$IngameDeadCopyWith<IngameDead> get copyWith => _$IngameDeadCopyWithImpl<IngameDead>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is IngameDead&&(identical(other.cause, cause) || other.cause == cause)&&(identical(other.killerName, killerName) || other.killerName == killerName)&&(identical(other.survivedSeconds, survivedSeconds) || other.survivedSeconds == survivedSeconds));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,cause,killerName,survivedSeconds);
+
+@override
+String toString() {
+  return 'IngamePhase.dead(cause: $cause, killerName: $killerName, survivedSeconds: $survivedSeconds)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $IngameDeadCopyWith<$Res> implements $IngamePhaseCopyWith<$Res> {
+  factory $IngameDeadCopyWith(IngameDead value, $Res Function(IngameDead) _then) = _$IngameDeadCopyWithImpl;
+@useResult
+$Res call({
+ String cause, String? killerName, int survivedSeconds
+});
+
+
+
+
+}
+/// @nodoc
+class _$IngameDeadCopyWithImpl<$Res>
+    implements $IngameDeadCopyWith<$Res> {
+  _$IngameDeadCopyWithImpl(this._self, this._then);
+
+  final IngameDead _self;
+  final $Res Function(IngameDead) _then;
+
+/// Create a copy of IngamePhase
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? cause = null,Object? killerName = freezed,Object? survivedSeconds = null,}) {
+  return _then(IngameDead(
+cause: null == cause ? _self.cause : cause // ignore: cast_nullable_to_non_nullable
+as String,killerName: freezed == killerName ? _self.killerName : killerName // ignore: cast_nullable_to_non_nullable
+as String?,survivedSeconds: null == survivedSeconds ? _self.survivedSeconds : survivedSeconds // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
 
 /// @nodoc
 mixin _$IngameWarning {

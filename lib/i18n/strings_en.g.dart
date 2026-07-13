@@ -406,6 +406,21 @@ class Translations$ingame$en {
 
 	/// en: 'No'
 	String get judgingNo => 'No';
+
+	/// en: 'You've been framed'
+	String get deadTitleFramed => 'You\'ve been framed';
+
+	/// en: 'MIA'
+	String get deadTitleMia => 'MIA';
+
+	/// en: 'You broke a game rule for too long.'
+	String get deadCauseMia => 'You broke a game rule for too long.';
+
+	/// en: 'Killed by $name'
+	String deadKilledBy({required Object name}) => 'Killed by ${name}';
+
+	/// en: 'Survived $time'
+	String deadSurvivedFor({required Object time}) => 'Survived ${time}';
 }
 
 // Path: scan
@@ -611,6 +626,11 @@ extension on Translations {
 			'ingame.judgingRetry' => 'Retry',
 			'ingame.judgingYes' => 'Yes',
 			'ingame.judgingNo' => 'No',
+			'ingame.deadTitleFramed' => 'You\'ve been framed',
+			'ingame.deadTitleMia' => 'MIA',
+			'ingame.deadCauseMia' => 'You broke a game rule for too long.',
+			'ingame.deadKilledBy' => ({required Object name}) => 'Killed by ${name}',
+			'ingame.deadSurvivedFor' => ({required Object time}) => 'Survived ${time}',
 			'scan.title' => 'Scan to join',
 			'scan.invalidCode' => 'That\'s not a valid Framed code — keep scanning.',
 			'frame.button' => 'Frame',

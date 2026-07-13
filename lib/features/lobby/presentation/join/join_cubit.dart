@@ -68,7 +68,7 @@ class JoinCubit extends Cubit<JoinState> {
         encryptedSelfie: encryptedSelfie,
       );
 
-      _session.begin(gameId: gameId, playerId: playerId, crypto: crypto);
+      await _session.begin(gameId: gameId, playerId: playerId, crypto: crypto);
 
       emit(state.copyWith(status: JoinStatus.success));
     } catch (e) {

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import '../../../core/realtime/game_event.dart';
 import 'geofence_info.dart';
 
 /// Storage + location access for the game feature.
@@ -41,4 +42,15 @@ abstract interface class GameRepository {
   /// `cast_vote(frame_id, vote)` (#20). A vote on an already-resolved or
   /// voided frame is a silent server-side no-op, not an error.
   Future<void> castVote({required String frameId, required bool vote});
+
+  /// `get_my_state(game_id)` (#53, #54) — a REST snapshot of whatever the
+  /// last relevant `player:{id}` broadcast should have told this device
+  /// (dispersal end time, current target, or death), shaped identically to
+  /// the broadcast payload so it decodes through the same
+  /// [GameEvent.fromBroadcast]. The event is null when the server has
+  /// nothing further to report (still in the lobby, or active with a
+  /// target not assigned yet — shouldn't normally happen). gameStatus is
+  /// the routing signal a cold-start resume needs before it even knows
+  /// whether to land on the lobby or the ingame screen.
+  Future<(String gameStatus, GameEvent? event)> getMyState(String gameId);
 }

@@ -32,6 +32,15 @@ class IngameBloc extends Cubit<IngameState> {
          IngameState(phase: IngamePhase.dispersing(endsAt: initialEndsAt)),
        ) {
     _subscription = events.listen(_onEvent);
+    // The one-shot player:{id} broadcast this phase depends on
+    // (dispersal_started/target_assigned/you_died) can be missed by a
+    // connection that still reports itself joined (#53), or simply never
+    // arrive at all on a cold-start resume into a game already in progress
+    // (#54). This REST catch-up runs once alongside the live subscription;
+    // _phaseGeneration ensures whichever one — this or a live event —
+    // starts last wins, same pattern as the target-supersession comment
+    // below already relies on.
+    unawaited(_fetchCurrentState());
   }
 
   final GameCrypto _crypto;
@@ -47,9 +56,11 @@ class IngameBloc extends Cubit<IngameState> {
   // stale state.
   String? _loadingFrameId;
 
-  // Bumped on every target_assigned so an in-flight download/decrypt from a
-  // superseded assignment (e.g. a target reassigned after dying) can't land
-  // after a newer one already did.
+  // Bumped on every phase-changing event (target_assigned, you_died, the
+  // startup catch-up fetch) so an in-flight download/decrypt from a
+  // superseded one (e.g. a target reassigned after dying, or a catch-up
+  // that resolves after a live event already landed) can't overwrite a
+  // newer one that already did.
   int _targetGeneration = 0;
 
   // Same idea for the compass: bumped on every pulse so a stale expiry
@@ -84,9 +95,50 @@ class IngameBloc extends Cubit<IngameState> {
       _onFrameCancelled(event);
       return;
     }
-    if (event is! TargetAssigned) return;
-    final generation = ++_targetGeneration;
+    if (event is TargetAssigned) {
+      await _applyTargetAssigned(event);
+      return;
+    }
+    if (event is YouDied) {
+      await _applyYouDied(event);
+    }
+    // dispersal_started is a game:{game_id} broadcast, never delivered on
+    // this bloc's player:{id} subscription — only ever seen via the
+    // catch-up fetch below, for a resume that's still mid-dispersal.
+  }
 
+  // The REST catch-up counterpart to _onEvent's live handling above —
+  // see the constructor comment. get_my_state (#53/#54) returns null only
+  // when the server genuinely has nothing to report yet.
+  Future<void> _fetchCurrentState() async {
+    final generation = ++_targetGeneration;
+    GameEvent? event;
+    try {
+      (_, event) = await _repository.getMyState(_gameId);
+    } catch (_) {
+      return;
+    }
+    if (isClosed || generation != _targetGeneration) return;
+    switch (event) {
+      case TargetAssigned():
+        await _applyTargetAssigned(event, generation: generation);
+      case YouDied():
+        await _applyYouDied(event, generation: generation);
+      case DispersalStarted():
+        emit(
+          state.copyWith(phase: IngamePhase.dispersing(endsAt: event.endsAt)),
+        );
+      default:
+      // No target yet, or an event shape this catch-up doesn't expect —
+      // nothing to change.
+    }
+  }
+
+  Future<void> _applyTargetAssigned(
+    TargetAssigned event, {
+    int? generation,
+  }) async {
+    generation ??= ++_targetGeneration;
     try {
       final name = await _crypto.decryptString(event.nameCiphertext);
       final encryptedSelfie = await _repository.downloadSelfie(
@@ -109,6 +161,29 @@ class IngameBloc extends Cubit<IngameState> {
       if (isClosed || generation != _targetGeneration) return;
       emit(state.copyWith(phase: const IngamePhase.targetLoadFailed()));
     }
+  }
+
+  Future<void> _applyYouDied(YouDied event, {int? generation}) async {
+    generation ??= ++_targetGeneration;
+    String? killerName;
+    if (event.killerNameCiphertext != null) {
+      try {
+        killerName = await _crypto.decryptString(event.killerNameCiphertext!);
+      } catch (_) {
+        // A dead player still deserves to see their own death — a killer
+        // name that fails to decrypt just renders unattributed.
+      }
+    }
+    if (isClosed || generation != _targetGeneration) return;
+    emit(
+      state.copyWith(
+        phase: IngamePhase.dead(
+          cause: event.cause,
+          killerName: killerName,
+          survivedSeconds: event.survivedSeconds,
+        ),
+      ),
+    );
   }
 
   // No local logic decides when a warning starts or stops — this just

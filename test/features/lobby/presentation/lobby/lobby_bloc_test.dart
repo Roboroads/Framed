@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:framed/core/crypto/game_crypto.dart';
 import 'package:framed/core/realtime/game_event.dart';
 import 'package:framed/core/session/game_session.dart';
+import 'package:framed/core/session/session_store.dart';
 import 'package:framed/features/lobby/domain/game_mode.dart';
 import 'package:framed/features/lobby/domain/game_settings.dart';
 import 'package:framed/features/lobby/domain/lobby_repository.dart';
@@ -12,6 +13,19 @@ import 'package:framed/features/lobby/domain/lobby_roster_entry.dart';
 import 'package:framed/features/lobby/domain/lobby_snapshot.dart';
 import 'package:framed/features/lobby/presentation/lobby/lobby_bloc.dart';
 import 'package:framed/features/lobby/presentation/lobby/lobby_state.dart';
+
+class _FakeSecureKeyValueStore implements SecureKeyValueStore {
+  final _values = <String, String>{};
+
+  @override
+  Future<String?> read(String key) async => _values[key];
+
+  @override
+  Future<void> write(String key, String value) async => _values[key] = value;
+
+  @override
+  Future<void> delete(String key) async => _values.remove(key);
+}
 
 class _FakeLobbyRepository implements LobbyRepository {
   LobbySnapshot? snapshot;
@@ -106,7 +120,7 @@ void main() {
     );
 
     GameSession sessionAs(String playerId) =>
-        GameSession()
+        GameSession(SessionStore(_FakeSecureKeyValueStore()))
           ..begin(gameId: gameId, playerId: playerId, crypto: crypto);
 
     setUp(() async {

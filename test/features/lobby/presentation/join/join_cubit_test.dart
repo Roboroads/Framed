@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:framed/core/crypto/game_crypto.dart';
 import 'package:framed/core/session/game_session.dart';
+import 'package:framed/core/session/session_store.dart';
 import 'package:framed/features/lobby/domain/game_settings.dart';
 import 'package:framed/features/lobby/domain/lobby_error.dart';
 import 'package:framed/features/lobby/domain/lobby_repository.dart';
@@ -10,6 +11,19 @@ import 'package:framed/features/lobby/domain/lobby_snapshot.dart';
 import 'package:framed/features/lobby/presentation/join/join_cubit.dart';
 import 'package:framed/features/lobby/presentation/join/join_state.dart';
 import 'package:postgrest/postgrest.dart';
+
+class _FakeSecureKeyValueStore implements SecureKeyValueStore {
+  final _values = <String, String>{};
+
+  @override
+  Future<String?> read(String key) async => _values[key];
+
+  @override
+  Future<void> write(String key, String value) async => _values[key] = value;
+
+  @override
+  Future<void> delete(String key) async => _values.remove(key);
+}
 
 class _FakeLobbyRepository implements LobbyRepository {
   String? capturedNameCiphertext;
@@ -91,7 +105,7 @@ void main() {
 
     setUp(() async {
       repository = _FakeLobbyRepository();
-      session = GameSession();
+      session = GameSession(SessionStore(_FakeSecureKeyValueStore()));
       hostCrypto = await GameCrypto.generate();
       keyBytes = await hostCrypto.keyBytes;
       cubit = JoinCubit(

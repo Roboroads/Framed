@@ -20,6 +20,16 @@ sealed class IngamePhase with _$IngamePhase {
   /// The target's name/selfie failed to decrypt or download — surfaced
   /// instead of crashing the screen.
   const factory IngamePhase.targetLoadFailed() = IngameTargetLoadFailed;
+
+  /// This player is out (#54's reconnect catch-up can land here directly
+  /// on cold start). Deliberately minimal — the full reveal (kill photo,
+  /// stats) is #23's job; this just makes sure a dead player, live or
+  /// reconnecting, never gets stuck looking like they're still playing.
+  const factory IngamePhase.dead({
+    required String cause,
+    String? killerName,
+    required int survivedSeconds,
+  }) = IngameDead;
 }
 
 /// A rule-break in progress (#12/#13's `warning` event, active branch).

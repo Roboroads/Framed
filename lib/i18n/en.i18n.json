@@ -104,7 +104,12 @@
     "judgingLoadError": "Couldn't load this frame.",
     "judgingRetry": "Retry",
     "judgingYes": "Yes",
-    "judgingNo": "No"
+    "judgingNo": "No",
+    "deadTitleFramed": "You've been framed",
+    "deadTitleMia": "MIA",
+    "deadCauseMia": "You broke a game rule for too long.",
+    "deadKilledBy": "Killed by $name",
+    "deadSurvivedFor": "Survived $time"
   },
   "scan": {
     "title": "Scan to join",

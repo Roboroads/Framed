@@ -84,6 +84,18 @@ class _FakeGameRepository implements GameRepository {
     lastVotedFrameId = frameId;
     lastVote = vote;
   }
+
+  GameEvent? myState;
+  String myGameStatus = 'active';
+  Object? myStateFailure;
+  Completer<(String, GameEvent?)>? myStateCompleter;
+
+  @override
+  Future<(String, GameEvent?)> getMyState(String gameId) {
+    if (myStateCompleter != null) return myStateCompleter!.future;
+    if (myStateFailure != null) throw myStateFailure!;
+    return Future.value((myGameStatus, myState));
+  }
 }
 
 void main() {
@@ -221,6 +233,172 @@ void main() {
         expect((phase as IngamePlaying).target.playerId, 'second');
       },
     );
+
+    test(
+      'the startup catch-up fetch applies a target no live event ever sends',
+      () async {
+        repository.myState = GameEvent.targetAssigned(
+          targetId: 'target-1',
+          nameCiphertext: await crypto.encryptString('Alice'),
+          selfiePath: 'game-1/target-1',
+        );
+        repository.selfieBytes = await crypto.encryptBytes(
+          Uint8List.fromList([9]),
+        );
+
+        final bloc = IngameBloc(
+          events: events.stream,
+          crypto: crypto,
+          repository: repository,
+          gameId: 'game-1',
+          initialEndsAt: endsAt,
+        );
+        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+
+        final phase = bloc.state.phase;
+        expect(phase, isA<IngamePlaying>());
+        expect((phase as IngamePlaying).target.playerId, 'target-1');
+      },
+    );
+
+    test('a live target_assigned beats a slower catch-up fetch', () async {
+      repository.myStateCompleter = Completer<(String, GameEvent?)>();
+      repository.selfieBytes = await crypto.encryptBytes(
+        Uint8List.fromList([1]),
+      );
+
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        gameId: 'game-1',
+        initialEndsAt: endsAt,
+      );
+      events.add(
+        GameEvent.targetAssigned(
+          targetId: 'live',
+          nameCiphertext: await crypto.encryptString('Live'),
+          selfiePath: 'game-1/live',
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      // The catch-up resolves after the live event already landed — its
+      // (now stale) target must not overwrite the live one's.
+      repository.myStateCompleter!.complete((
+        'active',
+        GameEvent.targetAssigned(
+          targetId: 'stale',
+          nameCiphertext: await crypto.encryptString('Stale'),
+          selfiePath: 'game-1/stale',
+        ),
+      ));
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      final phase = bloc.state.phase;
+      expect(phase, isA<IngamePlaying>());
+      expect((phase as IngamePlaying).target.playerId, 'live');
+    });
+
+    test('you_died sets the dead phase', () async {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        gameId: 'game-1',
+        initialEndsAt: endsAt,
+      );
+
+      events.add(
+        GameEvent.youDied(
+          cause: 'framed',
+          killerNameCiphertext: await crypto.encryptString('Killer'),
+          survivedSeconds: 120,
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(
+        bloc.state.phase,
+        const IngamePhase.dead(
+          cause: 'framed',
+          killerName: 'Killer',
+          survivedSeconds: 120,
+        ),
+      );
+    });
+
+    test(
+      'the catch-up fetch can report dead directly (cold-start resume)',
+      () async {
+        repository.myState = const GameEvent.youDied(
+          cause: 'mia',
+          survivedSeconds: 300,
+        );
+
+        final bloc = IngameBloc(
+          events: events.stream,
+          crypto: crypto,
+          repository: repository,
+          gameId: 'game-1',
+          initialEndsAt: endsAt,
+        );
+        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+
+        expect(
+          bloc.state.phase,
+          const IngamePhase.dead(
+            cause: 'mia',
+            killerName: null,
+            survivedSeconds: 300,
+          ),
+        );
+      },
+    );
+
+    test(
+      'the catch-up fetch updates the dispersal endsAt on a cold-start resume',
+      () async {
+        final serverEndsAt = endsAt.add(const Duration(minutes: 3));
+        repository.myState = GameEvent.dispersalStarted(endsAt: serverEndsAt);
+
+        final bloc = IngameBloc(
+          events: events.stream,
+          crypto: crypto,
+          repository: repository,
+          gameId: 'game-1',
+          initialEndsAt: endsAt,
+        );
+        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+
+        expect(bloc.state.phase, IngamePhase.dispersing(endsAt: serverEndsAt));
+      },
+    );
+
+    test('a failed catch-up fetch is silently ignored', () async {
+      repository.myStateFailure = Exception('network error');
+
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        gameId: 'game-1',
+        initialEndsAt: endsAt,
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(
+        bloc.state,
+        IngameState(phase: IngamePhase.dispersing(endsAt: endsAt)),
+      );
+    });
 
     test('unrelated events are ignored', () async {
       final bloc = IngameBloc(

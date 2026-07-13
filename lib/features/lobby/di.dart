@@ -9,5 +9,5 @@ void configureLobbyDependencies() {
   getIt.registerLazySingleton<LobbyRepository>(
     () => SupabaseLobbyRepository(getIt<SupabaseClient>()),
   );
-  getIt.registerLazySingleton<GameSession>(GameSession.new);
+  getIt.registerLazySingleton<GameSession>(() => GameSession(getIt()));
 }

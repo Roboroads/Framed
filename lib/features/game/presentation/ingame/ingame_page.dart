@@ -129,6 +129,16 @@ class _IngameView extends StatelessWidget {
                       ),
                     ),
                   ),
+                  IngameDead(
+                    :final cause,
+                    :final killerName,
+                    :final survivedSeconds,
+                  ) =>
+                    _DeadScreen(
+                      cause: cause,
+                      killerName: killerName,
+                      survivedSeconds: survivedSeconds,
+                    ),
                 },
                 if (state.warning case final warning?)
                   _WarningOverlay(warning: warning),
@@ -140,6 +150,60 @@ class _IngameView extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+/// Deliberately minimal — see [IngamePhase.dead]'s doc comment. #23 owns
+/// the full reveal (kill photo, dead chat).
+class _DeadScreen extends StatelessWidget {
+  const _DeadScreen({
+    required this.cause,
+    required this.killerName,
+    required this.survivedSeconds,
+  });
+
+  final String cause;
+  final String? killerName;
+  final int survivedSeconds;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              cause == 'mia' ? t.ingame.deadTitleMia : t.ingame.deadTitleFramed,
+              style: Theme.of(context).textTheme.headlineMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            if (cause == 'mia')
+              Text(t.ingame.deadCauseMia, textAlign: TextAlign.center)
+            else if (killerName != null)
+              Text(
+                t.ingame.deadKilledBy(name: killerName!),
+                textAlign: TextAlign.center,
+              ),
+            const SizedBox(height: 8),
+            Text(
+              t.ingame.deadSurvivedFor(time: _formatSurvived(survivedSeconds)),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _formatSurvived(int seconds) {
+    final duration = Duration(seconds: seconds);
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes.remainder(60);
+    if (hours > 0) return '${hours}h ${minutes}m';
+    return '${minutes}m';
   }
 }
 

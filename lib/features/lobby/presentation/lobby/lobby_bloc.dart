@@ -206,7 +206,7 @@ class LobbyBloc extends Cubit<LobbyState> {
 
   Future<void> leave() async {
     await _repository.leaveLobby(gameId);
-    _session.end();
+    await _session.end();
   }
 
   @override

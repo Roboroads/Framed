@@ -98,7 +98,7 @@ Set by the host in the lobby:
   - The app sends a location update every 30 seconds. You count as **stale** when the server hasn't received one for 90 seconds (3 missed updates — tolerates a bad GPS fix or a short network drop).
   - While stale: the warning modal shows, and you receive no compass update at a pulse. Your assassin's compass still points at your last known location.
   - Stale for `hard_punishment_minutes` straight → MIA death (this covers dead phones and force-closed apps). Any successful update resets the timer.
-  - There is no mid-game quit. Quitting *is* this rule: close the app and the staleness path kills you as MIA.
+  - There is no mid-game quit. Reopening the app after a crash or force-close resumes exactly where you left off (#54) — the app itself doesn't kill you. But nothing pauses the staleness clock while you're gone, so silence for `hard_punishment_minutes` still kills you as MIA whether that silence is a crash, a dead phone, or someone deliberately sitting out. Reconnecting only saves you if you're back before that timer runs out.
   - This rule binds the living only. Once dead you may close the app freely — you just stop judging and chatting.
 - **You must vote on pending frames.**
   - While you have an unvoted frame open, you receive no compass update at a pulse. Lazy judges lose their own intel.
@@ -124,7 +124,8 @@ The app can't enforce these; they're shown at pre-join alongside the play-fair d
 - **Target killed by someone else while a frame on them is pending:** impossible — each player has exactly one assassin in the circle.
 - **Assassin dies via MIA while their frame is pending:** the pending vote is cancelled.
 - **Simultaneous pending frames** (A framed B while B's frame of C is pending): B's held frame resolves after B's own verdict — if B dies, B's frame is void.
-- **App reinstall mid-game:** the game key and session live only on your device — you cannot rejoin. The staleness path makes you MIA.
+- **App reinstall mid-game:** unlike a crash or force-close, a reinstall wipes the game key and session with the rest of the app's local data — genuinely unrecoverable. You cannot rejoin. The staleness path makes you MIA.
+- **App crash/close before the lobby, or leaving on purpose:** rescan the host's QR to get your seat back — same join flow, same name, no new player row. Only works while the game is still in the lobby; once it starts the join token is gone (#54).
 - **Host leaves the lobby:** the lobby stays open; the host role (settings + start button) transfers to the longest-joined player.
 
 ## Security

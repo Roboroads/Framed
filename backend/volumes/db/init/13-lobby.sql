@@ -132,6 +132,11 @@ end $$;
 -- Token resolution happens only here; the same invalid_token comes back
 -- whether the token never existed or its game already started (tokens are
 -- nulled at start).
+--
+-- A retry by the same auth_uid (app crashed or was closed before reaching
+-- the lobby, player rescans the same QR) hands back their existing seat
+-- instead of erroring — this is the lobby half of reconnect (#54); the
+-- ingame half is get_my_state (21-reconnect.sql).
 create or replace function join_game(
   join_token text, name_ciphertext text, name_hmac text,
   push_token text default null, platform text default null
@@ -141,6 +146,7 @@ declare
   g public.games%rowtype;
   pid uuid;
   vconstraint text;
+  rejoining boolean := false;
 begin
   if coalesce(name_ciphertext, '') = '' or coalesce(name_hmac, '') = ''
      or length(name_ciphertext) > 2048 then
@@ -163,7 +169,9 @@ begin
     when unique_violation then
       get stacked diagnostics vconstraint = constraint_name;
       if vconstraint = 'players_game_id_auth_uid_key' then
-        raise exception using message = 'already_joined';
+        select id into pid from public.players
+          where game_id = g.id and auth_uid = auth.uid();
+        rejoining := true;
       elsif vconstraint = 'players_game_id_name_hmac_key' then
         raise exception using message = 'name_taken';
       else
@@ -173,8 +181,10 @@ begin
       raise exception using message = 'bad_settings';
   end;
 
-  perform public.emit('game:' || g.id, 'player_joined',
-    jsonb_build_object('player_id', pid, 'name_ciphertext', join_game.name_ciphertext));
+  if not rejoining then
+    perform public.emit('game:' || g.id, 'player_joined',
+      jsonb_build_object('player_id', pid, 'name_ciphertext', join_game.name_ciphertext));
+  end if;
   return jsonb_build_object('game_id', g.id, 'player_id', pid);
 end $$;
 

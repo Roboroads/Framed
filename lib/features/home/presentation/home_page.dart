@@ -1,10 +1,43 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/di/injector.dart';
+import '../../../core/session/resume_outcome.dart';
+import '../../../core/session/session_resume_service.dart';
 import '../../../i18n/strings.g.dart';
 
-class HomePage extends StatelessWidget {
+/// Renders normally on every build — a resumed session (#54) is rare (app
+/// crash/close mid-game) and the check is fast, so this redirects shortly
+/// after the first frame rather than gating the far more common "nothing
+/// to resume" case behind a loading spinner.
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_tryResume());
+  }
+
+  Future<void> _tryResume() async {
+    final outcome = await getIt<SessionResumeService>().resume();
+    if (!mounted) return;
+    switch (outcome) {
+      case ResumeToLobby():
+        context.go('/lobby');
+      case ResumeToIngame(:final initialEndsAt):
+        context.go('/location-gate', extra: initialEndsAt);
+      case ResumeNone():
+      // Nothing to resume — the normal home screen is already showing.
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

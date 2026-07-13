@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/realtime/game_event.dart';
 import '../domain/game_repository.dart';
 import '../domain/geofence_info.dart';
 
@@ -72,5 +73,20 @@ class SupabaseGameRepository implements GameRepository {
   @override
   Future<void> castVote({required String frameId, required bool vote}) async {
     await _client.rpc('cast_vote', params: {'frame_id': frameId, 'vote': vote});
+  }
+
+  @override
+  Future<(String, GameEvent?)> getMyState(String gameId) async {
+    final result =
+        await _client.rpc('get_my_state', params: {'p_game_id': gameId})
+            as Map<String, dynamic>;
+    final gameStatus = result['game_status'] as String;
+    final eventName = result['event'] as String?;
+    if (eventName == null) return (gameStatus, null);
+    final event = GameEvent.fromBroadcast(
+      eventName,
+      Map<String, dynamic>.from(result['payload'] as Map),
+    );
+    return (gameStatus, event);
   }
 }
