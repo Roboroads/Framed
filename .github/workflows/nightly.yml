@@ -1,21 +1,39 @@
 name: Nightly build
 
-# Builds a signed app bundle from main every night and uploads it to the
-# Play Console internal testing track — an always-fresh build for testers
-# without a manual trigger (issue #33).
+# Builds a signed app from main every night and uploads it to Play Console
+# (internal testing track) and TestFlight — an always-fresh build for
+# testers without a manual trigger (issue #33). Android and iOS build and
+# upload independently; either skips itself (via its own check-*-secrets
+# job) until its secrets are all set, rather than failing every night.
 #
-# Needs these repo secrets, none of which exist yet:
+# Android needs:
 #   ANDROID_KEYSTORE_BASE64   - `base64 -w0 upload-keystore.jks`
 #   ANDROID_KEY_ALIAS
 #   ANDROID_KEY_PASSWORD
 #   ANDROID_STORE_PASSWORD
 #   PLAY_SERVICE_ACCOUNT_JSON - a GCP service account with Release Manager
 #                               access to this app in Play Console
+#
+# iOS needs:
+#   IOS_CERTIFICATE_BASE64          - `base64 -w0 distribution.p12`
+#   IOS_CERTIFICATE_PASSWORD
+#   IOS_PROVISION_PROFILE_BASE64    - `base64 -w0 profile.mobileprovision`
+#   IOS_PROVISIONING_PROFILE_NAME   - exact profile name from the Apple
+#                                      Developer portal, not the filename
+#   IOS_TEAM_ID                     - Apple Developer Team ID
+#   APPSTORE_ISSUER_ID, APPSTORE_KEY_ID, APPSTORE_API_KEY_BASE64
+#                                    - App Store Connect API key
+#                                      (`base64 -w0 AuthKey_XXXX.p8`)
+#
+# Both platforms:
 #   PROD_SUPABASE_URL, PROD_SUPABASE_ANON_KEY - optional; falls back to the
 #                               local dev backend's address, which no real
 #                               device can reach
-# Skips itself entirely (via check-secrets) until they're all set, rather
-# than failing at the signing step every night.
+#
+# The iOS job is unverified — this repo's dev machine has no macOS/Xcode
+# to build and codesign-check against like the Android path was (see
+# android/app/build.gradle.kts's commit). Expect to iterate once
+# IOS_* secrets exist and a run can actually happen.
 
 on:
   schedule:
@@ -23,7 +41,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  check-secrets:
+  check-android-secrets:
     runs-on: ubuntu-latest
     outputs:
       ready: ${{ steps.check.outputs.ready }}
@@ -38,12 +56,12 @@ jobs:
             echo "ready=true" >> "$GITHUB_OUTPUT"
           else
             echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Signing/Play secrets not set yet — skipping this run."
+            echo "::notice::Android signing/Play secrets not set yet — skipping this run."
           fi
 
-  build-and-upload:
-    needs: check-secrets
-    if: needs.check-secrets.outputs.ready == 'true'
+  build-and-upload-android:
+    needs: check-android-secrets
+    if: needs.check-android-secrets.outputs.ready == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -79,3 +97,97 @@ jobs:
           releaseFiles: build/app/outputs/bundle/release/app-release.aab
           track: internal
           status: completed
+
+  check-ios-secrets:
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+    steps:
+      - id: check
+        run: |
+          if [ -n "${{ secrets.IOS_CERTIFICATE_BASE64 }}" ] && \
+             [ -n "${{ secrets.IOS_CERTIFICATE_PASSWORD }}" ] && \
+             [ -n "${{ secrets.IOS_PROVISION_PROFILE_BASE64 }}" ] && \
+             [ -n "${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}" ] && \
+             [ -n "${{ secrets.IOS_TEAM_ID }}" ] && \
+             [ -n "${{ secrets.APPSTORE_ISSUER_ID }}" ] && \
+             [ -n "${{ secrets.APPSTORE_KEY_ID }}" ] && \
+             [ -n "${{ secrets.APPSTORE_API_KEY_BASE64 }}" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::iOS signing/App Store Connect secrets not set yet — skipping this run."
+          fi
+
+  build-and-upload-ios:
+    needs: check-ios-secrets
+    if: needs.check-ios-secrets.outputs.ready == 'true'
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: dart run slang
+
+      - name: Import distribution certificate
+        uses: apple-actions/import-codesign-certs@v3
+        with:
+          p12-file-base64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
+          p12-password: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+
+      - name: Install provisioning profile
+        run: |
+          mkdir -p ~/Library/MobileDevice/"Provisioning Profiles"
+          echo "${{ secrets.IOS_PROVISION_PROFILE_BASE64 }}" | base64 -d \
+            > ~/Library/MobileDevice/"Provisioning Profiles"/framed.mobileprovision
+
+      - name: Build unsigned app
+        run: |
+          flutter build ios --release --no-codesign \
+            --build-number=${{ github.run_number }} \
+            --dart-define=SUPABASE_URL=${{ secrets.PROD_SUPABASE_URL || 'http://localhost:8000' }} \
+            --dart-define=SUPABASE_ANON_KEY=${{ secrets.PROD_SUPABASE_ANON_KEY }}
+
+      - name: Archive and sign
+        working-directory: ios
+        run: |
+          xcodebuild -workspace Runner.xcworkspace -scheme Runner \
+            -configuration Release -archivePath build/Runner.xcarchive \
+            archive \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM="${{ secrets.IOS_TEAM_ID }}" \
+            PROVISIONING_PROFILE_SPECIFIER="${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}" \
+            CODE_SIGN_IDENTITY="Apple Distribution"
+
+      - name: Export .ipa
+        working-directory: ios
+        run: |
+          cat > ExportOptions.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>teamID</key><string>${{ secrets.IOS_TEAM_ID }}</string>
+            <key>signingStyle</key><string>manual</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>me.roboroads.framed</key>
+              <string>${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}</string>
+            </dict>
+          </dict>
+          </plist>
+          EOF
+          xcodebuild -exportArchive -archivePath build/Runner.xcarchive \
+            -exportPath build/ios-release -exportOptionsPlist ExportOptions.plist
+
+      - name: Upload to TestFlight
+        uses: apple-actions/upload-testflight-build@v4
+        with:
+          app-path: ios/build/ios-release/Runner.ipa
+          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_API_KEY_BASE64 }}
