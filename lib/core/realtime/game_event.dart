@@ -52,6 +52,15 @@ sealed class GameEvent with _$GameEvent {
     required int survivedSeconds,
   }) = YouDied;
 
+  /// player:{player_id} — rule-break state changed (geofence and/or
+  /// staleness, see #12/#13). [reasons] and [hardDeadline] are only present
+  /// when [active] is true.
+  const factory GameEvent.warning({
+    required bool active,
+    @Default([]) List<String> reasons,
+    DateTime? hardDeadline,
+  }) = Warning;
+
   /// game:{game_id} — the game is over.
   const factory GameEvent.gameFinished({
     required String winnerId,
@@ -103,6 +112,16 @@ sealed class GameEvent with _$GameEvent {
             killerNameCiphertext: payload['killer_name_ciphertext'] as String?,
             photoPath: payload['photo_path'] as String?,
             survivedSeconds: payload['survived_seconds'] as int,
+          );
+        case 'warning':
+          return GameEvent.warning(
+            active: payload['active'] as bool,
+            reasons: payload['reasons'] != null
+                ? List<String>.from(payload['reasons'] as List)
+                : const [],
+            hardDeadline: payload['hard_deadline'] != null
+                ? DateTime.parse(payload['hard_deadline'] as String)
+                : null,
           );
         case 'game_finished':
           return GameEvent.gameFinished(

@@ -61,7 +61,10 @@ void main() {
         initialEndsAt: endsAt,
       );
 
-      expect(bloc.state, IngameState.dispersing(endsAt: endsAt));
+      expect(
+        bloc.state,
+        IngameState(phase: IngamePhase.dispersing(endsAt: endsAt)),
+      );
     });
 
     test('dispersing -> playing on target_assigned', () async {
@@ -84,9 +87,9 @@ void main() {
       await Future<void>.delayed(Duration.zero);
       await Future<void>.delayed(Duration.zero);
 
-      final state = bloc.state;
-      expect(state, isA<IngamePlaying>());
-      final target = (state as IngamePlaying).target;
+      final phase = bloc.state.phase;
+      expect(phase, isA<IngamePlaying>());
+      final target = (phase as IngamePlaying).target;
       expect(target.playerId, 'target-1');
       expect(target.name, 'Alice');
       expect(target.selfieBytes, selfieBytes);
@@ -113,7 +116,10 @@ void main() {
         await Future<void>.delayed(Duration.zero);
         await Future<void>.delayed(Duration.zero);
 
-        expect(bloc.state, const IngameState.targetLoadFailed());
+        expect(
+          bloc.state,
+          const IngameState(phase: IngamePhase.targetLoadFailed()),
+        );
       },
     );
 
@@ -157,9 +163,9 @@ void main() {
         );
         await Future<void>.delayed(const Duration(milliseconds: 20));
 
-        final state = bloc.state;
-        expect(state, isA<IngamePlaying>());
-        expect((state as IngamePlaying).target.playerId, 'second');
+        final phase = bloc.state.phase;
+        expect(phase, isA<IngamePlaying>());
+        expect((phase as IngamePlaying).target.playerId, 'second');
       },
     );
 
@@ -174,7 +180,60 @@ void main() {
       events.add(const GameEvent.playerLeft(playerId: 'someone-else'));
       await Future<void>.delayed(Duration.zero);
 
-      expect(bloc.state, IngameState.dispersing(endsAt: endsAt));
+      expect(
+        bloc.state,
+        IngameState(phase: IngamePhase.dispersing(endsAt: endsAt)),
+      );
+    });
+
+    test('warning active:true sets the overlay', () async {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        initialEndsAt: endsAt,
+      );
+      final deadline = DateTime.utc(2026, 1, 1, 12, 5);
+
+      events.add(
+        GameEvent.warning(
+          active: true,
+          reasons: const ['geofence'],
+          hardDeadline: deadline,
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      expect(
+        bloc.state.warning,
+        IngameWarning(reasons: const ['geofence'], hardDeadline: deadline),
+      );
+      // The phase underneath is untouched by a warning.
+      expect(bloc.state.phase, IngamePhase.dispersing(endsAt: endsAt));
+    });
+
+    test('warning active:false clears the overlay', () async {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        initialEndsAt: endsAt,
+      );
+
+      events.add(
+        GameEvent.warning(
+          active: true,
+          reasons: const ['stale'],
+          hardDeadline: DateTime.utc(2026, 1, 1, 12, 5),
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      expect(bloc.state.warning, isNotNull);
+
+      events.add(const GameEvent.warning(active: false));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.warning, isNull);
     });
   });
 }

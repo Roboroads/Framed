@@ -366,6 +366,15 @@ class Translations$ingame$en {
 
 	/// en: 'Couldn't load your target. Try reopening the app.'
 	String get errorTargetLoad => 'Couldn\'t load your target. Try reopening the app.';
+
+	/// en: 'You're outside the play area — go back.'
+	String get warningGeofence => 'You\'re outside the play area — go back.';
+
+	/// en: 'We're not receiving your location. Check GPS, signal, and battery saver.'
+	String get warningStale => 'We\'re not receiving your location. Check GPS, signal, and battery saver.';
+
+	/// en: 'You die in $time'
+	String warningDeadline({required Object time}) => 'You die in ${time}';
 }
 
 // Path: scan
@@ -519,6 +528,9 @@ extension on Translations {
 			'ingame.targetCardTitle' => 'Your target',
 			'ingame.frameButtonPlaceholder' => 'Frame (coming soon)',
 			'ingame.errorTargetLoad' => 'Couldn\'t load your target. Try reopening the app.',
+			'ingame.warningGeofence' => 'You\'re outside the play area — go back.',
+			'ingame.warningStale' => 'We\'re not receiving your location. Check GPS, signal, and battery saver.',
+			'ingame.warningDeadline' => ({required Object time}) => 'You die in ${time}',
 			'scan.title' => 'Scan to join',
 			'scan.invalidCode' => 'That\'s not a valid Framed code — keep scanning.',
 			'camera.permissionDeniedBody' => 'Framed needs camera access for this. Grant it, then try again.',

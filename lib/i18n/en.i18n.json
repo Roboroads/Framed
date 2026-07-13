@@ -91,7 +91,10 @@
     "disperseInstruction": "You'll get your target when this hits zero.",
     "targetCardTitle": "Your target",
     "frameButtonPlaceholder": "Frame (coming soon)",
-    "errorTargetLoad": "Couldn't load your target. Try reopening the app."
+    "errorTargetLoad": "Couldn't load your target. Try reopening the app.",
+    "warningGeofence": "You're outside the play area — go back.",
+    "warningStale": "We're not receiving your location. Check GPS, signal, and battery saver.",
+    "warningDeadline": "You die in $time"
   },
   "scan": {
     "title": "Scan to join",

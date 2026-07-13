@@ -85,6 +85,29 @@ void main() {
       );
     });
 
+    test('decodes an active warning', () {
+      final event = GameEvent.fromBroadcast('warning', {
+        'active': true,
+        'reasons': ['geofence', 'stale'],
+        'hard_deadline': '2026-07-12T20:05:00.000Z',
+      });
+
+      expect(
+        event,
+        GameEvent.warning(
+          active: true,
+          reasons: const ['geofence', 'stale'],
+          hardDeadline: DateTime.parse('2026-07-12T20:05:00.000Z'),
+        ),
+      );
+    });
+
+    test('decodes a cleared warning', () {
+      final event = GameEvent.fromBroadcast('warning', {'active': false});
+
+      expect(event, const GameEvent.warning(active: false));
+    });
+
     test('falls back to unknown for a malformed known event', () {
       final event = GameEvent.fromBroadcast('player_left', {
         'wrong_key': 'oops',

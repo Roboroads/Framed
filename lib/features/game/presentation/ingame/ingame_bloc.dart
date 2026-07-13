@@ -16,7 +16,9 @@ class IngameBloc extends Cubit<IngameState> {
     required DateTime initialEndsAt,
   }) : _crypto = crypto,
        _repository = repository,
-       super(IngameState.dispersing(endsAt: initialEndsAt)) {
+       super(
+         IngameState(phase: IngamePhase.dispersing(endsAt: initialEndsAt)),
+       ) {
     _subscription = events.listen(_onEvent);
   }
 
@@ -30,6 +32,10 @@ class IngameBloc extends Cubit<IngameState> {
   int _targetGeneration = 0;
 
   Future<void> _onEvent(GameEvent event) async {
+    if (event is Warning) {
+      _onWarning(event);
+      return;
+    }
     if (event is! TargetAssigned) return;
     final generation = ++_targetGeneration;
 
@@ -41,18 +47,35 @@ class IngameBloc extends Cubit<IngameState> {
       final selfieBytes = await _crypto.decryptBytes(encryptedSelfie);
       if (isClosed || generation != _targetGeneration) return;
       emit(
-        IngameState.playing(
-          target: Target(
-            playerId: event.targetId,
-            name: name,
-            selfieBytes: selfieBytes,
+        state.copyWith(
+          phase: IngamePhase.playing(
+            target: Target(
+              playerId: event.targetId,
+              name: name,
+              selfieBytes: selfieBytes,
+            ),
           ),
         ),
       );
     } catch (_) {
       if (isClosed || generation != _targetGeneration) return;
-      emit(const IngameState.targetLoadFailed());
+      emit(state.copyWith(phase: const IngamePhase.targetLoadFailed()));
     }
+  }
+
+  // No local logic decides when a warning starts or stops — this just
+  // mirrors the server's `warning` event onto the state.
+  void _onWarning(Warning event) {
+    emit(
+      state.copyWith(
+        warning: event.active
+            ? IngameWarning(
+                reasons: event.reasons,
+                hardDeadline: event.hardDeadline!,
+              )
+            : null,
+      ),
+    );
   }
 
   @override
