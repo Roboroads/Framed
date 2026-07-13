@@ -28,7 +28,7 @@
     "title": "Good to know",
     "fairPlayTitle": "Play fair",
     "privacyTitle": "Your privacy",
-    "privacyBody": "No analytics, no ads, no accounts — nobody's tracking you. Your name, selfie, frame photos, and dead chat are encrypted on your phone before they're ever sent, with a key generated on the host's device and shared only through the join QR code — it never reaches the server. Location is the one exception: the server reads it in plain text because it has to, to enforce the play area, drive the compass, and check who's died. Only your last-known location is ever stored, never a movement trail. Everything is deleted when the game ends, or after 24 hours, whichever comes first.",
+    "privacyBody": "No analytics, no ads, no accounts — nobody's tracking you. Your name, selfie, frame photos, and dead chat are encrypted on your phone before they're ever sent, with a key generated on the host's device and shared only through the join QR code — it never reaches the server. Location is the one exception: the server reads it in plain text because it has to, to enforce the play area, drive the compass, and check who's died, and only ever your last-known position, never a movement trail.",
     "moneyTitle": "How we make money",
     "moneyBody": "Right now, nothing — there's no monetization. The server this game runs on is self-hosted and paid for out of pocket, for the love of the game.",
     "aiTitle": "About this app",
