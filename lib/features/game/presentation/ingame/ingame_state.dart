@@ -91,6 +91,19 @@ sealed class IngameJudgingEntry with _$IngameJudgingEntry {
   }) = _IngameJudgingEntry;
 }
 
+/// One decrypted dead-chat message (#24), history or live, ready to render
+/// — [senderName] is already resolved from the roster.
+@freezed
+sealed class IngameChatMessage with _$IngameChatMessage {
+  const factory IngameChatMessage({
+    required String id,
+    required String senderId,
+    required String senderName,
+    required String text,
+    required DateTime createdAt,
+  }) = _IngameChatMessage;
+}
+
 @freezed
 sealed class IngameState with _$IngameState {
   const factory IngameState({
@@ -106,5 +119,8 @@ sealed class IngameState with _$IngameState {
     // Oldest first (#22) — only the front is ever shown or loaded; queued
     // behind it just means another assassin's frame is already pending.
     @Default([]) List<IngameJudgingEntry> judgingQueue,
+    // Oldest first (#24), history + live merged. Only populated once this
+    // player is dead — see IngameBloc._startDeadChat.
+    @Default([]) List<IngameChatMessage> deadChat,
   }) = _IngameState;
 }

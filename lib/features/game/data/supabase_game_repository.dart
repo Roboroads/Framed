@@ -89,4 +89,46 @@ class SupabaseGameRepository implements GameRepository {
     );
     return (gameStatus, event);
   }
+
+  @override
+  Future<Map<String, String>> getRoster(String gameId) async {
+    final rows = await _client
+        .from('players')
+        .select('id, name_ciphertext')
+        .eq('game_id', gameId);
+    return {
+      for (final row in rows)
+        row['id'] as String: row['name_ciphertext'] as String,
+    };
+  }
+
+  @override
+  Future<List<ChatMessageEvent>> fetchChatHistory(String gameId) async {
+    final rows = await _client
+        .from('chat_messages')
+        .select('id, sender_id, ciphertext, created_at')
+        .eq('game_id', gameId)
+        .order('created_at');
+    return [
+      for (final row in rows)
+        ChatMessageEvent(
+          messageId: row['id'] as String,
+          senderId: row['sender_id'] as String,
+          ciphertext: row['ciphertext'] as String,
+          createdAt: DateTime.parse(row['created_at'] as String),
+        ),
+    ];
+  }
+
+  @override
+  Future<String> sendChat({
+    required String gameId,
+    required String ciphertext,
+  }) async {
+    return await _client.rpc(
+          'send_chat',
+          params: {'p_game_id': gameId, 'p_ciphertext': ciphertext},
+        )
+        as String;
+  }
 }

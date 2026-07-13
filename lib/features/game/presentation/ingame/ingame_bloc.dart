@@ -16,7 +16,12 @@ class IngameBloc extends Cubit<IngameState> {
     required Stream<GameEvent> events,
     required GameCrypto crypto,
     required GameRepository repository,
+    // game:{game_id}:dead (#24) — unlike [events], not joined until this
+    // player actually dies (RLS refuses the subscribe before then; see
+    // _startDeadChat), same lazy-join-on-listen behaviour as GameChannels.
+    required Stream<GameEvent> deadChatEvents,
     required String gameId,
+    required String myPlayerId,
     required DateTime initialEndsAt,
     // ponytail: no target_location_ended event exists (#13/#18) — the
     // panel expires after this long without a fresh tick instead. Two
@@ -26,7 +31,9 @@ class IngameBloc extends Cubit<IngameState> {
     Duration targetLocationTimeout = const Duration(seconds: 70),
   }) : _crypto = crypto,
        _repository = repository,
+       _deadChatEvents = deadChatEvents,
        _gameId = gameId,
+       _myPlayerId = myPlayerId,
        _targetLocationTimeout = targetLocationTimeout,
        super(
          IngameState(phase: IngamePhase.dispersing(endsAt: initialEndsAt)),
@@ -45,10 +52,21 @@ class IngameBloc extends Cubit<IngameState> {
 
   final GameCrypto _crypto;
   final GameRepository _repository;
+  final Stream<GameEvent> _deadChatEvents;
   final String _gameId;
+  final String _myPlayerId;
   final Duration _targetLocationTimeout;
   late final StreamSubscription<GameEvent> _subscription;
   Timer? _cooldownTimer;
+
+  // Set once, the first time this player dies (_startDeadChat) — null
+  // guards against double-subscribing, since both the live you_died path
+  // and the catch-up path can reach death.
+  StreamSubscription<GameEvent>? _chatSubscription;
+  // id -> decrypted display name, built once from the roster (#24). A
+  // sender not found here (roster fetch failed, or hasn't loaded yet)
+  // falls back to their raw id rather than blocking the message.
+  final Map<String, String> _resolvedNames = {};
 
   // Only the queue's front entry is ever loading — set to its frameId so a
   // completion that lands after that entry stopped being the front (voted,
@@ -201,6 +219,97 @@ class IngameBloc extends Cubit<IngameState> {
         ),
       ),
     );
+    unawaited(_startDeadChat());
+  }
+
+  // Dead chat (#24): joins game:{game_id}:dead (only possible now that this
+  // player is actually dead — RLS refuses the subscribe otherwise), then
+  // loads the roster and history. The live subscription starts first so no
+  // message sent between "died" and "history loaded" is missed.
+  Future<void> _startDeadChat() async {
+    if (_chatSubscription != null) return;
+    _chatSubscription = _deadChatEvents.listen(_onChatEvent);
+    try {
+      final roster = await _repository.getRoster(_gameId);
+      for (final entry in roster.entries) {
+        try {
+          _resolvedNames[entry.key] = await _crypto.decryptString(entry.value);
+        } catch (_) {
+          // That one sender's messages fall back to their raw id below.
+        }
+      }
+      final history = await _repository.fetchChatHistory(_gameId);
+      final messages = [
+        for (final row in history) await _decryptChatMessage(row),
+      ];
+      if (!isClosed) emit(state.copyWith(deadChat: messages));
+    } catch (_) {
+      // The live subscription above still works even if history/roster
+      // failed to load — chat from here on just starts with an empty list.
+    }
+  }
+
+  void _onChatEvent(GameEvent event) {
+    if (event is! ChatMessageEvent) return;
+    unawaited(_appendChatMessage(event));
+  }
+
+  Future<void> _appendChatMessage(ChatMessageEvent event) async {
+    if (state.deadChat.any((m) => m.id == event.messageId)) return;
+    final message = await _decryptChatMessage(event);
+    if (isClosed) return;
+    // Re-check after the await — the optimistic echo in sendChatMessage
+    // (or another concurrent append) may have landed while this decrypted.
+    if (state.deadChat.any((m) => m.id == message.id)) return;
+    emit(state.copyWith(deadChat: [...state.deadChat, message]));
+  }
+
+  Future<IngameChatMessage> _decryptChatMessage(ChatMessageEvent event) async {
+    String text;
+    try {
+      text = await _crypto.decryptString(event.ciphertext);
+    } catch (_) {
+      text = '';
+    }
+    return IngameChatMessage(
+      id: event.messageId,
+      senderId: event.senderId,
+      senderName: _resolvedNames[event.senderId] ?? event.senderId,
+      text: text,
+      createdAt: event.createdAt,
+    );
+  }
+
+  // Optimistic append: the message is on screen before its own broadcast
+  // echoes back over game:{game_id}:dead. _appendChatMessage's id dedupe
+  // discards that echo when it arrives.
+  Future<void> sendChatMessage(String text) async {
+    final trimmed = text.trim();
+    if (trimmed.isEmpty) return;
+    try {
+      final ciphertext = await _crypto.encryptString(trimmed);
+      final id = await _repository.sendChat(
+        gameId: _gameId,
+        ciphertext: ciphertext,
+      );
+      if (isClosed || state.deadChat.any((m) => m.id == id)) return;
+      emit(
+        state.copyWith(
+          deadChat: [
+            ...state.deadChat,
+            IngameChatMessage(
+              id: id,
+              senderId: _myPlayerId,
+              senderName: _resolvedNames[_myPlayerId] ?? _myPlayerId,
+              text: trimmed,
+              createdAt: DateTime.now(),
+            ),
+          ],
+        ),
+      );
+    } catch (_) {
+      // Nothing to reconcile — the composer just keeps the user's draft.
+    }
   }
 
   // No local logic decides when a warning starts or stops — this just
@@ -432,6 +541,7 @@ class IngameBloc extends Cubit<IngameState> {
   @override
   Future<void> close() {
     _subscription.cancel();
+    _chatSubscription?.cancel();
     _compassTimer?.cancel();
     _targetLocationTimer?.cancel();
     _cooldownTimer?.cancel();

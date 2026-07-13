@@ -112,6 +112,17 @@ sealed class GameEvent with _$GameEvent {
     required List<dynamic> killChain,
   }) = GameFinished;
 
+  /// game:{game_id}:dead — a dead player sent a chat message (#24). Also
+  /// reused (like [GameEvent.fromBroadcast] itself) to shape
+  /// GameRepository.fetchChatHistory's REST rows identically to the live
+  /// broadcast.
+  const factory GameEvent.chatMessage({
+    required String messageId,
+    required String senderId,
+    required String ciphertext,
+    required DateTime createdAt,
+  }) = ChatMessageEvent;
+
   /// Fallback for events this app version does not model (yet).
   const factory GameEvent.unknown({
     required String event,
@@ -203,6 +214,13 @@ sealed class GameEvent with _$GameEvent {
             winnerId: payload['winner_id'] as String,
             stats: Map<String, dynamic>.from(payload['stats'] as Map),
             killChain: List<dynamic>.from(payload['kill_chain'] as List),
+          );
+        case 'chat_message':
+          return GameEvent.chatMessage(
+            messageId: payload['message_id'] as String,
+            senderId: payload['sender_id'] as String,
+            ciphertext: payload['ciphertext'] as String,
+            createdAt: DateTime.parse(payload['created_at'] as String),
           );
         default:
           return GameEvent.unknown(event: event, payload: payload);

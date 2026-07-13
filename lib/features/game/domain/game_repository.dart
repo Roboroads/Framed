@@ -53,4 +53,17 @@ abstract interface class GameRepository {
   /// the routing signal a cold-start resume needs before it even knows
   /// whether to land on the lobby or the ingame screen.
   Future<(String gameStatus, GameEvent? event)> getMyState(String gameId);
+
+  /// This game's roster as id → `name_ciphertext` (#24) — dead chat resolves
+  /// sender names from it, decrypting with the game key it already has.
+  Future<Map<String, String>> getRoster(String gameId);
+
+  /// Dead chat history, oldest first (`chat_dead_select`, #3/#4) — shaped
+  /// as [GameEvent.chatMessage] so it decodes through the same path as the
+  /// live `game:{game_id}:dead` broadcast.
+  Future<List<ChatMessageEvent>> fetchChatHistory(String gameId);
+
+  /// `send_chat(game_id, ciphertext)` (#24) — dead players only, enforced
+  /// server-side. Returns the new message's id.
+  Future<String> sendChat({required String gameId, required String ciphertext});
 }

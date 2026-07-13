@@ -122,7 +122,10 @@
     "deadTitleMia": "MIA",
     "deadCauseMia": "You broke a game rule for too long.",
     "deadKilledBy": "Killed by $name",
-    "deadSurvivedFor": "Survived $time"
+    "deadSurvivedFor": "Survived $time",
+    "deadChatEmpty": "No one's said anything yet.",
+    "deadChatHint": "Message the dead",
+    "deadChatSendButton": "Send"
   },
   "scan": {
     "title": "Scan to join",

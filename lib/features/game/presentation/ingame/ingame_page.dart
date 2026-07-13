@@ -60,7 +60,9 @@ class _IngamePageState extends State<IngamePage> {
       events: playerEvents,
       crypto: session.crypto,
       repository: repository,
+      deadChatEvents: channels.deadChat(session.gameId),
       gameId: session.gameId,
+      myPlayerId: session.playerId,
       initialEndsAt: widget.initialEndsAt,
     );
     _locationService = LocationService(
@@ -146,6 +148,7 @@ class _IngameView extends StatelessWidget {
                       killerName: killerName,
                       survivedSeconds: survivedSeconds,
                       photoBytes: photoBytes,
+                      chat: state.deadChat,
                     ),
                 },
                 if (state.warning case final warning?)
@@ -176,62 +179,144 @@ class _IngameView extends StatelessWidget {
   }
 }
 
-/// How you died, how long you survived, the photo that framed you, and who
-/// your assassin was (#23, IDEA.md "Screens" — death screen). Dead chat
-/// (#24) is a separate panel this screen doesn't own yet.
-class _DeadScreen extends StatelessWidget {
+/// How you died, how long you survived, the photo that framed you, who your
+/// assassin was (#23), and the dead chat everyone out of the game shares
+/// (#24, IDEA.md "Screens" — death screen).
+class _DeadScreen extends StatefulWidget {
   const _DeadScreen({
     required this.cause,
     required this.killerName,
     required this.survivedSeconds,
     required this.photoBytes,
+    required this.chat,
   });
 
   final String cause;
   final String? killerName;
   final int survivedSeconds;
   final Uint8List? photoBytes;
+  final List<IngameChatMessage> chat;
+
+  @override
+  State<_DeadScreen> createState() => _DeadScreenState();
+}
+
+class _DeadScreenState extends State<_DeadScreen> {
+  final _composer = TextEditingController();
+
+  @override
+  void dispose() {
+    _composer.dispose();
+    super.dispose();
+  }
+
+  void _send() {
+    final text = _composer.text;
+    if (text.trim().isEmpty) return;
+    context.read<IngameBloc>().sendChatMessage(text);
+    _composer.clear();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (photoBytes != null)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: AspectRatio(
-                    aspectRatio: 3 / 4,
-                    child: Image.memory(photoBytes!, fit: BoxFit.cover),
+    final myPlayerId = getIt<GameSession>().playerId;
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (widget.photoBytes != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: AspectRatio(
+                      aspectRatio: 3 / 4,
+                      child: Image.memory(
+                        widget.photoBytes!,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            Text(
-              cause == 'mia' ? t.ingame.deadTitleMia : t.ingame.deadTitleFramed,
-              style: Theme.of(context).textTheme.headlineMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            if (cause == 'mia')
-              Text(t.ingame.deadCauseMia, textAlign: TextAlign.center)
-            else if (killerName != null)
               Text(
-                t.ingame.deadKilledBy(name: killerName!),
+                widget.cause == 'mia'
+                    ? t.ingame.deadTitleMia
+                    : t.ingame.deadTitleFramed,
+                style: Theme.of(context).textTheme.headlineMedium,
                 textAlign: TextAlign.center,
               ),
-            const SizedBox(height: 8),
-            Text(
-              t.ingame.deadSurvivedFor(time: _formatSurvived(survivedSeconds)),
-              textAlign: TextAlign.center,
-            ),
-          ],
+              const SizedBox(height: 16),
+              if (widget.cause == 'mia')
+                Text(t.ingame.deadCauseMia, textAlign: TextAlign.center)
+              else if (widget.killerName != null)
+                Text(
+                  t.ingame.deadKilledBy(name: widget.killerName!),
+                  textAlign: TextAlign.center,
+                ),
+              const SizedBox(height: 8),
+              Text(
+                t.ingame.deadSurvivedFor(
+                  time: _formatSurvived(widget.survivedSeconds),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
-      ),
+        const Divider(height: 1),
+        Expanded(
+          child: widget.chat.isEmpty
+              ? Center(
+                  child: Text(
+                    t.ingame.deadChatEmpty,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                )
+              : ListView.builder(
+                  reverse: true,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  itemCount: widget.chat.length,
+                  itemBuilder: (context, i) {
+                    final message = widget.chat[widget.chat.length - 1 - i];
+                    return _ChatBubble(
+                      message: message,
+                      isMine: message.senderId == myPlayerId,
+                    );
+                  },
+                ),
+        ),
+        SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _composer,
+                    decoration: InputDecoration(
+                      hintText: t.ingame.deadChatHint,
+                    ),
+                    textInputAction: TextInputAction.send,
+                    onSubmitted: (_) => _send(),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.send),
+                  onPressed: _send,
+                  tooltip: t.ingame.deadChatSendButton,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -241,6 +326,46 @@ class _DeadScreen extends StatelessWidget {
     final minutes = duration.inMinutes.remainder(60);
     if (hours > 0) return '${hours}h ${minutes}m';
     return '${minutes}m';
+  }
+}
+
+class _ChatBubble extends StatelessWidget {
+  const _ChatBubble({required this.message, required this.isMine});
+
+  final IngameChatMessage message;
+  final bool isMine;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Align(
+      alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.75,
+        ),
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: isMine
+              ? scheme.primaryContainer
+              : scheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (!isMine)
+              Text(
+                message.senderName,
+                style: Theme.of(context).textTheme.labelSmall,
+              ),
+            Text(message.text),
+          ],
+        ),
+      ),
+    );
   }
 }
 

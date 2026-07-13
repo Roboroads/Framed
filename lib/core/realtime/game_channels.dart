@@ -20,6 +20,10 @@ class GameChannels {
   /// player:{player_id} — events for one player only.
   Stream<GameEvent> player(String playerId) => _topic('player:$playerId');
 
+  /// game:{game_id}:dead — dead chat (#24). Only joinable once this player
+  /// is dead — RLS on realtime.messages refuses the subscribe otherwise.
+  Stream<GameEvent> deadChat(String gameId) => _topic('game:$gameId:dead');
+
   Stream<GameEvent> _topic(String topic) {
     final controller = StreamController<GameEvent>();
     RealtimeChannel? channel;

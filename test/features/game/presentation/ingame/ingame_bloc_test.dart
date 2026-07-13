@@ -96,6 +96,36 @@ class _FakeGameRepository implements GameRepository {
     if (myStateFailure != null) throw myStateFailure!;
     return Future.value((myGameStatus, myState));
   }
+
+  Map<String, String> roster = {};
+  Object? rosterFailure;
+  List<ChatMessageEvent> chatHistory = [];
+  Object? chatHistoryFailure;
+  Object? sendChatFailure;
+  String nextSendChatId = 'msg-1';
+  final sentChatCiphertexts = <String>[];
+
+  @override
+  Future<Map<String, String>> getRoster(String gameId) async {
+    if (rosterFailure != null) throw rosterFailure!;
+    return roster;
+  }
+
+  @override
+  Future<List<ChatMessageEvent>> fetchChatHistory(String gameId) async {
+    if (chatHistoryFailure != null) throw chatHistoryFailure!;
+    return chatHistory;
+  }
+
+  @override
+  Future<String> sendChat({
+    required String gameId,
+    required String ciphertext,
+  }) async {
+    if (sendChatFailure != null) throw sendChatFailure!;
+    sentChatCiphertexts.add(ciphertext);
+    return nextSendChatId;
+  }
 }
 
 void main() {
@@ -120,6 +150,8 @@ void main() {
         crypto: crypto,
         repository: repository,
         gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
         initialEndsAt: endsAt,
       );
 
@@ -135,6 +167,8 @@ void main() {
         crypto: crypto,
         repository: repository,
         gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
         initialEndsAt: endsAt,
       );
       final selfieBytes = Uint8List.fromList([1, 2, 3, 4]);
@@ -166,6 +200,8 @@ void main() {
           crypto: crypto,
           repository: repository,
           gameId: 'game-1',
+          myPlayerId: 'player-me',
+          deadChatEvents: const Stream<GameEvent>.empty(),
           initialEndsAt: endsAt,
         );
         repository.failure = Exception('storage unavailable');
@@ -195,6 +231,8 @@ void main() {
           crypto: crypto,
           repository: repository,
           gameId: 'game-1',
+          myPlayerId: 'player-me',
+          deadChatEvents: const Stream<GameEvent>.empty(),
           initialEndsAt: endsAt,
         );
         repository.controlled = true;
@@ -251,6 +289,8 @@ void main() {
           crypto: crypto,
           repository: repository,
           gameId: 'game-1',
+          myPlayerId: 'player-me',
+          deadChatEvents: const Stream<GameEvent>.empty(),
           initialEndsAt: endsAt,
         );
         await Future<void>.delayed(Duration.zero);
@@ -273,6 +313,8 @@ void main() {
         crypto: crypto,
         repository: repository,
         gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
         initialEndsAt: endsAt,
       );
       events.add(
@@ -309,6 +351,8 @@ void main() {
         crypto: crypto,
         repository: repository,
         gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
         initialEndsAt: endsAt,
       );
 
@@ -338,6 +382,8 @@ void main() {
         crypto: crypto,
         repository: repository,
         gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
         initialEndsAt: endsAt,
       );
       final original = Uint8List.fromList(List.generate(20, (i) => i));
@@ -365,6 +411,8 @@ void main() {
         crypto: crypto,
         repository: repository,
         gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
         initialEndsAt: endsAt,
       );
 
@@ -390,6 +438,8 @@ void main() {
           crypto: crypto,
           repository: repository,
           gameId: 'game-1',
+          myPlayerId: 'player-me',
+          deadChatEvents: const Stream<GameEvent>.empty(),
           initialEndsAt: endsAt,
         );
         await Future<void>.delayed(Duration.zero);
@@ -417,6 +467,8 @@ void main() {
           crypto: crypto,
           repository: repository,
           gameId: 'game-1',
+          myPlayerId: 'player-me',
+          deadChatEvents: const Stream<GameEvent>.empty(),
           initialEndsAt: endsAt,
         );
         await Future<void>.delayed(Duration.zero);
@@ -434,6 +486,8 @@ void main() {
         crypto: crypto,
         repository: repository,
         gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
         initialEndsAt: endsAt,
       );
       await Future<void>.delayed(Duration.zero);
@@ -451,6 +505,8 @@ void main() {
         crypto: crypto,
         repository: repository,
         gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
         initialEndsAt: endsAt,
       );
 
@@ -469,6 +525,8 @@ void main() {
         crypto: crypto,
         repository: repository,
         gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
         initialEndsAt: endsAt,
       );
       final deadline = DateTime.utc(2026, 1, 1, 12, 5);
@@ -496,6 +554,8 @@ void main() {
         crypto: crypto,
         repository: repository,
         gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
         initialEndsAt: endsAt,
       );
 
@@ -521,6 +581,8 @@ void main() {
         crypto: crypto,
         repository: repository,
         gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
         initialEndsAt: endsAt,
       );
 
@@ -538,6 +600,8 @@ void main() {
         crypto: crypto,
         repository: repository,
         gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
         initialEndsAt: endsAt,
       );
 
@@ -557,6 +621,8 @@ void main() {
         crypto: crypto,
         repository: repository,
         gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
         initialEndsAt: endsAt,
       );
 
@@ -584,6 +650,8 @@ void main() {
         crypto: crypto,
         repository: repository,
         gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
         initialEndsAt: endsAt,
       );
 
@@ -607,6 +675,8 @@ void main() {
           crypto: crypto,
           repository: repository,
           gameId: 'game-1',
+          myPlayerId: 'player-me',
+          deadChatEvents: const Stream<GameEvent>.empty(),
           initialEndsAt: endsAt,
         );
 
@@ -641,6 +711,8 @@ void main() {
           crypto: crypto,
           repository: repository,
           gameId: 'game-1',
+          myPlayerId: 'player-me',
+          deadChatEvents: const Stream<GameEvent>.empty(),
           initialEndsAt: endsAt,
           targetLocationTimeout: const Duration(milliseconds: 50),
         );
@@ -669,6 +741,8 @@ void main() {
           crypto: crypto,
           repository: repository,
           gameId: 'game-1',
+          myPlayerId: 'player-me',
+          deadChatEvents: const Stream<GameEvent>.empty(),
           initialEndsAt: endsAt,
           targetLocationTimeout: const Duration(milliseconds: 30),
         );
@@ -688,6 +762,8 @@ void main() {
         crypto: crypto,
         repository: repository,
         gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
         initialEndsAt: endsAt,
         targetLocationTimeout: const Duration(milliseconds: 50),
       );
@@ -712,6 +788,8 @@ void main() {
         crypto: crypto,
         repository: repository,
         gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
         initialEndsAt: endsAt,
       );
 
@@ -724,6 +802,8 @@ void main() {
         crypto: crypto,
         repository: repository,
         gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
         initialEndsAt: endsAt,
       );
 
@@ -747,6 +827,8 @@ void main() {
         crypto: crypto,
         repository: repository,
         gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
         initialEndsAt: endsAt,
       );
       repository.frameFailure = PostgrestException(message: 'on_cooldown');
@@ -766,6 +848,8 @@ void main() {
         crypto: crypto,
         repository: repository,
         gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
         initialEndsAt: endsAt,
       );
       await bloc.submitFrame(
@@ -790,6 +874,8 @@ void main() {
         crypto: crypto,
         repository: repository,
         gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
         initialEndsAt: endsAt,
       );
       await bloc.submitFrame(
@@ -811,6 +897,8 @@ void main() {
           crypto: crypto,
           repository: repository,
           gameId: 'game-1',
+          myPlayerId: 'player-me',
+          deadChatEvents: const Stream<GameEvent>.empty(),
           initialEndsAt: endsAt,
         );
         await bloc.submitFrame(
@@ -838,6 +926,8 @@ void main() {
         crypto: crypto,
         repository: repository,
         gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
         initialEndsAt: endsAt,
       );
       final photoBytes = Uint8List.fromList([9, 9, 9]);
@@ -870,6 +960,8 @@ void main() {
         crypto: crypto,
         repository: repository,
         gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
         initialEndsAt: endsAt,
       );
       repository.controlled = true;
@@ -909,6 +1001,8 @@ void main() {
         crypto: crypto,
         repository: repository,
         gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
         initialEndsAt: endsAt,
       );
       repository.framePhotoBytes = await crypto.encryptBytes(
@@ -955,6 +1049,8 @@ void main() {
         crypto: crypto,
         repository: repository,
         gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
         initialEndsAt: endsAt,
       );
       repository.framePhotoBytes = await crypto.encryptBytes(
@@ -989,6 +1085,8 @@ void main() {
           crypto: crypto,
           repository: repository,
           gameId: 'game-1',
+          myPlayerId: 'player-me',
+          deadChatEvents: const Stream<GameEvent>.empty(),
           initialEndsAt: endsAt,
         );
         repository.framePhotoFailure = Exception('offline');
@@ -1022,5 +1120,80 @@ void main() {
         expect(bloc.state.judgingQueue.first.loaded, isNotNull);
       },
     );
+
+    test('dead chat: history loads decrypted, live merges in order, '
+        'the optimistic echo of a sent message dedupes', () async {
+      final deadChatEvents = StreamController<GameEvent>();
+      addTearDown(deadChatEvents.close);
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: deadChatEvents.stream,
+        initialEndsAt: endsAt,
+      );
+
+      repository.roster = {
+        'player-me': await crypto.encryptString('Me'),
+        'player-other': await crypto.encryptString('Other'),
+      };
+      repository.chatHistory = [
+        ChatMessageEvent(
+          messageId: 'hist-1',
+          senderId: 'player-other',
+          ciphertext: await crypto.encryptString('hello from history'),
+          createdAt: DateTime.utc(2026, 1, 1, 11),
+        ),
+      ];
+
+      events.add(const GameEvent.youDied(cause: 'mia', survivedSeconds: 42));
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.deadChat, hasLength(1));
+      expect(bloc.state.deadChat.first.text, 'hello from history');
+      expect(bloc.state.deadChat.first.senderName, 'Other');
+
+      repository.nextSendChatId = 'msg-optimistic';
+      await bloc.sendChatMessage('hi there');
+      expect(bloc.state.deadChat, hasLength(2));
+      expect(bloc.state.deadChat.last.text, 'hi there');
+      expect(bloc.state.deadChat.last.senderName, 'Me');
+
+      // The live echo of that same send arrives — deduped by message id.
+      deadChatEvents.add(
+        ChatMessageEvent(
+          messageId: 'msg-optimistic',
+          senderId: 'player-me',
+          ciphertext: repository.sentChatCiphertexts.last,
+          createdAt: DateTime.now(),
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+      expect(bloc.state.deadChat, hasLength(2));
+
+      // A genuinely new message from someone else still appends.
+      deadChatEvents.add(
+        ChatMessageEvent(
+          messageId: 'live-1',
+          senderId: 'player-other',
+          ciphertext: await crypto.encryptString('reply'),
+          createdAt: DateTime.now(),
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.deadChat, hasLength(3));
+      expect(bloc.state.deadChat.map((m) => m.id), [
+        'hist-1',
+        'msg-optimistic',
+        'live-1',
+      ]);
+    });
   });
 }

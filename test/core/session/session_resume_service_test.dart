@@ -65,6 +65,20 @@ class _FakeGameRepository implements GameRepository {
   @override
   Future<void> castVote({required String frameId, required bool vote}) =>
       throw UnimplementedError();
+
+  @override
+  Future<Map<String, String>> getRoster(String gameId) =>
+      throw UnimplementedError();
+
+  @override
+  Future<List<ChatMessageEvent>> fetchChatHistory(String gameId) =>
+      throw UnimplementedError();
+
+  @override
+  Future<String> sendChat({
+    required String gameId,
+    required String ciphertext,
+  }) => throw UnimplementedError();
 }
 
 void main() {
