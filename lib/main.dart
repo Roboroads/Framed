@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:mcp_toolkit/mcp_toolkit.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -14,23 +12,12 @@ import 'i18n/strings.g.dart';
 // so a failure always reaches the retry screen below instead of hanging.
 const _bootstrapTimeout = Duration(seconds: 15);
 
-void main() => runWithMcpToolkit(_bootstrap);
-
-/// Runs [body] inside a zone guarded by MCPToolkitBinding — the bindings
-/// this file and the debug-only lib/main_driver.dart both need before
-/// their own entrypoint logic.
-void runWithMcpToolkit(FutureOr<void> Function() body) {
-  runZonedGuarded(
-    () async {
-      WidgetsFlutterBinding.ensureInitialized();
-      MCPToolkitBinding.instance
-        ..initialize()
-        ..initializeFlutterToolkit();
-      await body();
-    },
-    (error, stack) => MCPToolkitBinding.instance.handleZoneError(error, stack),
-  );
-}
+// bootstrapFlutter() is mcp_toolkit's own entrypoint — unlike calling
+// initialize() directly, its debug-only gate is a real kReleaseMode check,
+// not just an assert() that happens to get stripped in release. It also
+// covers WidgetsFlutterBinding.ensureInitialized() and the zone-guarded
+// error forwarding this file used to set up by hand.
+void main() => MCPToolkitBinding.instance.bootstrapFlutter(runApp: _bootstrap);
 
 Future<void> _bootstrap() async {
   try {
