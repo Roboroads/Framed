@@ -43,6 +43,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$app$en app = Translations$app$en._(_root);
 	late final Translations$bootstrap$en bootstrap = Translations$bootstrap$en._(_root);
 	late final Translations$home$en home = Translations$home$en._(_root);
+	late final Translations$goodToKnow$en goodToKnow = Translations$goodToKnow$en._(_root);
 	late final Translations$hostSetup$en hostSetup = Translations$hostSetup$en._(_root);
 	late final Translations$preJoin$en preJoin = Translations$preJoin$en._(_root);
 	late final Translations$lobby$en lobby = Translations$lobby$en._(_root);
@@ -94,8 +95,50 @@ class Translations$home$en {
 	/// en: 'Host game'
 	String get hostGame => 'Host game';
 
+	/// en: 'Good to know'
+	String get goodToKnowButton => 'Good to know';
+
 	/// en: 'This game trusts the group. We don't detect GPS spoofing or modified clients — just play fair.'
 	String get playFairDisclaimer => 'This game trusts the group. We don\'t detect GPS spoofing or modified clients — just play fair.';
+}
+
+// Path: goodToKnow
+class Translations$goodToKnow$en {
+	Translations$goodToKnow$en._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Good to know'
+	String get title => 'Good to know';
+
+	/// en: 'Play fair'
+	String get fairPlayTitle => 'Play fair';
+
+	/// en: 'Your privacy'
+	String get privacyTitle => 'Your privacy';
+
+	/// en: 'No analytics, no ads, no accounts — nobody's tracking you. Your name, selfie, frame photos, and dead chat are encrypted on your phone before they're ever sent, with a key generated on the host's device and shared only through the join QR code — it never reaches the server. Location is the one exception: the server reads it in plain text because it has to, to enforce the play area, drive the compass, and check who's died. Only your last-known location is ever stored, never a movement trail. Everything is deleted when the game ends, or after 24 hours, whichever comes first.'
+	String get privacyBody => 'No analytics, no ads, no accounts — nobody\'s tracking you. Your name, selfie, frame photos, and dead chat are encrypted on your phone before they\'re ever sent, with a key generated on the host\'s device and shared only through the join QR code — it never reaches the server. Location is the one exception: the server reads it in plain text because it has to, to enforce the play area, drive the compass, and check who\'s died. Only your last-known location is ever stored, never a movement trail. Everything is deleted when the game ends, or after 24 hours, whichever comes first.';
+
+	/// en: 'How we make money'
+	String get moneyTitle => 'How we make money';
+
+	/// en: 'Right now, nothing — there's no monetization. The server this game runs on is self-hosted and paid for out of pocket, for the love of the game.'
+	String get moneyBody => 'Right now, nothing — there\'s no monetization. The server this game runs on is self-hosted and paid for out of pocket, for the love of the game.';
+
+	/// en: 'About this app'
+	String get aiTitle => 'About this app';
+
+	/// en: 'This app is mostly built with AI assistance. It's built by a developer with over 16 years of professional software experience, who has read, reviewed, and been present for every step of the code that ended up here.'
+	String get aiBody => 'This app is mostly built with AI assistance. It\'s built by a developer with over 16 years of professional software experience, who has read, reviewed, and been present for every step of the code that ended up here.';
+
+	/// en: 'New to Framed?'
+	String get beginnerTipsTitle => 'New to Framed?';
+
+	/// en: 'Once the game starts you get a dispersal countdown — nobody can be framed until it ends, so actually spread out. After that, everyone gets a compass pulse on the same schedule: an arrow and distance to your target, refreshed at a fixed interval and gone again after a few seconds — if people around you glance at their phones at the same moment, that's the tell. Stay inside the host's play area: leave it too long and your assassin sees your exact location, stay out or go dark long enough and you die automatically. To make a kill, photograph your target in the app — the other players vote on whether it's really them. A majority yes ends their game; a failed vote costs you a cooldown before you can try again.'
+	String get beginnerTipsBody => 'Once the game starts you get a dispersal countdown — nobody can be framed until it ends, so actually spread out. After that, everyone gets a compass pulse on the same schedule: an arrow and distance to your target, refreshed at a fixed interval and gone again after a few seconds — if people around you glance at their phones at the same moment, that\'s the tell. Stay inside the host\'s play area: leave it too long and your assassin sees your exact location, stay out or go dark long enough and you die automatically. To make a kill, photograph your target in the app — the other players vote on whether it\'s really them. A majority yes ends their game; a failed vote costs you a cooldown before you can try again.';
 }
 
 // Path: hostSetup
@@ -363,7 +406,18 @@ extension on Translations {
 			'bootstrap.retry' => 'Try again',
 			'home.joinGame' => 'Join game',
 			'home.hostGame' => 'Host game',
+			'home.goodToKnowButton' => 'Good to know',
 			'home.playFairDisclaimer' => 'This game trusts the group. We don\'t detect GPS spoofing or modified clients — just play fair.',
+			'goodToKnow.title' => 'Good to know',
+			'goodToKnow.fairPlayTitle' => 'Play fair',
+			'goodToKnow.privacyTitle' => 'Your privacy',
+			'goodToKnow.privacyBody' => 'No analytics, no ads, no accounts — nobody\'s tracking you. Your name, selfie, frame photos, and dead chat are encrypted on your phone before they\'re ever sent, with a key generated on the host\'s device and shared only through the join QR code — it never reaches the server. Location is the one exception: the server reads it in plain text because it has to, to enforce the play area, drive the compass, and check who\'s died. Only your last-known location is ever stored, never a movement trail. Everything is deleted when the game ends, or after 24 hours, whichever comes first.',
+			'goodToKnow.moneyTitle' => 'How we make money',
+			'goodToKnow.moneyBody' => 'Right now, nothing — there\'s no monetization. The server this game runs on is self-hosted and paid for out of pocket, for the love of the game.',
+			'goodToKnow.aiTitle' => 'About this app',
+			'goodToKnow.aiBody' => 'This app is mostly built with AI assistance. It\'s built by a developer with over 16 years of professional software experience, who has read, reviewed, and been present for every step of the code that ended up here.',
+			'goodToKnow.beginnerTipsTitle' => 'New to Framed?',
+			'goodToKnow.beginnerTipsBody' => 'Once the game starts you get a dispersal countdown — nobody can be framed until it ends, so actually spread out. After that, everyone gets a compass pulse on the same schedule: an arrow and distance to your target, refreshed at a fixed interval and gone again after a few seconds — if people around you glance at their phones at the same moment, that\'s the tell. Stay inside the host\'s play area: leave it too long and your assassin sees your exact location, stay out or go dark long enough and you die automatically. To make a kill, photograph your target in the app — the other players vote on whether it\'s really them. A majority yes ends their game; a failed vote costs you a cooldown before you can try again.',
 			'hostSetup.title' => 'Host a game',
 			'hostSetup.modeSectionTitle' => 'Game mode',
 			'hostSetup.modeMostFrames' => 'Most frames wins',
