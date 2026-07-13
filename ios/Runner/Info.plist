@@ -26,6 +26,10 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Framed uses your location to point a compass arrow at your target and to enforce the play area the host set.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Framed needs your camera for your reference selfie and for the frame photos judges compare it against to confirm a kill.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
