@@ -9,7 +9,10 @@
 --
 -- Step functions read the games row passed in from game_tick()'s per-tick
 -- snapshot; a step that changes fields a later step in the SAME tick
--- depends on must re-select before reading them (none do yet).
+-- depends on must re-select before reading them. tick_pulses reading a
+-- stale status/next_pulse_at right after tick_end_dispersal activates the
+-- game is the one exception: it just costs the first pulse one extra tick
+-- (~30s) against a multi-minute interval, so it's left alone.
 
 create extension if not exists pg_cron with schema cron;
 
@@ -83,8 +86,8 @@ begin
   for g in select * from public.games where status <> 'finished' for update skip locked loop
     perform public.tick_end_dispersal(g);
     perform public.tick_punishments(g);
-    -- later steps: tick_pulses(g), tick_vote_timeouts(g), tick_win_check(g),
-    -- tick_cleanup(g)
+    perform public.tick_pulses(g);
+    -- later steps: tick_vote_timeouts(g), tick_win_check(g), tick_cleanup(g)
   end loop;
 end $$;
 
