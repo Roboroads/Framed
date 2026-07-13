@@ -2,6 +2,10 @@
   "app": {
     "title": "Framed"
   },
+  "bootstrap": {
+    "errorGeneric": "Couldn't reach the server. Check your connection and try again.",
+    "retry": "Try again"
+  },
   "home": {
     "joinGame": "Join game",
     "hostGame": "Host game",

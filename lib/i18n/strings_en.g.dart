@@ -41,6 +41,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 
 	// Translations
 	late final Translations$app$en app = Translations$app$en._(_root);
+	late final Translations$bootstrap$en bootstrap = Translations$bootstrap$en._(_root);
 	late final Translations$home$en home = Translations$home$en._(_root);
 	late final Translations$hostSetup$en hostSetup = Translations$hostSetup$en._(_root);
 	late final Translations$preJoin$en preJoin = Translations$preJoin$en._(_root);
@@ -61,6 +62,21 @@ class Translations$app$en {
 
 	/// en: 'Framed'
 	String get title => 'Framed';
+}
+
+// Path: bootstrap
+class Translations$bootstrap$en {
+	Translations$bootstrap$en._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Couldn't reach the server. Check your connection and try again.'
+	String get errorGeneric => 'Couldn\'t reach the server. Check your connection and try again.';
+
+	/// en: 'Try again'
+	String get retry => 'Try again';
 }
 
 // Path: home
@@ -300,6 +316,8 @@ extension on Translations {
 	dynamic _flatMapFunction(String path) {
 		return switch (path) {
 			'app.title' => 'Framed',
+			'bootstrap.errorGeneric' => 'Couldn\'t reach the server. Check your connection and try again.',
+			'bootstrap.retry' => 'Try again',
 			'home.joinGame' => 'Join game',
 			'home.hostGame' => 'Host game',
 			'home.playFairDisclaimer' => 'This game trusts the group. We don\'t detect GPS spoofing or modified clients — just play fair.',
