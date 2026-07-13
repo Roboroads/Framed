@@ -1,0 +1,61 @@
+name: Nightly build
+
+# Builds a signed app bundle from main every night and uploads it to the
+# Play Console internal testing track — an always-fresh build for testers
+# without a manual trigger (issue #33).
+#
+# Needs these repo secrets, none of which exist yet:
+#   ANDROID_KEYSTORE_BASE64   - `base64 -w0 upload-keystore.jks`
+#   ANDROID_KEY_ALIAS
+#   ANDROID_KEY_PASSWORD
+#   ANDROID_STORE_PASSWORD
+#   PLAY_SERVICE_ACCOUNT_JSON - a GCP service account with Release Manager
+#                               access to this app in Play Console
+#   PROD_SUPABASE_URL, PROD_SUPABASE_ANON_KEY - optional; falls back to the
+#                               local dev backend's address, which no real
+#                               device can reach
+# Until they're set this workflow fails at the signing step — same result
+# as not running it, so it's safe to merge ahead of them.
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: dart run slang
+
+      - name: Write release signing config
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/app/upload-keystore.jks
+          cat > android/key.properties <<EOF
+          storePassword=${{ secrets.ANDROID_STORE_PASSWORD }}
+          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
+          storeFile=upload-keystore.jks
+          EOF
+
+      - name: Build signed app bundle
+        run: |
+          flutter build appbundle --release \
+            --build-number=${{ github.run_number }} \
+            --dart-define=SUPABASE_URL=${{ secrets.PROD_SUPABASE_URL || 'http://localhost:8000' }} \
+            --dart-define=SUPABASE_ANON_KEY=${{ secrets.PROD_SUPABASE_ANON_KEY }}
+
+      - name: Upload to Play Console (internal testing)
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: me.roboroads.framed
+          releaseFiles: build/app/outputs/bundle/release/app-release.aab
+          track: internal
+          status: completed

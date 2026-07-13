@@ -1,0 +1,8 @@
+# Release signing (issue #33). Copy to android/key.properties (gitignored)
+# for a local signed release build, or let CI write it from repo secrets
+# (see .github/workflows/nightly.yml and release.yml) — never commit the
+# real file.
+storePassword=changeme
+keyPassword=changeme
+keyAlias=upload
+storeFile=/absolute/path/to/upload-keystore.jks
