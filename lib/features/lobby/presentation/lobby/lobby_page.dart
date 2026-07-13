@@ -6,6 +6,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../../../core/crypto/qr_payload.dart';
 import '../../../../core/di/injector.dart';
+import '../../../../core/location/background_location_gate.dart';
 import '../../../../core/realtime/game_channels.dart';
 import '../../../../core/session/game_session.dart';
 import '../../../../i18n/strings.g.dart';
@@ -66,7 +67,9 @@ class _LobbyView extends StatelessWidget {
           if (endsAt != null) {
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
-                builder: (_) => IngamePage(initialEndsAt: endsAt),
+                builder: (_) => BackgroundLocationGate(
+                  next: (_) => IngamePage(initialEndsAt: endsAt),
+                ),
               ),
             );
           } else if (state.error != null) {

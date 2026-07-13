@@ -3,6 +3,14 @@
          (#12) and the geofence picker both need it. -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- Background location (#14): the game must keep reporting position
+         with the screen locked and the app backgrounded. -->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    <!-- Android 13+ requires this separately, or the foreground-service
+         notification is enqueued but never actually shown. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <application
         android:label="framed"
         android:name="${applicationName}"

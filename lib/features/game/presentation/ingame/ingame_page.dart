@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/injector.dart';
+import '../../../../core/location/location_service.dart';
 import '../../../../core/realtime/game_channels.dart';
 import '../../../../core/session/game_session.dart';
 import '../../../../i18n/strings.g.dart';
@@ -12,24 +13,55 @@ import '../../domain/target.dart';
 import 'ingame_bloc.dart';
 import 'ingame_state.dart';
 
-/// Lands here from the lobby (#10) on `dispersal_started`.
-class IngamePage extends StatelessWidget {
+/// Lands here from the lobby (#10) on `dispersal_started`, behind the
+/// background location gate (#14).
+class IngamePage extends StatefulWidget {
   const IngamePage({required this.initialEndsAt, super.key});
 
   final DateTime initialEndsAt;
 
   @override
-  Widget build(BuildContext context) {
+  State<IngamePage> createState() => _IngamePageState();
+}
+
+class _IngamePageState extends State<IngamePage> {
+  late final IngameBloc _bloc;
+  late final LocationService _locationService;
+
+  @override
+  void initState() {
+    super.initState();
     final session = getIt<GameSession>();
-    return BlocProvider(
-      create: (_) => IngameBloc(
-        events: getIt<GameChannels>().player(session.playerId),
-        crypto: session.crypto,
-        repository: getIt<GameRepository>(),
-        initialEndsAt: initialEndsAt,
-      ),
-      child: const _IngameView(),
+    final channels = getIt<GameChannels>();
+    final repository = getIt<GameRepository>();
+    _bloc = IngameBloc(
+      events: channels.player(session.playerId),
+      crypto: session.crypto,
+      repository: repository,
+      initialEndsAt: widget.initialEndsAt,
     );
+    // ponytail: two separate realtime subscriptions to player:{id} (one
+    // here, one for _bloc's own `events` above) instead of sharing one
+    // broadcast stream — simpler than plumbing a shared broadcast stream
+    // through both consumers' lifecycles. Revisit if channel count matters.
+    _locationService = LocationService(
+      repository: repository,
+      gameId: session.gameId,
+      gameEvents: channels.game(session.gameId),
+      playerEvents: channels.player(session.playerId),
+    )..start();
+  }
+
+  @override
+  void dispose() {
+    _locationService.stop();
+    _bloc.close();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider.value(value: _bloc, child: const _IngameView());
   }
 }
 

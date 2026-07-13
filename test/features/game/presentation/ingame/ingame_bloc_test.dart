@@ -28,6 +28,13 @@ class _FakeGameRepository implements GameRepository {
     }
     return Future.value(selfieBytes);
   }
+
+  @override
+  Future<void> submitLocation({
+    required String gameId,
+    required double lat,
+    required double lng,
+  }) async {}
 }
 
 void main() {

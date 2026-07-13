@@ -13,4 +13,16 @@ class SupabaseGameRepository implements GameRepository {
   Future<Uint8List> downloadSelfie(String path) {
     return _client.storage.from('selfies').download(path);
   }
+
+  @override
+  Future<void> submitLocation({
+    required String gameId,
+    required double lat,
+    required double lng,
+  }) async {
+    await _client.rpc(
+      'submit_location',
+      params: {'game_id': gameId, 'lat': lat, 'lng': lng},
+    );
+  }
 }

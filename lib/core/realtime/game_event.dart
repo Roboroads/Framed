@@ -44,6 +44,21 @@ sealed class GameEvent with _$GameEvent {
     required String selfiePath,
   }) = TargetAssigned;
 
+  /// player:{player_id} — you're out of the game, framed or MIA.
+  const factory GameEvent.youDied({
+    required String cause,
+    String? killerNameCiphertext,
+    String? photoPath,
+    required int survivedSeconds,
+  }) = YouDied;
+
+  /// game:{game_id} — the game is over.
+  const factory GameEvent.gameFinished({
+    required String winnerId,
+    required Map<String, dynamic> stats,
+    required List<dynamic> killChain,
+  }) = GameFinished;
+
   /// Fallback for events this app version does not model (yet).
   const factory GameEvent.unknown({
     required String event,
@@ -81,6 +96,19 @@ sealed class GameEvent with _$GameEvent {
             targetId: payload['target_id'] as String,
             nameCiphertext: payload['name_ciphertext'] as String,
             selfiePath: payload['selfie_path'] as String,
+          );
+        case 'you_died':
+          return GameEvent.youDied(
+            cause: payload['cause'] as String,
+            killerNameCiphertext: payload['killer_name_ciphertext'] as String?,
+            photoPath: payload['photo_path'] as String?,
+            survivedSeconds: payload['survived_seconds'] as int,
+          );
+        case 'game_finished':
+          return GameEvent.gameFinished(
+            winnerId: payload['winner_id'] as String,
+            stats: Map<String, dynamic>.from(payload['stats'] as Map),
+            killChain: List<dynamic>.from(payload['kill_chain'] as List),
           );
         default:
           return GameEvent.unknown(event: event, payload: payload);

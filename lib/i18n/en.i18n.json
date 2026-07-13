@@ -6,6 +6,18 @@
     "errorGeneric": "Couldn't reach the server. Check your connection and try again.",
     "retry": "Try again"
   },
+  "location": {
+    "notificationTitle": "Framed is running",
+    "notificationText": "Sharing your location for the current game."
+  },
+  "locationGate": {
+    "explainerTitle": "Location access",
+    "explainerBody": "Framed needs your location in the background, even with the screen locked, to point your target's compass and enforce the play area. Only your last-known location is ever stored — deleted when the game ends.",
+    "continueButton": "Continue",
+    "blockedTitle": "Location is off",
+    "blockedBody": "Framed can't track your location. Turn it on in Settings, then come back — you don't need to restart the app.",
+    "openSettings": "Open settings"
+  },
   "home": {
     "joinGame": "Join game",
     "hostGame": "Host game",

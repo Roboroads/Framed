@@ -55,7 +55,7 @@ extension GameEventPatterns on GameEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( PlayerJoined value)?  playerJoined,TResult Function( PlayerReady value)?  playerReady,TResult Function( PlayerLeft value)?  playerLeft,TResult Function( HostChanged value)?  hostChanged,TResult Function( SettingsChanged value)?  settingsChanged,TResult Function( DispersalStarted value)?  dispersalStarted,TResult Function( TargetAssigned value)?  targetAssigned,TResult Function( UnknownGameEvent value)?  unknown,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( PlayerJoined value)?  playerJoined,TResult Function( PlayerReady value)?  playerReady,TResult Function( PlayerLeft value)?  playerLeft,TResult Function( HostChanged value)?  hostChanged,TResult Function( SettingsChanged value)?  settingsChanged,TResult Function( DispersalStarted value)?  dispersalStarted,TResult Function( TargetAssigned value)?  targetAssigned,TResult Function( YouDied value)?  youDied,TResult Function( GameFinished value)?  gameFinished,TResult Function( UnknownGameEvent value)?  unknown,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case PlayerJoined() when playerJoined != null:
@@ -65,7 +65,9 @@ return playerLeft(_that);case HostChanged() when hostChanged != null:
 return hostChanged(_that);case SettingsChanged() when settingsChanged != null:
 return settingsChanged(_that);case DispersalStarted() when dispersalStarted != null:
 return dispersalStarted(_that);case TargetAssigned() when targetAssigned != null:
-return targetAssigned(_that);case UnknownGameEvent() when unknown != null:
+return targetAssigned(_that);case YouDied() when youDied != null:
+return youDied(_that);case GameFinished() when gameFinished != null:
+return gameFinished(_that);case UnknownGameEvent() when unknown != null:
 return unknown(_that);case _:
   return orElse();
 
@@ -84,7 +86,7 @@ return unknown(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( PlayerJoined value)  playerJoined,required TResult Function( PlayerReady value)  playerReady,required TResult Function( PlayerLeft value)  playerLeft,required TResult Function( HostChanged value)  hostChanged,required TResult Function( SettingsChanged value)  settingsChanged,required TResult Function( DispersalStarted value)  dispersalStarted,required TResult Function( TargetAssigned value)  targetAssigned,required TResult Function( UnknownGameEvent value)  unknown,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( PlayerJoined value)  playerJoined,required TResult Function( PlayerReady value)  playerReady,required TResult Function( PlayerLeft value)  playerLeft,required TResult Function( HostChanged value)  hostChanged,required TResult Function( SettingsChanged value)  settingsChanged,required TResult Function( DispersalStarted value)  dispersalStarted,required TResult Function( TargetAssigned value)  targetAssigned,required TResult Function( YouDied value)  youDied,required TResult Function( GameFinished value)  gameFinished,required TResult Function( UnknownGameEvent value)  unknown,}){
 final _that = this;
 switch (_that) {
 case PlayerJoined():
@@ -94,7 +96,9 @@ return playerLeft(_that);case HostChanged():
 return hostChanged(_that);case SettingsChanged():
 return settingsChanged(_that);case DispersalStarted():
 return dispersalStarted(_that);case TargetAssigned():
-return targetAssigned(_that);case UnknownGameEvent():
+return targetAssigned(_that);case YouDied():
+return youDied(_that);case GameFinished():
+return gameFinished(_that);case UnknownGameEvent():
 return unknown(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
@@ -109,7 +113,7 @@ return unknown(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( PlayerJoined value)?  playerJoined,TResult? Function( PlayerReady value)?  playerReady,TResult? Function( PlayerLeft value)?  playerLeft,TResult? Function( HostChanged value)?  hostChanged,TResult? Function( SettingsChanged value)?  settingsChanged,TResult? Function( DispersalStarted value)?  dispersalStarted,TResult? Function( TargetAssigned value)?  targetAssigned,TResult? Function( UnknownGameEvent value)?  unknown,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( PlayerJoined value)?  playerJoined,TResult? Function( PlayerReady value)?  playerReady,TResult? Function( PlayerLeft value)?  playerLeft,TResult? Function( HostChanged value)?  hostChanged,TResult? Function( SettingsChanged value)?  settingsChanged,TResult? Function( DispersalStarted value)?  dispersalStarted,TResult? Function( TargetAssigned value)?  targetAssigned,TResult? Function( YouDied value)?  youDied,TResult? Function( GameFinished value)?  gameFinished,TResult? Function( UnknownGameEvent value)?  unknown,}){
 final _that = this;
 switch (_that) {
 case PlayerJoined() when playerJoined != null:
@@ -119,7 +123,9 @@ return playerLeft(_that);case HostChanged() when hostChanged != null:
 return hostChanged(_that);case SettingsChanged() when settingsChanged != null:
 return settingsChanged(_that);case DispersalStarted() when dispersalStarted != null:
 return dispersalStarted(_that);case TargetAssigned() when targetAssigned != null:
-return targetAssigned(_that);case UnknownGameEvent() when unknown != null:
+return targetAssigned(_that);case YouDied() when youDied != null:
+return youDied(_that);case GameFinished() when gameFinished != null:
+return gameFinished(_that);case UnknownGameEvent() when unknown != null:
 return unknown(_that);case _:
   return null;
 
@@ -137,7 +143,7 @@ return unknown(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String playerId,  String nameCiphertext)?  playerJoined,TResult Function( String playerId)?  playerReady,TResult Function( String playerId)?  playerLeft,TResult Function( String playerId)?  hostChanged,TResult Function( Map<String, dynamic> settings)?  settingsChanged,TResult Function( DateTime endsAt)?  dispersalStarted,TResult Function( String targetId,  String nameCiphertext,  String selfiePath)?  targetAssigned,TResult Function( String event,  Map<String, dynamic> payload)?  unknown,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String playerId,  String nameCiphertext)?  playerJoined,TResult Function( String playerId)?  playerReady,TResult Function( String playerId)?  playerLeft,TResult Function( String playerId)?  hostChanged,TResult Function( Map<String, dynamic> settings)?  settingsChanged,TResult Function( DateTime endsAt)?  dispersalStarted,TResult Function( String targetId,  String nameCiphertext,  String selfiePath)?  targetAssigned,TResult Function( String cause,  String? killerNameCiphertext,  String? photoPath,  int survivedSeconds)?  youDied,TResult Function( String winnerId,  Map<String, dynamic> stats,  List<dynamic> killChain)?  gameFinished,TResult Function( String event,  Map<String, dynamic> payload)?  unknown,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case PlayerJoined() when playerJoined != null:
 return playerJoined(_that.playerId,_that.nameCiphertext);case PlayerReady() when playerReady != null:
@@ -146,7 +152,9 @@ return playerLeft(_that.playerId);case HostChanged() when hostChanged != null:
 return hostChanged(_that.playerId);case SettingsChanged() when settingsChanged != null:
 return settingsChanged(_that.settings);case DispersalStarted() when dispersalStarted != null:
 return dispersalStarted(_that.endsAt);case TargetAssigned() when targetAssigned != null:
-return targetAssigned(_that.targetId,_that.nameCiphertext,_that.selfiePath);case UnknownGameEvent() when unknown != null:
+return targetAssigned(_that.targetId,_that.nameCiphertext,_that.selfiePath);case YouDied() when youDied != null:
+return youDied(_that.cause,_that.killerNameCiphertext,_that.photoPath,_that.survivedSeconds);case GameFinished() when gameFinished != null:
+return gameFinished(_that.winnerId,_that.stats,_that.killChain);case UnknownGameEvent() when unknown != null:
 return unknown(_that.event,_that.payload);case _:
   return orElse();
 
@@ -165,7 +173,7 @@ return unknown(_that.event,_that.payload);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String playerId,  String nameCiphertext)  playerJoined,required TResult Function( String playerId)  playerReady,required TResult Function( String playerId)  playerLeft,required TResult Function( String playerId)  hostChanged,required TResult Function( Map<String, dynamic> settings)  settingsChanged,required TResult Function( DateTime endsAt)  dispersalStarted,required TResult Function( String targetId,  String nameCiphertext,  String selfiePath)  targetAssigned,required TResult Function( String event,  Map<String, dynamic> payload)  unknown,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String playerId,  String nameCiphertext)  playerJoined,required TResult Function( String playerId)  playerReady,required TResult Function( String playerId)  playerLeft,required TResult Function( String playerId)  hostChanged,required TResult Function( Map<String, dynamic> settings)  settingsChanged,required TResult Function( DateTime endsAt)  dispersalStarted,required TResult Function( String targetId,  String nameCiphertext,  String selfiePath)  targetAssigned,required TResult Function( String cause,  String? killerNameCiphertext,  String? photoPath,  int survivedSeconds)  youDied,required TResult Function( String winnerId,  Map<String, dynamic> stats,  List<dynamic> killChain)  gameFinished,required TResult Function( String event,  Map<String, dynamic> payload)  unknown,}) {final _that = this;
 switch (_that) {
 case PlayerJoined():
 return playerJoined(_that.playerId,_that.nameCiphertext);case PlayerReady():
@@ -174,7 +182,9 @@ return playerLeft(_that.playerId);case HostChanged():
 return hostChanged(_that.playerId);case SettingsChanged():
 return settingsChanged(_that.settings);case DispersalStarted():
 return dispersalStarted(_that.endsAt);case TargetAssigned():
-return targetAssigned(_that.targetId,_that.nameCiphertext,_that.selfiePath);case UnknownGameEvent():
+return targetAssigned(_that.targetId,_that.nameCiphertext,_that.selfiePath);case YouDied():
+return youDied(_that.cause,_that.killerNameCiphertext,_that.photoPath,_that.survivedSeconds);case GameFinished():
+return gameFinished(_that.winnerId,_that.stats,_that.killChain);case UnknownGameEvent():
 return unknown(_that.event,_that.payload);}
 }
 /// A variant of `when` that fallback to returning `null`
@@ -189,7 +199,7 @@ return unknown(_that.event,_that.payload);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String playerId,  String nameCiphertext)?  playerJoined,TResult? Function( String playerId)?  playerReady,TResult? Function( String playerId)?  playerLeft,TResult? Function( String playerId)?  hostChanged,TResult? Function( Map<String, dynamic> settings)?  settingsChanged,TResult? Function( DateTime endsAt)?  dispersalStarted,TResult? Function( String targetId,  String nameCiphertext,  String selfiePath)?  targetAssigned,TResult? Function( String event,  Map<String, dynamic> payload)?  unknown,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String playerId,  String nameCiphertext)?  playerJoined,TResult? Function( String playerId)?  playerReady,TResult? Function( String playerId)?  playerLeft,TResult? Function( String playerId)?  hostChanged,TResult? Function( Map<String, dynamic> settings)?  settingsChanged,TResult? Function( DateTime endsAt)?  dispersalStarted,TResult? Function( String targetId,  String nameCiphertext,  String selfiePath)?  targetAssigned,TResult? Function( String cause,  String? killerNameCiphertext,  String? photoPath,  int survivedSeconds)?  youDied,TResult? Function( String winnerId,  Map<String, dynamic> stats,  List<dynamic> killChain)?  gameFinished,TResult? Function( String event,  Map<String, dynamic> payload)?  unknown,}) {final _that = this;
 switch (_that) {
 case PlayerJoined() when playerJoined != null:
 return playerJoined(_that.playerId,_that.nameCiphertext);case PlayerReady() when playerReady != null:
@@ -198,7 +208,9 @@ return playerLeft(_that.playerId);case HostChanged() when hostChanged != null:
 return hostChanged(_that.playerId);case SettingsChanged() when settingsChanged != null:
 return settingsChanged(_that.settings);case DispersalStarted() when dispersalStarted != null:
 return dispersalStarted(_that.endsAt);case TargetAssigned() when targetAssigned != null:
-return targetAssigned(_that.targetId,_that.nameCiphertext,_that.selfiePath);case UnknownGameEvent() when unknown != null:
+return targetAssigned(_that.targetId,_that.nameCiphertext,_that.selfiePath);case YouDied() when youDied != null:
+return youDied(_that.cause,_that.killerNameCiphertext,_that.photoPath,_that.survivedSeconds);case GameFinished() when gameFinished != null:
+return gameFinished(_that.winnerId,_that.stats,_that.killChain);case UnknownGameEvent() when unknown != null:
 return unknown(_that.event,_that.payload);case _:
   return null;
 
@@ -675,6 +687,160 @@ targetId: null == targetId ? _self.targetId : targetId // ignore: cast_nullable_
 as String,nameCiphertext: null == nameCiphertext ? _self.nameCiphertext : nameCiphertext // ignore: cast_nullable_to_non_nullable
 as String,selfiePath: null == selfiePath ? _self.selfiePath : selfiePath // ignore: cast_nullable_to_non_nullable
 as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class YouDied implements GameEvent {
+  const YouDied({required this.cause, this.killerNameCiphertext, this.photoPath, required this.survivedSeconds});
+  
+
+ final  String cause;
+ final  String? killerNameCiphertext;
+ final  String? photoPath;
+ final  int survivedSeconds;
+
+/// Create a copy of GameEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$YouDiedCopyWith<YouDied> get copyWith => _$YouDiedCopyWithImpl<YouDied>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is YouDied&&(identical(other.cause, cause) || other.cause == cause)&&(identical(other.killerNameCiphertext, killerNameCiphertext) || other.killerNameCiphertext == killerNameCiphertext)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath)&&(identical(other.survivedSeconds, survivedSeconds) || other.survivedSeconds == survivedSeconds));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,cause,killerNameCiphertext,photoPath,survivedSeconds);
+
+@override
+String toString() {
+  return 'GameEvent.youDied(cause: $cause, killerNameCiphertext: $killerNameCiphertext, photoPath: $photoPath, survivedSeconds: $survivedSeconds)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $YouDiedCopyWith<$Res> implements $GameEventCopyWith<$Res> {
+  factory $YouDiedCopyWith(YouDied value, $Res Function(YouDied) _then) = _$YouDiedCopyWithImpl;
+@useResult
+$Res call({
+ String cause, String? killerNameCiphertext, String? photoPath, int survivedSeconds
+});
+
+
+
+
+}
+/// @nodoc
+class _$YouDiedCopyWithImpl<$Res>
+    implements $YouDiedCopyWith<$Res> {
+  _$YouDiedCopyWithImpl(this._self, this._then);
+
+  final YouDied _self;
+  final $Res Function(YouDied) _then;
+
+/// Create a copy of GameEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? cause = null,Object? killerNameCiphertext = freezed,Object? photoPath = freezed,Object? survivedSeconds = null,}) {
+  return _then(YouDied(
+cause: null == cause ? _self.cause : cause // ignore: cast_nullable_to_non_nullable
+as String,killerNameCiphertext: freezed == killerNameCiphertext ? _self.killerNameCiphertext : killerNameCiphertext // ignore: cast_nullable_to_non_nullable
+as String?,photoPath: freezed == photoPath ? _self.photoPath : photoPath // ignore: cast_nullable_to_non_nullable
+as String?,survivedSeconds: null == survivedSeconds ? _self.survivedSeconds : survivedSeconds // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class GameFinished implements GameEvent {
+  const GameFinished({required this.winnerId, required final  Map<String, dynamic> stats, required final  List<dynamic> killChain}): _stats = stats,_killChain = killChain;
+  
+
+ final  String winnerId;
+ final  Map<String, dynamic> _stats;
+ Map<String, dynamic> get stats {
+  if (_stats is EqualUnmodifiableMapView) return _stats;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(_stats);
+}
+
+ final  List<dynamic> _killChain;
+ List<dynamic> get killChain {
+  if (_killChain is EqualUnmodifiableListView) return _killChain;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_killChain);
+}
+
+
+/// Create a copy of GameEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$GameFinishedCopyWith<GameFinished> get copyWith => _$GameFinishedCopyWithImpl<GameFinished>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GameFinished&&(identical(other.winnerId, winnerId) || other.winnerId == winnerId)&&const DeepCollectionEquality().equals(other._stats, _stats)&&const DeepCollectionEquality().equals(other._killChain, _killChain));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,winnerId,const DeepCollectionEquality().hash(_stats),const DeepCollectionEquality().hash(_killChain));
+
+@override
+String toString() {
+  return 'GameEvent.gameFinished(winnerId: $winnerId, stats: $stats, killChain: $killChain)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $GameFinishedCopyWith<$Res> implements $GameEventCopyWith<$Res> {
+  factory $GameFinishedCopyWith(GameFinished value, $Res Function(GameFinished) _then) = _$GameFinishedCopyWithImpl;
+@useResult
+$Res call({
+ String winnerId, Map<String, dynamic> stats, List<dynamic> killChain
+});
+
+
+
+
+}
+/// @nodoc
+class _$GameFinishedCopyWithImpl<$Res>
+    implements $GameFinishedCopyWith<$Res> {
+  _$GameFinishedCopyWithImpl(this._self, this._then);
+
+  final GameFinished _self;
+  final $Res Function(GameFinished) _then;
+
+/// Create a copy of GameEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? winnerId = null,Object? stats = null,Object? killChain = null,}) {
+  return _then(GameFinished(
+winnerId: null == winnerId ? _self.winnerId : winnerId // ignore: cast_nullable_to_non_nullable
+as String,stats: null == stats ? _self._stats : stats // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>,killChain: null == killChain ? _self._killChain : killChain // ignore: cast_nullable_to_non_nullable
+as List<dynamic>,
   ));
 }
 

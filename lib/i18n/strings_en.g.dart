@@ -42,6 +42,8 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	// Translations
 	late final Translations$app$en app = Translations$app$en._(_root);
 	late final Translations$bootstrap$en bootstrap = Translations$bootstrap$en._(_root);
+	late final Translations$location$en location = Translations$location$en._(_root);
+	late final Translations$locationGate$en locationGate = Translations$locationGate$en._(_root);
 	late final Translations$home$en home = Translations$home$en._(_root);
 	late final Translations$goodToKnow$en goodToKnow = Translations$goodToKnow$en._(_root);
 	late final Translations$hostSetup$en hostSetup = Translations$hostSetup$en._(_root);
@@ -79,6 +81,48 @@ class Translations$bootstrap$en {
 
 	/// en: 'Try again'
 	String get retry => 'Try again';
+}
+
+// Path: location
+class Translations$location$en {
+	Translations$location$en._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Framed is running'
+	String get notificationTitle => 'Framed is running';
+
+	/// en: 'Sharing your location for the current game.'
+	String get notificationText => 'Sharing your location for the current game.';
+}
+
+// Path: locationGate
+class Translations$locationGate$en {
+	Translations$locationGate$en._(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Location access'
+	String get explainerTitle => 'Location access';
+
+	/// en: 'Framed needs your location in the background, even with the screen locked, to point your target's compass and enforce the play area. Only your last-known location is ever stored — deleted when the game ends.'
+	String get explainerBody => 'Framed needs your location in the background, even with the screen locked, to point your target\'s compass and enforce the play area. Only your last-known location is ever stored — deleted when the game ends.';
+
+	/// en: 'Continue'
+	String get continueButton => 'Continue';
+
+	/// en: 'Location is off'
+	String get blockedTitle => 'Location is off';
+
+	/// en: 'Framed can't track your location. Turn it on in Settings, then come back — you don't need to restart the app.'
+	String get blockedBody => 'Framed can\'t track your location. Turn it on in Settings, then come back — you don\'t need to restart the app.';
+
+	/// en: 'Open settings'
+	String get openSettings => 'Open settings';
 }
 
 // Path: home
@@ -404,6 +448,14 @@ extension on Translations {
 			'app.title' => 'Framed',
 			'bootstrap.errorGeneric' => 'Couldn\'t reach the server. Check your connection and try again.',
 			'bootstrap.retry' => 'Try again',
+			'location.notificationTitle' => 'Framed is running',
+			'location.notificationText' => 'Sharing your location for the current game.',
+			'locationGate.explainerTitle' => 'Location access',
+			'locationGate.explainerBody' => 'Framed needs your location in the background, even with the screen locked, to point your target\'s compass and enforce the play area. Only your last-known location is ever stored — deleted when the game ends.',
+			'locationGate.continueButton' => 'Continue',
+			'locationGate.blockedTitle' => 'Location is off',
+			'locationGate.blockedBody' => 'Framed can\'t track your location. Turn it on in Settings, then come back — you don\'t need to restart the app.',
+			'locationGate.openSettings' => 'Open settings',
 			'home.joinGame' => 'Join game',
 			'home.hostGame' => 'Host game',
 			'home.goodToKnowButton' => 'Good to know',
