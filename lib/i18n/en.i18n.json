@@ -138,6 +138,8 @@
     "warningDeadline": "You die in $time",
     "compassNoPulseWarning": "No compass while breaking rules",
     "compassNoPulseIdle": "Next pulse soon",
+    "compassNoPulseCountdown": "Next pulse in $time",
+    "selfNameLabel": "Playing as $name",
     "compassDistanceMeters": "$distance m",
     "compassFallback": "$direction, $distance m",
     "targetLocationTitle": "Your target left the play area. This is where they are",

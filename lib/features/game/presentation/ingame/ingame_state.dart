@@ -114,6 +114,14 @@ sealed class IngameState with _$IngameState {
     // actually left (or gone stale) and a punishment clock is running.
     @Default(false) bool nearGeofenceEdge,
     IngameCompass? compass,
+    // The game's next scheduled compass pulse (#73) — set once the game
+    // goes active (get_my_state) and refreshed on every pulse received,
+    // so the compass panel can count down to it while [compass] is null
+    // instead of showing a static "soon".
+    DateTime? nextPulseAt,
+    // This player's own decrypted name (#73) — resolved from the roster,
+    // same as dead chat resolves sender names. Null until that resolves.
+    String? myName,
     IngameTargetLocation? targetLocation,
     @Default(IngameFrameStatus.ready()) IngameFrameStatus frameStatus,
     // Oldest first (#22) — only the front is ever shown or loaded; queued

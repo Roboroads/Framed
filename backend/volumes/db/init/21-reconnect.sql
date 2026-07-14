@@ -43,7 +43,8 @@ begin
       select name_ciphertext into killer_name from public.players where id = me.killed_by;
     end if;
     return jsonb_build_object(
-      'game_status', g.status, 'event', 'you_died', 'payload', jsonb_build_object(
+      'game_status', g.status, 'next_pulse_at', g.next_pulse_at,
+      'event', 'you_died', 'payload', jsonb_build_object(
         'cause', me.death_cause,
         'killer_name_ciphertext', killer_name,
         'photo_path', me.death_photo_path,
@@ -54,7 +55,8 @@ begin
 
   if g.status = 'dispersing' then
     return jsonb_build_object(
-      'game_status', g.status, 'event', 'dispersal_started', 'payload', jsonb_build_object(
+      'game_status', g.status, 'next_pulse_at', g.next_pulse_at,
+      'event', 'dispersal_started', 'payload', jsonb_build_object(
         'ends_at', g.started_at + (g.disperse_minutes || ' minutes')::interval
       ));
   end if;
@@ -62,14 +64,18 @@ begin
   if g.status = 'active' and me.target_id is not null then
     select * into t from public.players where id = me.target_id;
     return jsonb_build_object(
-      'game_status', g.status, 'event', 'target_assigned', 'payload', jsonb_build_object(
+      'game_status', g.status, 'next_pulse_at', g.next_pulse_at,
+      'event', 'target_assigned', 'payload', jsonb_build_object(
         'target_id', t.id,
         'name_ciphertext', t.name_ciphertext,
         'selfie_path', t.selfie_path
       ));
   end if;
 
-  return jsonb_build_object('game_status', g.status, 'event', null, 'payload', '{}'::jsonb);
+  return jsonb_build_object(
+    'game_status', g.status, 'next_pulse_at', g.next_pulse_at,
+    'event', null, 'payload', '{}'::jsonb
+  );
 end $$;
 
 revoke execute on function get_my_state(uuid) from public, anon;

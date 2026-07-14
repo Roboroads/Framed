@@ -34,7 +34,7 @@ class SessionResumeService {
         playerId: persisted.playerId,
         crypto: crypto,
       );
-      final (gameStatus, event) = await _repository.getMyState(
+      final (gameStatus, event, _) = await _repository.getMyState(
         persisted.gameId,
       );
       if (gameStatus == 'lobby') return const ResumeToLobby();

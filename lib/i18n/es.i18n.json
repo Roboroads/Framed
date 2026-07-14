@@ -138,6 +138,8 @@
     "warningDeadline": "Mueres en $time",
     "compassNoPulseWarning": "Sin brújula mientras incumples una regla",
     "compassNoPulseIdle": "Próximo pulso pronto",
+    "compassNoPulseCountdown": "Próximo pulso en $time",
+    "selfNameLabel": "Jugando como $name",
     "compassDistanceMeters": "$distance m",
     "compassFallback": "$direction, $distance m",
     "targetLocationTitle": "Tu objetivo ha salido del área de juego. Aquí está",

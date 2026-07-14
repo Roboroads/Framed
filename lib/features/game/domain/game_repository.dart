@@ -51,8 +51,11 @@ abstract interface class GameRepository {
   /// nothing further to report (still in the lobby, or active with a
   /// target not assigned yet — shouldn't normally happen). gameStatus is
   /// the routing signal a cold-start resume needs before it even knows
-  /// whether to land on the lobby or the ingame screen.
-  Future<(String gameStatus, GameEvent? event)> getMyState(String gameId);
+  /// whether to land on the lobby or the ingame screen. nextPulseAt (#73)
+  /// is the game's next scheduled compass pulse — null until the game goes
+  /// active, independent of which event (if any) this call returns.
+  Future<(String gameStatus, GameEvent? event, DateTime? nextPulseAt)>
+  getMyState(String gameId);
 
   /// This game's roster as id → `name_ciphertext` (#24) — dead chat resolves
   /// sender names from it, decrypting with the game key it already has.

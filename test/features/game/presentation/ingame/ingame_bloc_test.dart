@@ -87,14 +87,15 @@ class _FakeGameRepository implements GameRepository {
 
   GameEvent? myState;
   String myGameStatus = 'active';
+  DateTime? myNextPulseAt;
   Object? myStateFailure;
-  Completer<(String, GameEvent?)>? myStateCompleter;
+  Completer<(String, GameEvent?, DateTime?)>? myStateCompleter;
 
   @override
-  Future<(String, GameEvent?)> getMyState(String gameId) {
+  Future<(String, GameEvent?, DateTime?)> getMyState(String gameId) {
     if (myStateCompleter != null) return myStateCompleter!.future;
     if (myStateFailure != null) throw myStateFailure!;
-    return Future.value((myGameStatus, myState));
+    return Future.value((myGameStatus, myState, myNextPulseAt));
   }
 
   Map<String, String> roster = {};
@@ -194,6 +195,40 @@ void main() {
         bloc.state,
         IngameState(phase: IngamePhase.dispersing(endsAt: endsAt)),
       );
+    });
+
+    test('resolves myName from the roster on init', () async {
+      repository.roster = {'player-me': await crypto.encryptString('Bob')};
+
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
+        initialEndsAt: endsAt,
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.myName, 'Bob');
+    });
+
+    test('a roster without this player leaves myName unset', () async {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
+        initialEndsAt: endsAt,
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.myName, isNull);
     });
 
     test('dispersing -> playing on target_assigned', () async {
@@ -338,7 +373,8 @@ void main() {
     );
 
     test('a live target_assigned beats a slower catch-up fetch', () async {
-      repository.myStateCompleter = Completer<(String, GameEvent?)>();
+      repository.myStateCompleter =
+          Completer<(String, GameEvent?, DateTime?)>();
       repository.selfieBytes = await crypto.encryptBytes(
         Uint8List.fromList([1]),
       );
@@ -371,6 +407,7 @@ void main() {
           nameCiphertext: await crypto.encryptString('Stale'),
           selfiePath: 'game-1/stale',
         ),
+        null,
       ));
       await Future<void>.delayed(Duration.zero);
       await Future<void>.delayed(Duration.zero);
@@ -510,6 +547,29 @@ void main() {
         await Future<void>.delayed(Duration.zero);
 
         expect(bloc.state.phase, IngamePhase.dispersing(endsAt: serverEndsAt));
+      },
+    );
+
+    test(
+      'the catch-up fetch carries nextPulseAt regardless of the event',
+      () async {
+        final nextPulseAt = endsAt.add(const Duration(minutes: 5));
+        repository.myState = GameEvent.dispersalStarted(endsAt: endsAt);
+        repository.myNextPulseAt = nextPulseAt;
+
+        final bloc = IngameBloc(
+          events: events.stream,
+          crypto: crypto,
+          repository: repository,
+          gameId: 'game-1',
+          myPlayerId: 'player-me',
+          deadChatEvents: const Stream<GameEvent>.empty(),
+          initialEndsAt: endsAt,
+        );
+        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+
+        expect(bloc.state.nextPulseAt, nextPulseAt);
       },
     );
 
@@ -666,6 +726,7 @@ void main() {
           bearingDeg: 42,
           distanceM: 1234,
           expiresAt: DateTime.now().add(const Duration(milliseconds: 50)),
+          nextPulseAt: DateTime.now().add(const Duration(minutes: 10)),
         ),
       );
       await Future<void>.delayed(Duration.zero);
@@ -678,6 +739,40 @@ void main() {
       await Future<void>.delayed(const Duration(milliseconds: 80));
       expect(bloc.state.compass, isNull);
     });
+
+    test(
+      'compass_pulse sets nextPulseAt for the following countdown',
+      () async {
+        final bloc = IngameBloc(
+          events: events.stream,
+          crypto: crypto,
+          repository: repository,
+          gameId: 'game-1',
+          myPlayerId: 'player-me',
+          deadChatEvents: const Stream<GameEvent>.empty(),
+          initialEndsAt: endsAt,
+        );
+        final nextPulseAt = DateTime.now().add(const Duration(minutes: 10));
+
+        events.add(
+          GameEvent.compassPulse(
+            bearingDeg: 42,
+            distanceM: 1234,
+            expiresAt: DateTime.now().add(const Duration(milliseconds: 50)),
+            nextPulseAt: nextPulseAt,
+          ),
+        );
+        await Future<void>.delayed(Duration.zero);
+
+        expect(bloc.state.nextPulseAt, nextPulseAt);
+
+        // nextPulseAt survives the pulse itself expiring — the countdown to
+        // the following one is exactly what should still be on screen.
+        await Future<void>.delayed(const Duration(milliseconds: 80));
+        expect(bloc.state.compass, isNull);
+        expect(bloc.state.nextPulseAt, nextPulseAt);
+      },
+    );
 
     test('an already-expired compass_pulse on arrival is dropped', () async {
       final bloc = IngameBloc(
@@ -695,6 +790,7 @@ void main() {
           bearingDeg: 42,
           distanceM: 1234,
           expiresAt: DateTime.now().subtract(const Duration(seconds: 1)),
+          nextPulseAt: DateTime.now().add(const Duration(minutes: 10)),
         ),
       );
       await Future<void>.delayed(Duration.zero);
@@ -720,6 +816,7 @@ void main() {
             bearingDeg: 1,
             distanceM: 100,
             expiresAt: DateTime.now().add(const Duration(milliseconds: 30)),
+            nextPulseAt: DateTime.now().add(const Duration(minutes: 10)),
           ),
         );
         await Future<void>.delayed(const Duration(milliseconds: 10));
@@ -728,6 +825,7 @@ void main() {
             bearingDeg: 2,
             distanceM: 200,
             expiresAt: DateTime.now().add(const Duration(milliseconds: 200)),
+            nextPulseAt: DateTime.now().add(const Duration(minutes: 10)),
           ),
         );
         await Future<void>.delayed(const Duration(milliseconds: 60));

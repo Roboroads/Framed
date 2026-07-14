@@ -138,6 +138,8 @@
     "warningDeadline": "Je gaat dood over $time",
     "compassNoPulseWarning": "Geen kompas tijdens regelovertreding",
     "compassNoPulseIdle": "Volgende puls binnenkort",
+    "compassNoPulseCountdown": "Volgende puls over $time",
+    "selfNameLabel": "Je speelt als $name",
     "compassDistanceMeters": "$distance m",
     "compassFallback": "$direction, $distance m",
     "targetLocationTitle": "Je doelwit heeft het speelgebied verlaten. Hier bevindt diegene zich",

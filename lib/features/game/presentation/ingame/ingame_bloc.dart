@@ -48,6 +48,10 @@ class IngameBloc extends Cubit<IngameState> {
     // starts last wins, same pattern as the target-supersession comment
     // below already relies on.
     unawaited(_fetchCurrentState());
+    // The self-name label (#73) — no plaintext name lives in GameSession
+    // (only the id), so this decrypts it from the roster the same way dead
+    // chat already resolves sender names.
+    unawaited(_fetchMyName());
   }
 
   final GameCrypto _crypto;
@@ -135,12 +139,14 @@ class IngameBloc extends Cubit<IngameState> {
   Future<void> _fetchCurrentState() async {
     final generation = ++_targetGeneration;
     GameEvent? event;
+    DateTime? nextPulseAt;
     try {
-      (_, event) = await _repository.getMyState(_gameId);
+      (_, event, nextPulseAt) = await _repository.getMyState(_gameId);
     } catch (_) {
       return;
     }
     if (isClosed || generation != _targetGeneration) return;
+    if (nextPulseAt != null) emit(state.copyWith(nextPulseAt: nextPulseAt));
     switch (event) {
       case TargetAssigned():
         await _applyTargetAssigned(event, generation: generation);
@@ -153,6 +159,21 @@ class IngameBloc extends Cubit<IngameState> {
       default:
       // No target yet, or an event shape this catch-up doesn't expect —
       // nothing to change.
+    }
+  }
+
+  // Best-effort — a name that fails to resolve just means the label stays
+  // hidden (see _fetchMyName's caller). No dependency on _targetGeneration:
+  // this never competes with a target/death update, it just adds a field.
+  Future<void> _fetchMyName() async {
+    try {
+      final roster = await _repository.getRoster(_gameId);
+      final ciphertext = roster[_myPlayerId];
+      if (ciphertext == null) return;
+      final name = await _crypto.decryptString(ciphertext);
+      if (!isClosed) emit(state.copyWith(myName: name));
+    } catch (_) {
+      // Nothing to fall back to — the label just doesn't render.
     }
   }
 
@@ -332,6 +353,11 @@ class IngameBloc extends Cubit<IngameState> {
   void _onCompassPulse(CompassPulse event) {
     final generation = ++_compassGeneration;
     _compassTimer?.cancel();
+
+    // Unlike compass below, nextPulseAt (#73) isn't cleared by the expiry
+    // timer — it's the countdown to show once the arrow disappears, not
+    // part of the snapshot that disappears.
+    emit(state.copyWith(nextPulseAt: event.nextPulseAt));
 
     final remaining = event.expiresAt.difference(DateTime.now());
     // The app may have been closed/backgrounded through the whole pulse —

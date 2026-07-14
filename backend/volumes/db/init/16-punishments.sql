@@ -96,7 +96,12 @@ revoke execute on function kill_player(uuid, public.death_cause, uuid, text)
 
 -- Stub until #16 (compass pulse engine) lands — that issue replaces this
 -- with the real immediate personal-snapshot pulse on target reassignment.
-create or replace function send_pulse_to(player_id uuid) returns void
+-- Signature must match 17-pulse.sql's real version exactly (same name +
+-- arg types is what makes `create or replace` there replace this one
+-- in place, instead of defining a second overload alongside it).
+create or replace function send_pulse_to(
+  player_id uuid, next_pulse_override timestamptz default null
+) returns void
 language plpgsql set search_path = '' as $$
 begin
 end $$;

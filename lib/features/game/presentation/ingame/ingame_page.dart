@@ -138,6 +138,7 @@ class _IngameView extends StatelessWidget {
                   IngamePlaying(:final target) => _TargetCard(
                     target: target,
                     compass: state.compass,
+                    nextPulseAt: state.nextPulseAt,
                     hasWarning: state.warning != null,
                     targetLocation: state.targetLocation,
                     geofence: geofence,
@@ -185,6 +186,9 @@ class _IngameView extends StatelessWidget {
                     geofence: geofence!,
                     selfPositionStream: selfPositionStream,
                   ),
+                if (state.myName case final myName?
+                    when state.phase is! IngameDead)
+                  _SelfNameLabel(name: myName),
               ],
             ),
           ),
@@ -525,6 +529,33 @@ class _ProximityBanner extends StatelessWidget {
   }
 }
 
+/// A reminder of which player you are (#73) — the reference selfie and
+/// target card are all about the target, nothing on this screen otherwise
+/// names the device's own player. Mirrors [_MyLocationButton]'s corner
+/// placement on the opposite side.
+class _SelfNameLabel extends StatelessWidget {
+  const _SelfNameLabel({required this.name});
+
+  final String name;
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      top: 0,
+      left: 0,
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Text(
+            t.ingame.selfNameLabel(name: name),
+            style: Theme.of(context).textTheme.labelMedium,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// Opens a full-screen map with the player's own live position and the
 /// play-area boundary (#65) — button rather than a persistent on-screen
 /// map, since the "Game in progress" screen is already dense (target card,
@@ -741,6 +772,7 @@ class _TargetCard extends StatelessWidget {
   const _TargetCard({
     required this.target,
     required this.compass,
+    required this.nextPulseAt,
     required this.hasWarning,
     required this.targetLocation,
     required this.geofence,
@@ -749,6 +781,7 @@ class _TargetCard extends StatelessWidget {
 
   final Target target;
   final IngameCompass? compass;
+  final DateTime? nextPulseAt;
   final bool hasWarning;
   final IngameTargetLocation? targetLocation;
   final GeofenceInfo? geofence;
@@ -786,7 +819,11 @@ class _TargetCard extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
-          _CompassPanel(compass: compass, hasWarning: hasWarning),
+          _CompassPanel(
+            compass: compass,
+            nextPulseAt: nextPulseAt,
+            hasWarning: hasWarning,
+          ),
           if (targetLocation case final location?)
             if (geofence case final geofence?) ...[
               const SizedBox(height: 24),
@@ -851,27 +888,49 @@ class _FrameButton extends StatelessWidget {
 }
 
 /// The compass area (#17). No-pulse states are one line each: rule-breaking
-/// ties into #15's warning, otherwise idle text — the client never computes
-/// when the next pulse is due, only the server knows.
+/// ties into #15's warning; otherwise a live countdown to [nextPulseAt]
+/// (#73) once the server has told this device when that is — a static
+/// "soon" only remains for the narrow window before that's ever arrived
+/// (get_my_state hasn't resolved yet, or this is a lobby/dispersing game
+/// with no schedule at all).
 class _CompassPanel extends StatelessWidget {
-  const _CompassPanel({required this.compass, required this.hasWarning});
+  const _CompassPanel({
+    required this.compass,
+    required this.nextPulseAt,
+    required this.hasWarning,
+  });
 
   final IngameCompass? compass;
+  final DateTime? nextPulseAt;
   final bool hasWarning;
 
   @override
   Widget build(BuildContext context) {
     final compass = this.compass;
-    if (compass == null) {
+    if (compass != null) return _CompassArrow(compass: compass);
+    if (hasWarning) {
       return Text(
-        hasWarning
-            ? t.ingame.compassNoPulseWarning
-            : t.ingame.compassNoPulseIdle,
+        t.ingame.compassNoPulseWarning,
         textAlign: TextAlign.center,
         style: Theme.of(context).textTheme.bodyMedium,
       );
     }
-    return _CompassArrow(compass: compass);
+    final nextPulseAt = this.nextPulseAt;
+    if (nextPulseAt == null || !nextPulseAt.isAfter(DateTime.now())) {
+      return Text(
+        t.ingame.compassNoPulseIdle,
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.bodyMedium,
+      );
+    }
+    return _CountdownText(
+      deadline: nextPulseAt,
+      builder: (context, time) => Text(
+        t.ingame.compassNoPulseCountdown(time: time),
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
+    );
   }
 }
 

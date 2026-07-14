@@ -113,6 +113,7 @@ void main() {
         'bearing_deg': 42.5,
         'distance_m': 1234.6,
         'expires_at': '2026-07-12T20:05:30.000Z',
+        'next_pulse_at': '2026-07-12T20:15:00.000Z',
       });
 
       expect(
@@ -121,6 +122,7 @@ void main() {
           bearingDeg: 42.5,
           distanceM: 1234.6,
           expiresAt: DateTime.parse('2026-07-12T20:05:30.000Z'),
+          nextPulseAt: DateTime.parse('2026-07-12T20:15:00.000Z'),
         ),
       );
     });
@@ -132,6 +134,7 @@ void main() {
         'bearing_deg': 90,
         'distance_m': 500,
         'expires_at': '2026-07-12T20:05:30.000Z',
+        'next_pulse_at': '2026-07-12T20:15:00.000Z',
       });
 
       expect(
@@ -140,6 +143,7 @@ void main() {
           bearingDeg: 90,
           distanceM: 500,
           expiresAt: DateTime.parse('2026-07-12T20:05:30.000Z'),
+          nextPulseAt: DateTime.parse('2026-07-12T20:15:00.000Z'),
         ),
       );
     });

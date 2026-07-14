@@ -70,10 +70,14 @@ sealed class GameEvent with _$GameEvent {
 
   /// player:{player_id} — the global compass pulse's snapshot for this
   /// player (#16), a bearing/distance pair valid until [expiresAt].
+  /// [nextPulseAt] (#73) is the game's next scheduled pulse — always the
+  /// following global tick, even for a pulse sent outside the normal
+  /// schedule (target reassignment on a kill/frame pass).
   const factory GameEvent.compassPulse({
     required double bearingDeg,
     required double distanceM,
     required DateTime expiresAt,
+    required DateTime nextPulseAt,
   }) = CompassPulse;
 
   /// player:{assassin_id} — the target's exact location, sent every tick
@@ -195,6 +199,7 @@ sealed class GameEvent with _$GameEvent {
             bearingDeg: (payload['bearing_deg'] as num).toDouble(),
             distanceM: (payload['distance_m'] as num).toDouble(),
             expiresAt: DateTime.parse(payload['expires_at'] as String),
+            nextPulseAt: DateTime.parse(payload['next_pulse_at'] as String),
           );
         case 'target_location':
           return GameEvent.targetLocation(

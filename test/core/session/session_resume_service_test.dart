@@ -24,11 +24,11 @@ class _FakeSecureKeyValueStore implements SecureKeyValueStore {
 }
 
 class _FakeGameRepository implements GameRepository {
-  (String, GameEvent?)? myState;
+  (String, GameEvent?, DateTime?)? myState;
   Object? myStateFailure;
 
   @override
-  Future<(String, GameEvent?)> getMyState(String gameId) async {
+  Future<(String, GameEvent?, DateTime?)> getMyState(String gameId) async {
     if (myStateFailure != null) throw myStateFailure!;
     return myState!;
   }
@@ -150,7 +150,7 @@ void main() {
         playerId: 'player-1',
         keyBytes: await crypto.keyBytes,
       );
-      repository.myState = ('lobby', null);
+      repository.myState = ('lobby', null, null);
 
       final outcome = await service.resume();
 
@@ -174,6 +174,7 @@ void main() {
           nameCiphertext: 'irrelevant-here',
           selfiePath: 'irrelevant-here',
         ),
+        null,
       );
 
       final outcome = await service.resume();
@@ -195,6 +196,7 @@ void main() {
         repository.myState = (
           'dispersing',
           GameEvent.dispersalStarted(endsAt: endsAt),
+          null,
         );
 
         final outcome = await service.resume();
