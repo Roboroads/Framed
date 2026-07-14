@@ -43,40 +43,95 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    t.app.title,
+                    style: Theme.of(context).textTheme.displayMedium,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 48),
+                  FilledButton(
+                    onPressed: () =>
+                        context.push('/permission-gate', extra: '/scan'),
+                    child: Text(t.home.joinGame),
+                  ),
+                  const SizedBox(height: 16),
+                  OutlinedButton(
+                    onPressed: () =>
+                        context.push('/permission-gate', extra: '/host-setup'),
+                    child: Text(t.home.hostGame),
+                  ),
+                  const SizedBox(height: 48),
+                  TextButton(
+                    onPressed: () => _showGoodToKnow(context),
+                    child: Text(t.home.goodToKnowButton),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              top: 0,
+              right: 0,
+              child: IconButton(
+                icon: const Icon(Icons.language),
+                tooltip: t.home.languageButton,
+                onPressed: () => _showLanguagePicker(context),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showLanguagePicker(BuildContext context) {
+    return showModalBottomSheet<void>(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: RadioGroup<AppLocale>(
+          groupValue: LocaleSettings.currentLocale,
+          onChanged: (value) {
+            Navigator.of(sheetContext).pop();
+            if (value != null) LocaleSettings.setLocale(value);
+          },
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                t.app.title,
-                style: Theme.of(context).textTheme.displayMedium,
-                textAlign: TextAlign.center,
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  t.home.languagePickerTitle,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
               ),
-              const SizedBox(height: 48),
-              FilledButton(
-                onPressed: () =>
-                    context.push('/permission-gate', extra: '/scan'),
-                child: Text(t.home.joinGame),
-              ),
-              const SizedBox(height: 16),
-              OutlinedButton(
-                onPressed: () =>
-                    context.push('/permission-gate', extra: '/host-setup'),
-                child: Text(t.home.hostGame),
-              ),
-              const SizedBox(height: 48),
-              TextButton(
-                onPressed: () => _showGoodToKnow(context),
-                child: Text(t.home.goodToKnowButton),
-              ),
+              for (final locale in AppLocale.values)
+                RadioListTile<AppLocale>(
+                  title: Text(_nativeName(locale)),
+                  value: locale,
+                ),
             ],
           ),
         ),
       ),
     );
   }
+
+  // Language names stay in their own language regardless of the app's
+  // current locale — standard convention for a language picker (you find
+  // "Español" by reading Spanish, not by reading its English translation).
+  String _nativeName(AppLocale locale) => switch (locale) {
+    AppLocale.en => 'English',
+    AppLocale.nl => 'Nederlands',
+    AppLocale.es => 'Español',
+    AppLocale.fr => 'Français',
+  };
 
   Future<void> _showGoodToKnow(BuildContext context) {
     return showDialog<void>(

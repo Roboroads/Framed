@@ -53,7 +53,9 @@
     "joinGame": "Spel meedoen",
     "hostGame": "Spel hosten",
     "goodToKnowButton": "Goed om te weten",
-    "playFairDisclaimer": "Dit spel vertrouwt op de groep. We detecteren geen GPS-spoofing of aangepaste clients — speel gewoon eerlijk."
+    "playFairDisclaimer": "Dit spel vertrouwt op de groep. We detecteren geen GPS-spoofing of aangepaste clients — speel gewoon eerlijk.",
+    "languageButton": "Taal",
+    "languagePickerTitle": "Taal"
   },
   "goodToKnow": {
     "title": "Goed om te weten",

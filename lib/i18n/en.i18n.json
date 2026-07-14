@@ -53,7 +53,9 @@
     "joinGame": "Join game",
     "hostGame": "Host game",
     "goodToKnowButton": "Good to know",
-    "playFairDisclaimer": "This game trusts the group. We don't detect GPS spoofing or modified clients — just play fair."
+    "playFairDisclaimer": "This game trusts the group. We don't detect GPS spoofing or modified clients — just play fair.",
+    "languageButton": "Language",
+    "languagePickerTitle": "Language"
   },
   "goodToKnow": {
     "title": "Good to know",

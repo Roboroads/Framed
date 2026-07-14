@@ -53,7 +53,9 @@
     "joinGame": "Unirse a una partida",
     "hostGame": "Crear partida",
     "goodToKnowButton": "Cosas que conviene saber",
-    "playFairDisclaimer": "Este juego confía en el grupo. No detectamos GPS falsificado ni clientes modificados — juega limpio."
+    "playFairDisclaimer": "Este juego confía en el grupo. No detectamos GPS falsificado ni clientes modificados — juega limpio.",
+    "languageButton": "Idioma",
+    "languagePickerTitle": "Idioma"
   },
   "goodToKnow": {
     "title": "Cosas que conviene saber",

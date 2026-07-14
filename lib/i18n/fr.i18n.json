@@ -53,7 +53,9 @@
     "joinGame": "Rejoindre une partie",
     "hostGame": "Héberger une partie",
     "goodToKnowButton": "Bon à savoir",
-    "playFairDisclaimer": "Ce jeu fait confiance au groupe. Nous ne détectons ni le GPS falsifié ni les clients modifiés — jouez simplement franc jeu."
+    "playFairDisclaimer": "Ce jeu fait confiance au groupe. Nous ne détectons ni le GPS falsifié ni les clients modifiés — jouez simplement franc jeu.",
+    "languageButton": "Langue",
+    "languagePickerTitle": "Langue"
   },
   "goodToKnow": {
     "title": "Bon à savoir",
