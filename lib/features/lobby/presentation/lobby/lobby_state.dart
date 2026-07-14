@@ -33,7 +33,7 @@ sealed class LobbyState with _$LobbyState {
     @Default(10) int disperseMinutes,
     @Default(2) int softPunishmentMinutes,
     @Default(5) int hardPunishmentMinutes,
-    @Default(10) int compassUpdateIntervalMinutes,
+    @Default(5) int compassUpdateIntervalMinutes,
     @Default(30) int compassViewSeconds,
     @Default(5) int voteTimeoutMinutes,
     @Default(5) int frameCooldownMinutes,

@@ -32,6 +32,8 @@ While a vote about them is pending, the target is **not notified** and keeps pla
 
 Once every `compass_update_interval_minutes` a **global pulse** fires: every alive player simultaneously receives a compass update — an arrow and distance to their target's location *at pulse time* (a snapshot; it does not track the target live). The arrow rotates live with the device compass. The update disappears after `compass_view_seconds` seconds.
 
+The first pulse fires as soon as dispersal ends and targets are assigned, not one interval later — a player who only gets a name and a photo with no sense of direction has nothing to act on. Every pulse after that follows the normal `compass_update_interval_minutes` cadence.
+
 The simultaneous pulse is a feature: everyone stops to check their phone at the same moment, which is itself a tell you can watch for IRL.
 
 ## Notifications
@@ -86,7 +88,7 @@ Set by the host in the lobby:
 - `disperse_minutes` — dispersal time before the game starts. Default: 10.
 - `soft_punishment_minutes` — how long you can break a rule before soft consequences. Default: 2.
 - `hard_punishment_minutes` — how long you can break a rule before you die automatically. You die as if framed, but the death screen shows "MIA (broke a game rule for too long)". Default: 5.
-- `compass_update_interval_minutes` — interval of the global compass pulse. Default: 10.
+- `compass_update_interval_minutes` — interval of the global compass pulse. Default: 5.
 - `compass_view_seconds` — seconds a compass update stays visible. Default: 30.
 - `vote_timeout_minutes` — max time a vote stays open before it resolves on cast votes. Default: 5.
 - `frame_cooldown_minutes` — cooldown after a failed frame. Default: 2.

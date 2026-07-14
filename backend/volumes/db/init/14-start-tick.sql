@@ -55,7 +55,15 @@ begin
     jsonb_build_object('ends_at', started + (g.disperse_minutes || ' minutes')::interval));
 end $$;
 
--- Step 1: dispersal ends -> active, first pulse scheduled, targets revealed.
+-- Step 1: dispersal ends -> active, first pulse due immediately, targets
+-- revealed. next_pulse_at is set to now() rather than one interval out: a
+-- player who only gets a target's name and photo with no sense of
+-- direction has nothing to act on until the first pulse (IDEA.md "The
+-- compass"). tick_pulses (17-pulse.sql) reads a stale pre-update snapshot
+-- of this same game for the rest of THIS tick (see the file header comment
+-- above), so it still skips this round; the due-now timestamp makes it
+-- fire on the very next tick instead, ~30s later rather than a full
+-- interval later, using the normal pulse machinery unchanged.
 create or replace function tick_end_dispersal(g public.games) returns void
 language plpgsql set search_path = '' as $$
 declare next_pulse timestamptz;
@@ -65,7 +73,7 @@ begin
     return;
   end if;
 
-  next_pulse := now() + (g.compass_update_interval_minutes || ' minutes')::interval;
+  next_pulse := now();
   update public.games set status = 'active', active_at = now(), next_pulse_at = next_pulse
     where id = g.id;
 

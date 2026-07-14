@@ -34,7 +34,7 @@ create table if not exists games (
   disperse_minutes integer not null default 10,
   soft_punishment_minutes integer not null default 2,
   hard_punishment_minutes integer not null default 5,
-  compass_update_interval_minutes integer not null default 10,
+  compass_update_interval_minutes integer not null default 5,
   compass_view_seconds integer not null default 30,
   vote_timeout_minutes integer not null default 5,
   frame_cooldown_minutes integer not null default 2,

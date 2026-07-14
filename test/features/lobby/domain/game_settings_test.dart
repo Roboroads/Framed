@@ -41,7 +41,7 @@ void main() {
       expect(settings.disperseMinutes, 10);
       expect(settings.softPunishmentMinutes, 2);
       expect(settings.hardPunishmentMinutes, 5);
-      expect(settings.compassUpdateIntervalMinutes, 10);
+      expect(settings.compassUpdateIntervalMinutes, 5);
       expect(settings.compassViewSeconds, 30);
       expect(settings.voteTimeoutMinutes, 5);
       expect(settings.frameCooldownMinutes, 2);
