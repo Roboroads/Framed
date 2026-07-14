@@ -1,0 +1,203 @@
+{
+  "app": {
+    "title": "Framed"
+  },
+  "bootstrap": {
+    "errorGeneric": "Impossible de joindre le serveur. Vérifiez votre connexion et réessayez.",
+    "retry": "Réessayer"
+  },
+  "push": {
+    "channelName": "Événements de partie",
+    "channelDescription": "Mises à jour urgentes sur votre partie — cibles, photos et avertissements.",
+    "fallbackTitle": "Framed",
+    "fallbackBody": "Quelque chose s'est passé dans votre partie — ouvrez l'appli pour voir quoi.",
+    "targetAssignedTitle": "La dispersion est terminée",
+    "targetAssignedBody": "Vous avez une cible.",
+    "compassPulseTitle": "Mise à jour de la boussole",
+    "compassPulseBody": "Ouvrez l'appli pour voir où se trouve votre cible.",
+    "frameToJudgeTitle": "Nouvelle photo à juger",
+    "frameToJudgeBody": "Quelqu'un a besoin de votre vote.",
+    "frameToJudgeBodyNamed": "Est-ce $name ?",
+    "frameVerdictTitle": "Le verdict est tombé",
+    "frameVerdictBody": "Ouvrez l'appli pour voir ce qu'il est advenu de votre photo.",
+    "warningTitle": "Vous enfreignez une règle du jeu",
+    "warningBody": "Corrigez ça avant la fin du délai.",
+    "youDiedTitle": "Vous êtes éliminé",
+    "youDiedBody": "Ouvrez l'appli pour voir ce qui s'est passé.",
+    "youDiedBodyNamed": "$name vous a piégé.",
+    "gameFinishedTitle": "Partie terminée",
+    "gameFinishedBody": "Ouvrez l'appli pour voir qui a gagné.",
+    "gameFinishedBodyNamed": "$name a gagné."
+  },
+  "location": {
+    "notificationTitle": "Framed est actif",
+    "notificationText": "Partage de votre position pour la partie en cours."
+  },
+  "locationGate": {
+    "explainerTitle": "Accès à la position",
+    "explainerBody": "Framed a besoin de votre position en arrière-plan, même écran verrouillé, pour orienter la boussole vers votre cible et faire respecter la zone de jeu. Seule votre dernière position connue est stockée — elle est supprimée à la fin de la partie.",
+    "continueButton": "Continuer",
+    "blockedTitle": "La position est désactivée",
+    "blockedBody": "Framed ne peut pas suivre votre position. Activez-la dans les réglages, puis revenez — inutile de redémarrer l'appli.",
+    "openSettings": "Ouvrir les réglages"
+  },
+  "permissionGate": {
+    "explainerTitle": "Avant de commencer",
+    "explainerBody": "Framed a besoin de votre appareil photo pour les selfies et les photos de piégeage, et de votre position — même écran verrouillé — pour faire fonctionner la boussole et faire respecter la zone de jeu. Impossible d'héberger ou de rejoindre une partie sans les deux.",
+    "continueButton": "Continuer",
+    "blockedTitle": "Autorisation requise",
+    "blockedBody": "Framed ne peut pas démarrer sans accès à l'appareil photo et à la position. Activez-les dans les réglages, puis revenez — inutile de redémarrer l'appli.",
+    "openSettings": "Ouvrir les réglages"
+  },
+  "home": {
+    "joinGame": "Rejoindre une partie",
+    "hostGame": "Héberger une partie",
+    "goodToKnowButton": "Bon à savoir",
+    "playFairDisclaimer": "Ce jeu fait confiance au groupe. Nous ne détectons ni le GPS falsifié ni les clients modifiés — jouez simplement franc jeu."
+  },
+  "goodToKnow": {
+    "title": "Bon à savoir",
+    "fairPlayTitle": "Jouez franc jeu",
+    "privacyTitle": "Votre vie privée",
+    "privacyBody": "Pas d'analytique, pas de publicité, pas de comptes — personne ne vous suit. Votre nom, votre selfie, vos photos de piégeage et le chat des éliminés sont chiffrés sur votre téléphone avant d'être envoyés, avec une clé générée sur l'appareil de l'hôte et partagée uniquement via le QR code d'invitation — elle n'atteint jamais le serveur. La position est la seule exception : le serveur la lit en clair car il en a besoin, pour faire respecter la zone de jeu, faire fonctionner la boussole et vérifier qui est éliminé, et toujours seulement votre dernière position connue, jamais un historique de déplacements.",
+    "moneyTitle": "Comment nous gagnons de l'argent",
+    "moneyBody": "Pour l'instant, rien — il n'y a aucune monétisation. Le serveur sur lequel tourne ce jeu est autohébergé et payé de notre poche, par passion du jeu.",
+    "aiTitle": "À propos de cette appli",
+    "aiBody": "Cette appli est en grande partie construite avec l'aide de l'IA. Elle est réalisée par un développeur ayant plus de 16 ans d'expérience professionnelle en logiciel, qui a lu, relu et suivi chaque étape du code qui s'y trouve.",
+    "beginnerTipsTitle": "Nouveau sur Framed ?",
+    "beginnerTipsBody": "Dès le début de la partie, un compte à rebours de dispersion démarre — personne ne peut être piégé avant qu'il se termine, alors dispersez-vous vraiment. Ensuite, tout le monde reçoit une pulsation de boussole au même moment : une flèche et une distance jusqu'à votre cible, actualisées à intervalle fixe et qui disparaissent après quelques secondes — si les gens autour de vous regardent leur téléphone au même instant, voilà l'indice. Restez dans la zone de jeu définie par l'hôte : la quitter trop longtemps permet à votre assassin de voir votre position exacte, et rester dehors ou hors ligne trop longtemps vous élimine automatiquement. Pour éliminer quelqu'un, photographiez votre cible dans l'appli — les autres joueurs votent pour dire si c'est vraiment cette personne. Une majorité de oui met fin à sa partie ; un vote raté vous impose un délai avant de pouvoir retenter votre chance."
+  },
+  "hostSetup": {
+    "title": "Héberger une partie",
+    "modeSectionTitle": "Mode de jeu",
+    "modeMostFrames": "Le plus de piégeages gagne",
+    "modeMostFramesDescription": "Celui ou celle qui a le plus de piégeages confirmés à la fin de la partie gagne, même s'il ou elle a aussi été piégé(e).",
+    "modeLastManStanding": "Dernier survivant",
+    "modeLastManStandingDescription": "Le dernier joueur en vie gagne.",
+    "geofenceSectionTitle": "Zone de jeu",
+    "geofenceInfo": "Le cercle à l'intérieur duquel tout le monde doit rester. Le serveur le fait respecter — le quitter trop longtemps compte comme une infraction.",
+    "geofenceRadiusLabel": "$radius m de rayon",
+    "timingSectionTitle": "Minutage",
+    "disperseMinutes": "Temps de dispersion (minutes)",
+    "disperseMinutesInfo": "Compte à rebours après le début de la partie avant l'attribution des cibles. Personne ne peut piéger personne avant la fin de ce délai.",
+    "softPunishmentMinutes": "Sanction légère après (minutes)",
+    "softPunishmentMinutesInfo": "Combien de temps vous pouvez enfreindre une règle — quitter la zone de jeu, une position obsolète — avant que votre assassin ne voie votre position exacte sur sa carte.",
+    "hardPunishmentMinutes": "Sanction sévère après (minutes)",
+    "hardPunishmentMinutesInfo": "Combien de temps avant qu'enfreindre une règle ne vous élimine directement. L'écran de mort affiche cela comme « a enfreint une règle du jeu trop longtemps ».",
+    "compassUpdateIntervalMinutes": "Intervalle des pulsations de boussole (minutes)",
+    "compassUpdateIntervalMinutesInfo": "À quelle fréquence la pulsation de boussole se déclenche. Chaque joueur en vie reçoit au même moment une flèche et une distance jusqu'à sa cible.",
+    "compassViewSeconds": "Boussole visible pendant (secondes)",
+    "compassViewSecondsInfo": "Combien de secondes cette flèche et cette distance restent à l'écran avant de disparaître à nouveau.",
+    "voteTimeoutMinutes": "Délai de vote (minutes)",
+    "voteTimeoutMinutesInfo": "Combien de temps une photo de piégeage reste ouverte au vote des juges avant d'être tranchée selon les votes réellement exprimés.",
+    "frameCooldownMinutes": "Délai avant nouveau piégeage (minutes)",
+    "frameCooldownMinutesInfo": "Combien de temps un assassin attend après un vote de piégeage raté avant de pouvoir soumettre une nouvelle photo.",
+    "createGame": "Créer la partie",
+    "errorBadSettings": "Quelque chose ne va pas dans les réglages — vérifiez les valeurs et réessayez.",
+    "errorGeneric": "Impossible de créer la partie. Vérifiez votre connexion et réessayez."
+  },
+  "preJoin": {
+    "title": "Vous jouez aussi",
+    "nameLabel": "Votre nom",
+    "consentNotice": "Nous collectons votre nom, votre selfie de référence, votre position en direct, vos photos de piégeage et les notifications push, uniquement pour cette partie. Tout est supprimé à la fin de la partie, ou au plus tard après 24 heures. Rejoindre signifie que vous acceptez cela, et que vous jouerez prudemment : faites attention à la circulation, ne pénétrez pas dans des propriétés privées, évitez tout contact physique, ne photographiez pas des passants de près et respectez les zones que l'hôte déclare interdites.",
+    "selfieHint": "Les juges comparent ceci à chaque photo où vous apparaissez — assurez-vous que votre visage est clairement visible.",
+    "takeSelfie": "Prendre un selfie de référence",
+    "retakeSelfie": "Reprendre le selfie"
+  },
+  "lobby": {
+    "title": "Salle d'attente",
+    "scanToJoin": "Scannez pour rejoindre",
+    "readyCount": "$ready/$total prêts",
+    "hostBadge": "Hôte",
+    "readyBadge": "Prêt",
+    "notReadyBadge": "Pas encore prêt",
+    "startButton": "Démarrer la partie",
+    "startTooFewPlayers": "Au moins 3 joueurs prêts sont nécessaires",
+    "waitingForHost": "En attente que l'hôte démarre…",
+    "changeMode": "Changer de mode",
+    "showQrButton": "Afficher le QR code d'invitation",
+    "shareLinkButton": "Partager le lien d'invitation",
+    "gameSettingsButton": "Réglages de la partie",
+    "errorGeneric": "Quelque chose s'est mal passé. Vérifiez votre connexion et réessayez."
+  },
+  "ingame": {
+    "disperseTitle": "Dispersez-vous",
+    "disperseInstruction": "Vous recevrez votre cible quand ce délai atteindra zéro.",
+    "targetCardTitle": "Votre cible",
+    "myLocationButton": "Ma position",
+    "myLocationTitle": "Ma position",
+    "errorTargetLoad": "Impossible de charger votre cible. Essayez de rouvrir l'appli.",
+    "warningGeofence": "Vous êtes hors de la zone de jeu — revenez.",
+    "nearGeofenceEdge": "Vous êtes proche du bord de la zone de jeu",
+    "warningStale": "Nous ne recevons pas votre position. Vérifiez le GPS, le signal et l'économie de batterie.",
+    "warningDeadline": "Vous mourez dans $time",
+    "compassNoPulseWarning": "Pas de boussole tant que vous enfreignez une règle",
+    "compassNoPulseIdle": "Prochaine pulsation bientôt",
+    "compassDistanceMeters": "$distance m",
+    "compassFallback": "$direction, $distance m",
+    "targetLocationTitle": "Votre cible a quitté la zone de jeu — la voici",
+    "judgingTitle": "Est-ce $name ?",
+    "judgingNudge": "Si vous passez, vous manquerez votre prochaine pulsation de boussole.",
+    "judgingLoadError": "Impossible de charger cette photo.",
+    "judgingRetry": "Réessayer",
+    "judgingYes": "Oui",
+    "judgingNo": "Non",
+    "deadTitleFramed": "Vous avez été piégé",
+    "deadTitleMia": "Disparu",
+    "deadCauseMia": "Vous avez enfreint une règle du jeu trop longtemps.",
+    "deadKilledBy": "Éliminé par $name",
+    "deadSurvivedFor": "A survécu $time",
+    "deadChatEmpty": "Personne n'a encore rien dit.",
+    "deadChatHint": "Message aux éliminés",
+    "deadChatSendButton": "Envoyer"
+  },
+  "finish": {
+    "title": "Partie terminée",
+    "youWon": "Vous avez gagné !",
+    "winnerFrames": "$name a gagné avec $count piégeages",
+    "winnerLastManStanding": "$name est le dernier survivant",
+    "statsTitle": "Statistiques",
+    "statMostKills": "Le plus d'éliminations",
+    "statMostMoved": "Le plus de déplacement",
+    "statMostStill": "Le moins de déplacement",
+    "statCombinedMovement": "$distance m parcourus ensemble",
+    "statDuration": "La partie a duré $time",
+    "killChainTitle": "Chaîne d'éliminations",
+    "killChainFramed": "$killer a piégé $victim",
+    "killChainMia": "$victim a disparu",
+    "replayButton": "Rejouer avec les mêmes joueurs",
+    "replayError": "Impossible de démarrer la nouvelle partie. Réessayez.",
+    "leaveButton": "Quitter la partie"
+  },
+  "scan": {
+    "title": "Scannez pour rejoindre",
+    "invalidCode": "Ce n'est pas un code Framed valide — continuez à scanner."
+  },
+  "frame": {
+    "button": "Piéger",
+    "waiting": "En attente du verdict",
+    "cooldown": "Délai $time",
+    "confirmTitle": "Confirmer la photo",
+    "retake": "Reprendre",
+    "submit": "Envoyer",
+    "errorOnCooldown": "Vous êtes encore en délai après votre dernier piégeage.",
+    "errorAlreadyPending": "Vous avez déjà un piégeage en attente de verdict.",
+    "errorWrongStatus": "Vous ne pouvez piéger personne pour le moment.",
+    "errorGeneric": "Impossible d'envoyer cette photo. Vérifiez votre connexion et réessayez."
+  },
+  "camera": {
+    "permissionDeniedBody": "Framed a besoin de l'accès à l'appareil photo pour cela. Autorisez-le puis réessayez.",
+    "errorGeneric": "Impossible de démarrer l'appareil photo. Réessayez.",
+    "retry": "Réessayer"
+  },
+  "permissionRationale": {
+    "ok": "OK",
+    "locationExplanation": "Framed utilise votre position pour orienter une flèche de boussole vers votre cible et pour faire respecter la zone de jeu définie par l'hôte — le serveur en a besoin pour faire fonctionner la partie.",
+    "cameraExplanation": "Framed a besoin de votre appareil photo pour votre selfie de référence, puis pour les photos de piégeage que les juges comparent pour confirmer une élimination."
+  },
+  "join": {
+    "joinButton": "Rejoindre",
+    "errorNameTaken": "Ce nom est déjà pris dans cette salle d'attente.",
+    "errorGeneric": "Impossible de rejoindre la partie. Vérifiez votre connexion et réessayez."
+  }
+}

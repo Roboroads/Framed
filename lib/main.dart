@@ -27,6 +27,11 @@ const _bootstrapTimeout = Duration(seconds: 15);
 void main() => MCPToolkitBinding.instance.bootstrapFlutter(runApp: _bootstrap);
 
 Future<void> _bootstrap() async {
+  // Locale files ship with #64's key parity, but slang starts at the base
+  // locale (en) until something explicitly asks for the device's — this
+  // is that ask, before the first t.* read below so even the bootstrap
+  // error screen renders in the right language.
+  await LocaleSettings.useDeviceLocale();
   try {
     await Supabase.initialize(
       url: Env.supabaseUrl,

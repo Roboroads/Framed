@@ -39,6 +39,9 @@ migrate_working_dir/
 **/*.freezed.dart
 lib/i18n/strings.g.dart
 lib/i18n/strings_en.g.dart
+lib/i18n/strings_nl.g.dart
+lib/i18n/strings_es.g.dart
+lib/i18n/strings_fr.g.dart
 
 # Symbolication related
 app.*.symbols
