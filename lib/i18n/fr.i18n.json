@@ -105,7 +105,8 @@
   "preJoin": {
     "title": "Vous jouez aussi",
     "nameLabel": "Votre nom",
-    "consentNotice": "Nous collectons votre nom, votre selfie de référence, votre position en direct, vos photos de piégeage et les notifications push, uniquement pour cette partie. Tout est supprimé à la fin de la partie, ou au plus tard après 24 heures. Rejoindre signifie que vous acceptez cela, et que vous jouerez prudemment : faites attention à la circulation, ne pénétrez pas dans des propriétés privées, évitez tout contact physique, ne photographiez pas des passants de près et respectez les zones que l'hôte déclare interdites.",
+    "consentNotice": "Jouer envoie votre nom, votre selfie de référence, votre position en direct, vos photos de piégeage et votre jeton de notification au serveur, le tout supprimé à la fin de la partie ou au plus tard après 24 heures. Jouez prudemment : faites attention à la circulation, ne pénétrez pas dans des propriétés privées, évitez tout contact physique, photographiez uniquement votre cible et respectez les zones que l'hôte déclare interdites. En rejoignant, vous acceptez cela.",
+    "privacyPolicyLink": "Politique de confidentialité",
     "selfieHint": "Les juges comparent ceci à chaque photo où vous apparaissez. Assurez-vous que votre visage est clairement visible.",
     "takeSelfie": "Prendre un selfie de référence",
     "retakeSelfie": "Reprendre le selfie"

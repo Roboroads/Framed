@@ -105,7 +105,8 @@
   "preJoin": {
     "title": "You're playing too",
     "nameLabel": "Your name",
-    "consentNotice": "We collect your name, reference selfie, live location, frame photos, and push notifications for this game only. Everything is deleted when the game ends, or after 24 hours at the latest. Joining means you agree, and that you'll play safe: watch for traffic, don't trespass, no physical contact, don't photograph bystanders up close, and respect any areas the host declares off-limits.",
+    "consentNotice": "Playing sends your name, reference selfie, live location, frame photos, and push token to the server, all deleted when the game ends or after 24 hours at the latest. Play safe: watch for traffic, don't trespass, no physical contact, photograph your target only, and respect any areas the host puts off-limits. By joining, you agree.",
+    "privacyPolicyLink": "Privacy policy",
     "selfieHint": "Judges compare this to every frame you're in. Make sure your face is clearly visible.",
     "takeSelfie": "Take reference selfie",
     "retakeSelfie": "Retake selfie"

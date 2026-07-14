@@ -105,7 +105,8 @@
   "preJoin": {
     "title": "Jij speelt ook mee",
     "nameLabel": "Jouw naam",
-    "consentNotice": "We verzamelen je naam, referentieselfie, live locatie, frame-foto's en pushmeldingen alleen voor dit spel. Alles wordt verwijderd zodra het spel eindigt, of uiterlijk na 24 uur. Meedoen betekent dat je akkoord gaat, en dat je veilig speelt: let op verkeer, betreed geen verboden terrein, geen fysiek contact, fotografeer geen omstanders van dichtbij en respecteer gebieden die de host verboden verklaart.",
+    "consentNotice": "Meespelen stuurt je naam, referentieselfie, live locatie, frame-foto's en pushtoken naar de server, alles verwijderd zodra het spel eindigt of uiterlijk na 24 uur. Speel veilig: let op verkeer, betreed geen verboden terrein, geen fysiek contact, fotografeer alleen je doelwit en respecteer gebieden die de host verboden verklaart. Door mee te doen ga je hiermee akkoord.",
+    "privacyPolicyLink": "Privacybeleid",
     "selfieHint": "Juryleden vergelijken dit met elke frame waar je in zit. Zorg dat je gezicht duidelijk zichtbaar is.",
     "takeSelfie": "Referentieselfie maken",
     "retakeSelfie": "Selfie opnieuw maken"

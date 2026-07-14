@@ -105,7 +105,8 @@
   "preJoin": {
     "title": "Tú también juegas",
     "nameLabel": "Tu nombre",
-    "consentNotice": "Recogemos tu nombre, tu selfie de referencia, tu ubicación en tiempo real, tus fotos de eliminación y las notificaciones push solo para esta partida. Todo se borra cuando termina la partida, o como máximo a las 24 horas. Unirte significa que aceptas esto, y que jugarás de forma segura: vigila el tráfico, no entres en propiedad privada, evita el contacto físico, no fotografíes a transeúntes de cerca y respeta las zonas que el anfitrión declare prohibidas.",
+    "consentNotice": "Jugar envía tu nombre, tu selfie de referencia, tu ubicación en tiempo real, tus fotos de eliminación y tu token de notificaciones al servidor; todo se borra cuando termina la partida o, como máximo, a las 24 horas. Juega de forma segura: vigila el tráfico, no entres en propiedad privada, evita el contacto físico, fotografía solo a tu objetivo y respeta las zonas que el anfitrión declare prohibidas. Al unirte, aceptas esto.",
+    "privacyPolicyLink": "Política de privacidad",
     "selfieHint": "Los jueces comparan esto con cada foto en la que apareces. Asegúrate de que tu cara se vea con claridad.",
     "takeSelfie": "Hacer selfie de referencia",
     "retakeSelfie": "Repetir selfie"

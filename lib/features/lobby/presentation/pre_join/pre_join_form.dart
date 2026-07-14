@@ -1,10 +1,15 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/camera/in_app_camera_page.dart';
 import '../../../../core/widgets/full_screen_photo_page.dart';
 import '../../../../i18n/strings.g.dart';
+
+/// Same domain #66 already set up for join links, GitHub Pages-hosted
+/// (docs/privacy-policy/index.html).
+const _privacyPolicyUrl = 'https://getframed.fun/privacy-policy';
 
 /// Name + reference selfie, shared by the host flow (#8) and the join flow
 /// (#9) — same widget, no separate bloc. Whoever embeds this owns the state
@@ -71,6 +76,19 @@ class _PreJoinFormState extends State<PreJoinForm> {
         Text(
           t.preJoin.consentNotice,
           style: Theme.of(context).textTheme.bodySmall,
+        ),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: InkWell(
+            onTap: () => launchUrl(Uri.parse(_privacyPolicyUrl)),
+            child: Text(
+              t.preJoin.privacyPolicyLink,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.primary,
+                decoration: TextDecoration.underline,
+              ),
+            ),
+          ),
         ),
         const SizedBox(height: 16),
         Text(

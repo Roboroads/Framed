@@ -56,6 +56,13 @@ any game, whatever its status, wipes 24h after `created_at` regardless
 old game wipes the same way once its players move on — the new game
 already has its own copied rows and its own 24h clock by then.
 
+A lobby that never starts a game expires sooner (issue #70,
+`volumes/db/init/26-lobby-expiry.sql`): the whole lobby wipes after an
+hour with no heartbeat from anyone in it (`tick_lobby_expiry`), and a
+single quiet player is dropped from an otherwise-active lobby after 15
+minutes (`tick_inactive_lobby_players`), same effects a live `leave_lobby`
+call produces.
+
 The only thing that survives, forever, feeds this repo's privacy policy
 (#30):
 

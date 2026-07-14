@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Framed: Privacy Policy</title>
+<meta name="description" content="What Framed collects, why, and for how long.">
+<link rel="icon" href="data:,">
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    max-width: 40rem;
+    margin: 3rem auto;
+    padding: 0 1.5rem 4rem;
+    line-height: 1.6;
+  }
+  h1 { font-size: 1.75rem; margin-bottom: 0.25rem; }
+  h2 { font-size: 1.2rem; margin-top: 2.5rem; }
+  .updated { opacity: 0.65; margin-top: 0; font-size: 0.9rem; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid color-mix(in srgb, currentColor 15%, transparent); font-size: 0.95rem; vertical-align: top; }
+  th { font-weight: 600; }
+  code { font-size: 0.9em; }
+  .fixme {
+    background: color-mix(in srgb, orange 20%, transparent);
+    border: 1px solid orange;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+  }
+</style>
+</head>
+<body>
+  <h1>Privacy Policy</h1>
+  <p class="updated">Last updated: 2026-07-14</p>
+
+  <p>Framed is a local-area game you play with people you already know, over a fixed session (a "game"). This page explains what the app collects while you play, why, and when it's deleted. It applies to everyone who joins a game, host or not.</p>
+
+  <h2>What we process, and for how long</h2>
+
+  <table>
+    <tr><th>Data</th><th>Encrypted before it reaches us?</th><th>Kept until</th></tr>
+    <tr><td>Display name</td><td>Yes</td><td>Game ends, or 24h, whichever first</td></tr>
+    <tr><td>Reference selfie</td><td>Yes</td><td>Game ends, or 24h, whichever first</td></tr>
+    <tr><td>Frame photos (the pictures you take of your target)</td><td>Yes</td><td>Game ends, or 24h, whichever first</td></tr>
+    <tr><td>Dead-chat messages</td><td>Yes</td><td>Game ends, or 24h, whichever first</td></tr>
+    <tr><td>Live GPS location</td><td>No &mdash; only last-known position is stored, never a movement history</td><td>Game ends, or 24h, whichever first</td></tr>
+    <tr><td>Push notification token</td><td>No</td><td>Game ends, or 24h, whichever first</td></tr>
+  </table>
+
+  <p>"Encrypted before it reaches us" means client-side end-to-end encryption: the game key is generated on the host's phone and shared with other players only through the join QR code or link, never sent to our server. We physically cannot read your name, selfie, frame photos, or dead-chat messages &mdash; we only ever store and relay opaque ciphertext for those. Location is the one exception: our server reads it in plain text because the game itself depends on it (see "Why we need your location" below).</p>
+
+  <p>A lobby that never starts a game expires sooner than 24 hours: the whole lobby is deleted after an hour of nobody in it being active, and an individual player who's gone quiet is dropped from an otherwise-active lobby after 15 minutes.</p>
+
+  <h2>Why we need your location</h2>
+
+  <p>The server uses your GPS position, in plain text, to:</p>
+  <ul>
+    <li>Enforce the play area the host set (the "geofence") &mdash; leaving it for too long is a rule-break.</li>
+    <li>Compute the compass arrow and distance every player gets, pointing at their target.</li>
+    <li>Detect when a player has gone silent (stale location) for too long.</li>
+  </ul>
+  <p>Only your most recent position is ever stored. There is no location history, no movement trail &mdash; each new update overwrites the last.</p>
+
+  <h2>Lawful basis</h2>
+
+  <p>Consent. This page, and the shorter notice shown before you join a game, tell you what's collected and for how long before your selfie is ever taken. Joining a game is the consent action.</p>
+
+  <p>Leaving a lobby before the game starts deletes your data immediately. Leaving mid-game isn't possible the same way &mdash; going silent marks you MIA, and everything is wiped when the game ends (24 hours at the latest either way). That's the right to erasure, automated rather than requested.</p>
+
+  <h2>Hosting</h2>
+
+  <div class="fixme">
+    FIXME (blocks release &mdash; see the release checklist): name the actual hosting provider and region here once the production server exists. Must be an EU provider/region to match the claim below.
+  </div>
+
+  <p>Framed runs on a self-hosted <a href="https://supabase.com">Supabase</a> instance in the EU. Your data doesn't leave the EU, and there's no third-party data processor involved beyond that hosting provider. Thanks to end-to-end encryption, even the hosting provider only ever holds unreadable ciphertext for the fields listed as encrypted above.</p>
+
+  <h2>Push notifications</h2>
+
+  <p>Push notifications (via Apple's APNs or Google's FCM) carry no readable content &mdash; only a bare wake-up signal (which kind of game event happened, and which game). The app decrypts and renders the actual notification text on your device, using the game key it already has. Apple and Google never see your name, a photo, or any other content through their push services.</p>
+
+  <h2>No tracking</h2>
+
+  <p>No accounts, no ads, no third-party analytics or crash reporting of any kind. We don't know who you are beyond the display name you pick for a single game, and we don't want to.</p>
+
+  <h2>Bystanders</h2>
+
+  <p>Frame photos might catch people who aren't playing. Photograph your target, not crowds. Frame photos are deleted within 24 hours at the latest, same as everything else.</p>
+
+  <h2>What we keep forever</h2>
+
+  <p>One anonymous row per finished game, with nothing that can be traced back to a player, a name, or a location:</p>
+
+  <pre><code>create table aggregate_stats (
+  finished_on date not null,
+  player_count integer not null,
+  duration_minutes integer not null,
+  autocleaned boolean not null
+);</code></pre>
+
+  <p>That's it &mdash; when a game happened, how many people played, how long it lasted, and whether it was cleaned up automatically versus properly finished. No IDs, no names, no locations. Used only to see, in aggregate, whether the game gets played.</p>
+
+  <h2>Contact</h2>
+
+  <div class="fixme">
+    FIXME (blocks release): confirm the right contact point and, if applicable, the legal entity name for data-subject requests.
+  </div>
+
+  <p>Framed is a hobby project. For questions about this policy or your data, open an issue on <a href="https://github.com/Roboroads/Framed">the GitHub repository</a>.</p>
+
+  <p><a href="/">&larr; Back to Framed</a></p>
+</body>
+</html>
