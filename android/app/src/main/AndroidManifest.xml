@@ -44,14 +44,18 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-            <!-- Join links: framed://join?v=1&t={join_token}&k={game key}
+            <!-- Join links: https://getframed.fun/join?v=1&t={join_token}#k={game key}
                  (lib/core/crypto/qr_payload.dart) — same payload as the
-                 lobby QR code, so a join link works anywhere the QR does. -->
-            <intent-filter>
+                 lobby QR code, so a join link works anywhere the QR does.
+                 An Android App Link (#66): autoVerify plus the
+                 /.well-known/assetlinks.json served from getframed.fun is
+                 what opens the app directly, no chooser dialog, instead of
+                 just registering as one of several handlers. -->
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="framed" android:host="join"/>
+                <data android:scheme="https" android:host="getframed.fun" android:pathPrefix="/join"/>
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.

@@ -36,18 +36,14 @@
 	<array>
 		<string>location</string>
 	</array>
-	<!-- Join links: framed://join?v=1&t={join_token}&k={game key}
+	<!-- Join links: https://getframed.fun/join?v=1&t={join_token}#k={game key}
 	     (lib/core/crypto/qr_payload.dart) — same payload as the lobby QR
-	     code, routed through go_router (issue #49). -->
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>framed</string>
-			</array>
-		</dict>
-	</array>
+	     code, routed through go_router (issue #49). A Universal Link
+	     (#66), not a custom URL scheme: no CFBundleURLTypes entry needed
+	     here, that's what the Associated Domains entitlement
+	     (Runner.entitlements, applinks:getframed.fun) plus the
+	     apple-app-site-association file served from getframed.fun are
+	     for. -->
 	<key>FlutterDeepLinkingEnabled</key>
 	<true/>
 	<key>UIApplicationSceneManifest</key>

@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "FIXME_APPLE_TEAM_ID.me.roboroads.framed",
+        "paths": ["/join", "/join?*"]
+      }
+    ]
+  }
+}

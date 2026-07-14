@@ -60,12 +60,14 @@ final appRouter = GoRouter(
   ],
 );
 
-// framed://join?v=1&t={token}&k={key} (the QR payload format,
-// core/crypto/qr_payload.dart) is a custom-scheme link where "join" is the
-// URI *host*, not the path — go_router matches routes by path, so it can't
-// see this directly. Rewrite it to the internal /join path once, here,
-// rather than changing a wire format QR codes and shared links already
-// use.
+// https://getframed.fun/join?v=1&t={token}#k={key} (the QR payload format,
+// core/crypto/qr_payload.dart — an Android App Link / iOS Universal Link,
+// #66) has "join" as a *path* segment, but go_router's own route table
+// only ever sees a same-app in-app navigation as far as its `path` field —
+// it has no way to match "https://getframed.fun/join" against a plain
+// "/join" GoRoute. Rewrite it to that bare path once, here, preserving the
+// query (v, t) and fragment (k) exactly, rather than changing the wire
+// format QR codes and shared links use.
 //
 // Android redelivers the same intent (singleTop launch mode) on a second
 // tap of the link, or any other stale VIEW redelivery — see #72. Without a
@@ -82,9 +84,13 @@ final appRouter = GoRouter(
 // resume, which lands back on the correct live screen instead.
 String? _redirectJoinLink(BuildContext context, GoRouterState state) {
   final uri = state.uri;
-  if (uri.scheme != 'framed' || uri.host != 'join') return null;
+  if (uri.host != 'getframed.fun' || uri.path != '/join') return null;
   if (getIt<GameSession>().isActive) return '/';
-  return Uri(path: '/join', queryParameters: uri.queryParameters).toString();
+  return Uri(
+    path: '/join',
+    queryParameters: uri.queryParameters,
+    fragment: uri.fragment,
+  ).toString();
 }
 
 Widget _buildJoinPage(BuildContext context, GoRouterState state) {
@@ -94,16 +100,13 @@ Widget _buildJoinPage(BuildContext context, GoRouterState state) {
       gameKeyBytes: payload.keyBytes,
     );
   }
-  // No extra: reached via a framed://join link (rewritten by the redirect
-  // above). Rebuild the original shape and reuse QrPayload's own
-  // validation rather than duplicating it.
-  final relink = Uri(
-    scheme: 'framed',
-    host: 'join',
-    queryParameters: state.uri.queryParameters,
-  );
+  // No extra: reached via an https://getframed.fun/join link, already
+  // rewritten to a bare /join?...#... path by the redirect above — parse
+  // it directly, reusing QrPayload's own validation rather than
+  // duplicating it (QrPayload.parse doesn't check scheme/host itself,
+  // exactly so this bare-path shape parses too).
   try {
-    final payload = QrPayload.parse(relink.toString());
+    final payload = QrPayload.parse(state.uri.toString());
     return JoinPage(
       joinToken: payload.joinToken,
       gameKeyBytes: payload.keyBytes,
