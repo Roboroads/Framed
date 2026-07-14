@@ -217,7 +217,7 @@ class _GeofenceMapState extends State<GeofenceMap> {
               ).colorScheme.surface.withValues(alpha: 0.8),
               child: Padding(
                 padding: const EdgeInsets.all(3),
-                child: Text(t.hostSetup.osmAttribution),
+                child: Text('© ${t.hostSetup.osmAttribution}'),
               ),
             ),
           ),
