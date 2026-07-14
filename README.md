@@ -23,7 +23,6 @@ Checks: `dart format .` · `flutter analyze` · `flutter test`
 - `lib/features/<feature>/{data,domain,presentation}` — clean architecture, feature-first
 - `lib/core/` — theme (design system), DI, config, crypto
 - `backend/` — Supabase docker-compose for local dev ([backend/README.md](backend/README.md))
-- Contributor/AI guidelines: [CLAUDE.md](CLAUDE.md)
 
 ## Localization
 
