@@ -113,6 +113,10 @@ class _HomePageState extends State<HomePage> {
               ),
               for (final locale in AppLocale.values)
                 RadioListTile<AppLocale>(
+                  secondary: Text(
+                    _flag(locale),
+                    style: const TextStyle(fontSize: 24),
+                  ),
                   title: Text(_nativeName(locale)),
                   value: locale,
                 ),
@@ -131,6 +135,17 @@ class _HomePageState extends State<HomePage> {
     AppLocale.nl => 'Nederlands',
     AppLocale.es => 'Español',
     AppLocale.fr => 'Français',
+  };
+
+  // A flag per language, not per country — the point is "recognizable at a
+  // glance in a picker", not a precise claim about where a language is
+  // spoken. UK flag for English rather than US: this app's backend and
+  // primary dev context are European (backend/README.md).
+  String _flag(AppLocale locale) => switch (locale) {
+    AppLocale.en => '🇬🇧',
+    AppLocale.nl => '🇳🇱',
+    AppLocale.es => '🇪🇸',
+    AppLocale.fr => '🇫🇷',
   };
 
   Future<void> _showGoodToKnow(BuildContext context) {
