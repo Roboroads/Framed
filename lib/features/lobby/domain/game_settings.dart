@@ -13,14 +13,14 @@ sealed class GameSettings with _$GameSettings {
     @Default(GameMode.mostFrames) GameMode mode,
     required double geofenceLat,
     required double geofenceLng,
-    @Default(200) int geofenceRadiusM,
+    @Default(500) int geofenceRadiusM,
     @Default(10) int disperseMinutes,
     @Default(2) int softPunishmentMinutes,
     @Default(5) int hardPunishmentMinutes,
     @Default(10) int compassUpdateIntervalMinutes,
     @Default(30) int compassViewSeconds,
     @Default(5) int voteTimeoutMinutes,
-    @Default(5) int frameCooldownMinutes,
+    @Default(2) int frameCooldownMinutes,
   }) = _GameSettings;
 
   const GameSettings._();

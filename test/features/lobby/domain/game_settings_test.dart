@@ -44,7 +44,7 @@ void main() {
       expect(settings.compassUpdateIntervalMinutes, 10);
       expect(settings.compassViewSeconds, 30);
       expect(settings.voteTimeoutMinutes, 5);
-      expect(settings.frameCooldownMinutes, 5);
+      expect(settings.frameCooldownMinutes, 2);
     });
   });
 }

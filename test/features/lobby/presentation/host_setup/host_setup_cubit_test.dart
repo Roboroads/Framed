@@ -146,7 +146,7 @@ void main() {
         // GameSettings' own defaults; mode/radius/timing move to the
         // lobby's "Game settings" screen (#62).
         expect(repository.capturedSettings!.mode, GameMode.mostFrames);
-        expect(repository.capturedSettings!.geofenceRadiusM, 200);
+        expect(repository.capturedSettings!.geofenceRadiusM, 500);
         expect(repository.capturedSettings!.geofenceLat, 52.09);
         expect(repository.capturedPlatform, isNotEmpty);
 

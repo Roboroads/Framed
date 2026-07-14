@@ -87,7 +87,7 @@ Set by the host in the lobby:
 - `compass_update_interval_minutes` — interval of the global compass pulse. Default: 10.
 - `compass_view_seconds` — seconds a compass update stays visible. Default: 30.
 - `vote_timeout_minutes` — max time a vote stays open before it resolves on cast votes. Default: 5.
-- `frame_cooldown_minutes` — cooldown after a failed frame. Default: 5.
+- `frame_cooldown_minutes` — cooldown after a failed frame. Default: 2.
 
 ## Game rules
 

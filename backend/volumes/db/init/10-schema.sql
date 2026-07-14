@@ -37,7 +37,7 @@ create table if not exists games (
   compass_update_interval_minutes integer not null default 10,
   compass_view_seconds integer not null default 30,
   vote_timeout_minutes integer not null default 5,
-  frame_cooldown_minutes integer not null default 5,
+  frame_cooldown_minutes integer not null default 2,
   next_pulse_at timestamptz,
   replay_of uuid references games (id),
   replay_key_ciphertext text, -- new game key under the old key; opaque to the server
