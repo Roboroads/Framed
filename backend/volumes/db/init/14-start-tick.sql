@@ -88,7 +88,8 @@ begin
     perform public.tick_punishments(g);
     perform public.tick_pulses(g);
     perform public.tick_vote_timeouts(g);
-    -- later steps: tick_win_check(g), tick_cleanup(g)
+    perform public.tick_win_check(g);
+    -- later steps: tick_cleanup(g)
   end loop;
 end $$;
 
