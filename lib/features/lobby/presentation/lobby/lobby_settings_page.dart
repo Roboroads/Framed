@@ -26,15 +26,20 @@ class LobbySettingsPage extends StatelessWidget {
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              Row(
-                children: [
-                  Text(
-                    t.hostSetup.geofenceSectionTitle,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(width: 4),
-                  _InfoIcon(message: t.hostSetup.geofenceInfo),
-                ],
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        t.hostSetup.geofenceSectionTitle,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    _InfoIcon(message: t.hostSetup.geofenceInfo),
+                  ],
+                ),
               ),
               const SizedBox(height: 8),
               if (lat == null || lng == null)
@@ -147,9 +152,8 @@ class _Stepper extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       title: Row(
-        mainAxisSize: MainAxisSize.min,
         children: [
-          Flexible(child: Text(label)),
+          Expanded(child: Text(label)),
           const SizedBox(width: 4),
           _InfoIcon(message: info),
         ],
