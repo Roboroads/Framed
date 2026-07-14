@@ -265,8 +265,14 @@ class IngameBloc extends Cubit<IngameState> {
           survivedSeconds: event.survivedSeconds,
           photoBytes: photoBytes,
         ),
+        keepAwake: false,
       ),
     );
+    // The wake lock (#78) exists so a compass pulse or warning is never
+    // missed to a dimmed screen — dead players get neither. A pending
+    // frame_to_judge still wakes the device via its own push, same as any
+    // other push while the game's still active.
+    unawaited(_wakeLockService.disable());
     unawaited(_startDeadChat());
   }
 

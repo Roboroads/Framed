@@ -569,6 +569,9 @@ void main() {
         ),
       );
       expect(localAlarms.cancelAllCallCount, 1);
+      // #78: nothing left to stay awake for once dead.
+      expect(bloc.state.keepAwake, isFalse);
+      expect(wakeLockService.disableCallCount, 1);
     });
 
     test('you_died with a photo downloads and decrypts it', () async {

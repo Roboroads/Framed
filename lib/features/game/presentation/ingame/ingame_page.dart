@@ -201,7 +201,11 @@ class _IngameView extends StatelessWidget {
                 // "no mid-game quit" no longer blocks the living, it just
                 // makes leaving cost you the game).
                 if (state.phase is! IngameDead) const _LeaveButton(),
-                _WakeLockButton(keepAwake: state.keepAwake),
+                // Nothing left to stay awake for once dead (#78) — no more
+                // compass pulses or warnings, and a pending frame_to_judge
+                // still wakes the device via its own push either way.
+                if (state.phase is! IngameDead)
+                  _WakeLockButton(keepAwake: state.keepAwake),
               ],
             ),
           ),
