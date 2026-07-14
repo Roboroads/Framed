@@ -65,7 +65,7 @@
     "moneyTitle": "How we make money",
     "moneyBody": "Right now, nothing — there's no monetization. The server this game runs on is self-hosted and paid for out of pocket, for the love of the game.",
     "aiTitle": "About this app",
-    "aiBody": "This app is mostly built with AI assistance. It's built by a developer with over 16 years of professional software experience, who has read, reviewed, and been present for every step of the code that ended up here.",
+    "aiBody": "This app is mostly built with AI assistance. The developer behind it has over 16 years of professional software experience and reviewed every line before it shipped.",
     "beginnerTipsTitle": "New to Framed?",
     "beginnerTipsBody": "Once the game starts you get a dispersal countdown — nobody can be framed until it ends, so actually spread out. After that, everyone gets a compass pulse on the same schedule: an arrow and distance to your target, refreshed at a fixed interval and gone again after a few seconds — if people around you glance at their phones at the same moment, that's the tell. Stay inside the host's play area: leave it too long and your assassin sees your exact location, stay out or go dark long enough and you die automatically. To make a kill, photograph your target in the app — the other players vote on whether it's really them. A majority yes ends their game; a failed vote costs you a cooldown before you can try again."
   },
