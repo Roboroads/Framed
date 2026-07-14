@@ -117,7 +117,11 @@ declare
   reasons text[];
   assassin_id uuid;
 begin
-  if g.status not in ('dispersing', 'active') then return; end if;
+  -- Enforcement waits for the hunt itself (IDEA.md "Dispersal phase"):
+  -- during dispersing, players are deliberately spreading out and haven't
+  -- been told their target yet, so a geofence/staleness warning here would
+  -- fire before there's anything to warn about.
+  if g.status <> 'active' then return; end if;
 
   for p in select * from public.players where game_id = g.id and status = 'alive' loop
     outside := public.is_outside_geofence(p, g);

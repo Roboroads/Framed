@@ -112,7 +112,7 @@ Set by the host in the lobby:
 - **Votes are final.**
   - A majority "yes" kills the target even if the judges were wrong. There is no appeal; the vote is the truth.
 - **Dispersal phase.**
-  - Location updates and geofence enforcement start at game start, not after dispersal.
+  - Location updates start at game start, but geofence and staleness enforcement (warnings, punishments) waits for dispersal to end — you're meant to be spreading out, and you don't have a target yet to break rules over.
   - Framing is impossible until dispersal ends and you receive your target.
 
 ### Safety rules
