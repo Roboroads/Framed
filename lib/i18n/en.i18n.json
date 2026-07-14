@@ -6,6 +6,29 @@
     "errorGeneric": "Couldn't reach the server. Check your connection and try again.",
     "retry": "Try again"
   },
+  "push": {
+    "channelName": "Game events",
+    "channelDescription": "Time-sensitive updates about your game — targets, frames, and warnings.",
+    "fallbackTitle": "Framed",
+    "fallbackBody": "Something happened in your game — open the app to see.",
+    "targetAssignedTitle": "Dispersal is over",
+    "targetAssignedBody": "You have a target.",
+    "compassPulseTitle": "Compass update",
+    "compassPulseBody": "Open the app to see where your target is.",
+    "frameToJudgeTitle": "New frame to judge",
+    "frameToJudgeBody": "Someone needs your vote.",
+    "frameToJudgeBodyNamed": "Is this $name?",
+    "frameVerdictTitle": "Verdict is in",
+    "frameVerdictBody": "Open the app to see how your frame went.",
+    "warningTitle": "You're breaking a game rule",
+    "warningBody": "Fix it before the clock runs out.",
+    "youDiedTitle": "You're out",
+    "youDiedBody": "Open the app to see what happened.",
+    "youDiedBodyNamed": "$name framed you.",
+    "gameFinishedTitle": "Game over",
+    "gameFinishedBody": "Open the app to see who won.",
+    "gameFinishedBodyNamed": "$name won."
+  },
   "location": {
     "notificationTitle": "Framed is running",
     "notificationText": "Sharing your location for the current game."

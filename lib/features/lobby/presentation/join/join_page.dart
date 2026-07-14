@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/injector.dart';
+import '../../../../core/push/push_service.dart';
 import '../../../../core/session/game_session.dart';
 import '../../../../i18n/strings.g.dart';
 import '../../domain/lobby_error.dart';
@@ -29,6 +30,7 @@ class JoinPage extends StatelessWidget {
       create: (_) => JoinCubit(
         repository: getIt<LobbyRepository>(),
         session: getIt<GameSession>(),
+        pushService: getIt<PushService>(),
         joinToken: joinToken,
         gameKeyBytes: gameKeyBytes,
       ),

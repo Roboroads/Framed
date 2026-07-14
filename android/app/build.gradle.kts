@@ -25,6 +25,9 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        // flutter_local_notifications (#28) needs this for its Android
+        // implementation, independent of any Firebase/push credentials.
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -69,4 +72,9 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    // Paired with isCoreLibraryDesugaringEnabled above.
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }

@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:framed/core/push/push_service.dart';
 import 'package:framed/core/session/game_session.dart';
 import 'package:framed/core/session/session_store.dart';
 import 'package:framed/features/lobby/domain/game_mode.dart';
@@ -100,7 +101,11 @@ void main() {
     setUp(() {
       repository = _FakeLobbyRepository();
       session = GameSession(SessionStore(_FakeSecureKeyValueStore()));
-      cubit = HostSetupCubit(repository: repository, session: session);
+      cubit = HostSetupCubit(
+        repository: repository,
+        session: session,
+        pushService: PushService(),
+      );
     });
 
     test('canSubmit is false until name, selfie, and geofence are all set', () {

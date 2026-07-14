@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../../../core/di/injector.dart';
+import '../../../../core/push/push_service.dart';
 import '../../../../core/session/game_session.dart';
 import '../../../../core/widgets/geofence_map.dart';
 import '../../../../i18n/strings.g.dart';
@@ -26,6 +27,7 @@ class HostSetupPage extends StatelessWidget {
       create: (_) => HostSetupCubit(
         repository: getIt<LobbyRepository>(),
         session: getIt<GameSession>(),
+        pushService: getIt<PushService>(),
       ),
       child: const _HostSetupView(),
     );

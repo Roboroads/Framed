@@ -5,6 +5,7 @@ import 'package:latlong2/latlong.dart';
 
 import '../../../../core/crypto/game_crypto.dart';
 import '../../../../core/device/platform_name.dart';
+import '../../../../core/push/push_service.dart';
 import '../../../../core/session/game_session.dart';
 import '../../domain/game_settings.dart';
 import '../../domain/lobby_error.dart';
@@ -15,12 +16,15 @@ class HostSetupCubit extends Cubit<HostSetupState> {
   HostSetupCubit({
     required LobbyRepository repository,
     required GameSession session,
+    required PushService pushService,
   }) : _repository = repository,
        _session = session,
+       _pushService = pushService,
        super(const HostSetupState());
 
   final LobbyRepository _repository;
   final GameSession _session;
+  final PushService _pushService;
 
   void geofenceChanged(LatLng center) =>
       emit(state.copyWith(geofenceCenter: center));
@@ -51,6 +55,7 @@ class HostSetupCubit extends Cubit<HostSetupState> {
         nameCiphertext: nameCiphertext,
         nameHmac: nameHmac,
         platform: currentPlatformName(),
+        pushToken: await _pushService.getToken(),
       );
       final playerId = await _repository.myHostPlayerId(gameId);
 

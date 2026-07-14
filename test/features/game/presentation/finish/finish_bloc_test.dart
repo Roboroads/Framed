@@ -97,6 +97,12 @@ class _FakeGameRepository implements GameRepository {
   }
 
   @override
+  Future<void> updatePushToken({
+    required String gameId,
+    required String token,
+  }) => throw UnimplementedError();
+
+  @override
   Future<Uint8List> downloadFramePhoto(String path) =>
       throw UnimplementedError();
 

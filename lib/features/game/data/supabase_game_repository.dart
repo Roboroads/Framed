@@ -205,4 +205,18 @@ class SupabaseGameRepository implements GameRepository {
   Future<void> leaveFinishedGame(String gameId) async {
     await _client.rpc('leave_finished_game', params: {'game_id': gameId});
   }
+
+  @override
+  Future<void> updatePushToken({
+    required String gameId,
+    required String token,
+  }) async {
+    // RLS (players_own_update, 11-policies.sql) already restricts this to
+    // the caller's own row; the game_id filter just keeps it from also
+    // touching a stale row in some other game this auth_uid was once in.
+    await _client
+        .from('players')
+        .update({'push_token': token})
+        .eq('game_id', gameId);
+  }
 }

@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:framed/core/crypto/game_crypto.dart';
+import 'package:framed/core/push/push_service.dart';
 import 'package:framed/core/session/game_session.dart';
 import 'package:framed/core/session/session_store.dart';
 import 'package:framed/features/lobby/domain/game_settings.dart';
@@ -111,6 +112,7 @@ void main() {
       cubit = JoinCubit(
         repository: repository,
         session: session,
+        pushService: PushService(),
         joinToken: 'token-1',
         gameKeyBytes: keyBytes,
       );

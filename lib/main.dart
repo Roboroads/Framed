@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:mcp_toolkit/mcp_toolkit.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -5,6 +8,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app.dart';
 import 'core/config/env.dart';
 import 'core/di/injector.dart';
+import 'core/push/push_background_handler.dart';
+import 'core/push/push_service.dart';
+import 'core/session/game_session.dart';
+import 'features/game/domain/game_repository.dart';
 import 'i18n/strings.g.dart';
 
 // A real server outage or a bad connection shouldn't leave the user staring
@@ -34,6 +41,29 @@ Future<void> _bootstrap() async {
       );
     }
     configureDependencies();
+
+    // Push (#28): registered before runApp, and the handler stays a
+    // top-level function (FirebaseMessaging reflects on it — see its own
+    // doc comment). No project is configured yet (#28's decision), so
+    // this — like every push call — degrades to "no push" rather than
+    // blocking startup.
+    try {
+      FirebaseMessaging.onBackgroundMessage(pushBackgroundHandler);
+    } catch (_) {}
+    final pushService = getIt<PushService>();
+    pushService.ignoreForegroundMessages();
+    pushService.listenForRefresh((token) {
+      final session = getIt<GameSession>();
+      if (session.isActive) {
+        unawaited(
+          getIt<GameRepository>().updatePushToken(
+            gameId: session.gameId,
+            token: token,
+          ),
+        );
+      }
+    });
+
     runApp(TranslationProvider(child: const FramedApp()));
   } catch (_) {
     runApp(TranslationProvider(child: _BootstrapErrorApp(onRetry: _bootstrap)));

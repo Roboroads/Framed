@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/crypto/game_crypto.dart';
 import '../../../../core/device/platform_name.dart';
+import '../../../../core/push/push_service.dart';
 import '../../../../core/session/game_session.dart';
 import '../../domain/lobby_error.dart';
 import '../../domain/lobby_repository.dart';
@@ -13,14 +14,17 @@ class JoinCubit extends Cubit<JoinState> {
   JoinCubit({
     required LobbyRepository repository,
     required GameSession session,
+    required PushService pushService,
     required this.joinToken,
     required this.gameKeyBytes,
   }) : _repository = repository,
        _session = session,
+       _pushService = pushService,
        super(const JoinState());
 
   final LobbyRepository _repository;
   final GameSession _session;
+  final PushService _pushService;
   final String joinToken;
   final Uint8List gameKeyBytes;
 
@@ -56,6 +60,7 @@ class JoinCubit extends Cubit<JoinState> {
           nameCiphertext: nameCiphertext,
           nameHmac: nameHmac,
           platform: currentPlatformName(),
+          pushToken: await _pushService.getToken(),
         );
         _gameId = gameId;
         _playerId = playerId;
