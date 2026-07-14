@@ -35,6 +35,7 @@ dependencies:
   slang: ^4.18.0
   slang_flutter: ^4.18.0
   supabase_flutter: ^2.16.0
+  timezone: ^0.10.1
 
 dev_dependencies:
   flutter_test:

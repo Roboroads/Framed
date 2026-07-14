@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../features/game/di.dart';
 import '../../features/game/domain/game_repository.dart';
 import '../../features/lobby/di.dart';
+import '../push/local_alarms.dart';
 import '../push/push_service.dart';
 import '../realtime/game_channels.dart';
 import '../session/game_session.dart';
@@ -19,6 +20,7 @@ void configureDependencies() {
   getIt.registerLazySingleton<GameChannels>(() => GameChannels(getIt()));
   getIt.registerLazySingleton<SessionStore>(SessionStore.new);
   getIt.registerLazySingleton<PushService>(PushService.new);
+  getIt.registerLazySingleton<LocalAlarms>(FlutterLocalAlarms.new);
   configureLobbyDependencies();
   configureGameDependencies();
   getIt.registerLazySingleton<SessionResumeService>(

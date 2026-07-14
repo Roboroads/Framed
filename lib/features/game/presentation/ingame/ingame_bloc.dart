@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/crypto/game_crypto.dart';
+import '../../../../core/push/local_alarms.dart';
 import '../../../../core/realtime/game_event.dart';
 import '../../domain/frame_error.dart';
 import '../../domain/game_repository.dart';
@@ -16,6 +17,7 @@ class IngameBloc extends Cubit<IngameState> {
     required Stream<GameEvent> events,
     required GameCrypto crypto,
     required GameRepository repository,
+    required LocalAlarms localAlarms,
     // game:{game_id}:dead (#24) — unlike [events], not joined until this
     // player actually dies (RLS refuses the subscribe before then; see
     // _startDeadChat), same lazy-join-on-listen behaviour as GameChannels.
@@ -34,6 +36,7 @@ class IngameBloc extends Cubit<IngameState> {
     Duration warningResyncGrace = const Duration(seconds: 35),
   }) : _crypto = crypto,
        _repository = repository,
+       _localAlarms = localAlarms,
        _deadChatEvents = deadChatEvents,
        _gameId = gameId,
        _myPlayerId = myPlayerId,
@@ -60,6 +63,7 @@ class IngameBloc extends Cubit<IngameState> {
 
   final GameCrypto _crypto;
   final GameRepository _repository;
+  final LocalAlarms _localAlarms;
   final Stream<GameEvent> _deadChatEvents;
   final String _gameId;
   final String _myPlayerId;
@@ -157,6 +161,7 @@ class IngameBloc extends Cubit<IngameState> {
     if (isClosed || generation != _targetGeneration) return;
     if (result.nextPulseAt case final nextPulseAt?) {
       emit(state.copyWith(nextPulseAt: nextPulseAt));
+      unawaited(_localAlarms.scheduleCompassPulse(nextPulseAt));
     }
     if (result.activeWarning case Warning warning) _onWarning(warning);
     switch (result.event) {
@@ -219,6 +224,7 @@ class IngameBloc extends Cubit<IngameState> {
   Future<void> _applyYouDied(YouDied event, {int? generation}) async {
     generation ??= ++_targetGeneration;
     _warningResyncTimer?.cancel();
+    unawaited(_localAlarms.cancelAll());
     String? killerName;
     if (event.killerNameCiphertext != null) {
       try {
@@ -360,7 +366,11 @@ class IngameBloc extends Cubit<IngameState> {
             : null,
       ),
     );
-    if (!event.active) return;
+    if (!event.active) {
+      unawaited(_localAlarms.cancelWarningDeadline());
+      return;
+    }
+    unawaited(_localAlarms.scheduleWarningDeadline(event.hardDeadline!));
 
     // If the deadline passes with no you_died and no fresh warning update
     // at all, tick_punishments may have silently stopped running for this
@@ -388,6 +398,7 @@ class IngameBloc extends Cubit<IngameState> {
     // timer — it's the countdown to show once the arrow disappears, not
     // part of the snapshot that disappears.
     emit(state.copyWith(nextPulseAt: event.nextPulseAt));
+    unawaited(_localAlarms.scheduleCompassPulse(event.nextPulseAt));
 
     final remaining = event.expiresAt.difference(DateTime.now());
     // The app may have been closed/backgrounded through the whole pulse —
@@ -602,6 +613,7 @@ class IngameBloc extends Cubit<IngameState> {
     _targetLocationTimer?.cancel();
     _cooldownTimer?.cancel();
     _warningResyncTimer?.cancel();
+    unawaited(_localAlarms.cancelAll());
     return super.close();
   }
 }

@@ -45,6 +45,8 @@ Anything that needs your attention fires a **high-priority, time-sensitive push 
 - Rule-break warning (geofence, stale location) and punishment escalation.
 - You died / new target inherited / game finished.
 
+Push delivery isn't guaranteed-instant, so the two moments where a late or dropped push costs the most — the compass pulse's brief visibility window, and a rule-break's hard deadline — also get a client-scheduled local alarm as a backstop. It fires locally at the exact instant the server said, whether or not the matching push arrived, and carries no content of its own; the client rebuilds it from the server timestamps it already has (`next_pulse_at`, a warning's `hard_deadline`), rescheduling or cancelling it every time a fresh update changes that timing.
+
 ## Tech used
 
 - "Clean architecture" for the app architecture.

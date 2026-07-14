@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:framed/core/crypto/game_crypto.dart';
+import 'package:framed/core/push/local_alarms.dart';
 import 'package:framed/core/realtime/game_event.dart';
 import 'package:framed/features/game/domain/frame_error.dart';
 import 'package:framed/features/game/domain/game_repository.dart';
@@ -10,6 +11,43 @@ import 'package:framed/features/game/domain/geofence_info.dart';
 import 'package:framed/features/game/presentation/ingame/ingame_bloc.dart';
 import 'package:framed/features/game/presentation/ingame/ingame_state.dart';
 import 'package:postgrest/postgrest.dart';
+
+class _FakeLocalAlarms implements LocalAlarms {
+  DateTime? scheduledCompassPulse;
+  DateTime? scheduledWarningDeadline;
+  int cancelCompassPulseCallCount = 0;
+  int cancelWarningDeadlineCallCount = 0;
+  int cancelAllCallCount = 0;
+
+  @override
+  Future<void> scheduleCompassPulse(DateTime at) async {
+    scheduledCompassPulse = at;
+  }
+
+  @override
+  Future<void> cancelCompassPulse() async {
+    cancelCompassPulseCallCount++;
+    scheduledCompassPulse = null;
+  }
+
+  @override
+  Future<void> scheduleWarningDeadline(DateTime at) async {
+    scheduledWarningDeadline = at;
+  }
+
+  @override
+  Future<void> cancelWarningDeadline() async {
+    cancelWarningDeadlineCallCount++;
+    scheduledWarningDeadline = null;
+  }
+
+  @override
+  Future<void> cancelAll() async {
+    cancelAllCallCount++;
+    scheduledCompassPulse = null;
+    scheduledWarningDeadline = null;
+  }
+}
 
 class _FakeGameRepository implements GameRepository {
   Uint8List? selfieBytes;
@@ -176,12 +214,14 @@ void main() {
   group('IngameBloc', () {
     late GameCrypto crypto;
     late _FakeGameRepository repository;
+    late _FakeLocalAlarms localAlarms;
     late StreamController<GameEvent> events;
     late DateTime endsAt;
 
     setUp(() async {
       crypto = await GameCrypto.generate();
       repository = _FakeGameRepository();
+      localAlarms = _FakeLocalAlarms();
       events = StreamController<GameEvent>();
       endsAt = DateTime.utc(2026, 1, 1, 12);
     });
@@ -193,6 +233,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        localAlarms: localAlarms,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -212,6 +253,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        localAlarms: localAlarms,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -228,6 +270,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        localAlarms: localAlarms,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -244,6 +287,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        localAlarms: localAlarms,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -277,6 +321,7 @@ void main() {
           events: events.stream,
           crypto: crypto,
           repository: repository,
+          localAlarms: localAlarms,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -308,6 +353,7 @@ void main() {
           events: events.stream,
           crypto: crypto,
           repository: repository,
+          localAlarms: localAlarms,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -366,6 +412,7 @@ void main() {
           events: events.stream,
           crypto: crypto,
           repository: repository,
+          localAlarms: localAlarms,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -390,6 +437,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        localAlarms: localAlarms,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -430,6 +478,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        localAlarms: localAlarms,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -454,6 +503,7 @@ void main() {
           survivedSeconds: 120,
         ),
       );
+      expect(localAlarms.cancelAllCallCount, 1);
     });
 
     test('you_died with a photo downloads and decrypts it', () async {
@@ -461,6 +511,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        localAlarms: localAlarms,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -490,6 +541,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        localAlarms: localAlarms,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -517,6 +569,7 @@ void main() {
           events: events.stream,
           crypto: crypto,
           repository: repository,
+          localAlarms: localAlarms,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -546,6 +599,7 @@ void main() {
           events: events.stream,
           crypto: crypto,
           repository: repository,
+          localAlarms: localAlarms,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -569,6 +623,7 @@ void main() {
           events: events.stream,
           crypto: crypto,
           repository: repository,
+          localAlarms: localAlarms,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -578,6 +633,7 @@ void main() {
         await Future<void>.delayed(Duration.zero);
 
         expect(bloc.state.nextPulseAt, nextPulseAt);
+        expect(localAlarms.scheduledCompassPulse, nextPulseAt);
       },
     );
 
@@ -588,6 +644,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        localAlarms: localAlarms,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -607,6 +664,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        localAlarms: localAlarms,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -627,6 +685,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        localAlarms: localAlarms,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -649,6 +708,7 @@ void main() {
       );
       // The phase underneath is untouched by a warning.
       expect(bloc.state.phase, IngamePhase.dispersing(endsAt: endsAt));
+      expect(localAlarms.scheduledWarningDeadline, deadline);
     });
 
     test('warning active:false clears the overlay', () async {
@@ -656,6 +716,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        localAlarms: localAlarms,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -676,6 +737,7 @@ void main() {
       await Future<void>.delayed(Duration.zero);
 
       expect(bloc.state.warning, isNull);
+      expect(localAlarms.cancelWarningDeadlineCallCount, 1);
     });
 
     test(
@@ -685,6 +747,7 @@ void main() {
           events: events.stream,
           crypto: crypto,
           repository: repository,
+          localAlarms: localAlarms,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -726,6 +789,7 @@ void main() {
           events: events.stream,
           crypto: crypto,
           repository: repository,
+          localAlarms: localAlarms,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -747,6 +811,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        localAlarms: localAlarms,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -766,6 +831,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        localAlarms: localAlarms,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -787,6 +853,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        localAlarms: localAlarms,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -819,6 +886,7 @@ void main() {
           events: events.stream,
           crypto: crypto,
           repository: repository,
+          localAlarms: localAlarms,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -837,6 +905,7 @@ void main() {
         await Future<void>.delayed(Duration.zero);
 
         expect(bloc.state.nextPulseAt, nextPulseAt);
+        expect(localAlarms.scheduledCompassPulse, nextPulseAt);
 
         // nextPulseAt survives the pulse itself expiring — the countdown to
         // the following one is exactly what should still be on screen.
@@ -851,6 +920,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        localAlarms: localAlarms,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -877,6 +947,7 @@ void main() {
           events: events.stream,
           crypto: crypto,
           repository: repository,
+          localAlarms: localAlarms,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -915,6 +986,7 @@ void main() {
           events: events.stream,
           crypto: crypto,
           repository: repository,
+          localAlarms: localAlarms,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -945,6 +1017,7 @@ void main() {
           events: events.stream,
           crypto: crypto,
           repository: repository,
+          localAlarms: localAlarms,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -966,6 +1039,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        localAlarms: localAlarms,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -992,6 +1066,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        localAlarms: localAlarms,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1006,6 +1081,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        localAlarms: localAlarms,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1031,6 +1107,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        localAlarms: localAlarms,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1052,6 +1129,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        localAlarms: localAlarms,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1078,6 +1156,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        localAlarms: localAlarms,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1101,6 +1180,7 @@ void main() {
           events: events.stream,
           crypto: crypto,
           repository: repository,
+          localAlarms: localAlarms,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1130,6 +1210,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        localAlarms: localAlarms,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1164,6 +1245,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        localAlarms: localAlarms,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1205,6 +1287,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        localAlarms: localAlarms,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1253,6 +1336,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        localAlarms: localAlarms,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1289,6 +1373,7 @@ void main() {
           events: events.stream,
           crypto: crypto,
           repository: repository,
+          localAlarms: localAlarms,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1334,6 +1419,7 @@ void main() {
         events: events.stream,
         crypto: crypto,
         repository: repository,
+        localAlarms: localAlarms,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: deadChatEvents.stream,
@@ -1399,6 +1485,23 @@ void main() {
         'msg-optimistic',
         'live-1',
       ]);
+    });
+
+    test('close() cancels any pending local alarms', () async {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        localAlarms: localAlarms,
+        gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
+        initialEndsAt: endsAt,
+      );
+
+      await bloc.close();
+
+      expect(localAlarms.cancelAllCallCount, 1);
     });
   });
 }

@@ -14,6 +14,7 @@ import '../../../../core/di/injector.dart';
 import '../../../../core/location/compass_math.dart';
 import '../../../../core/location/heading.dart';
 import '../../../../core/location/location_service.dart';
+import '../../../../core/push/local_alarms.dart';
 import '../../../../core/realtime/game_channels.dart';
 import '../../../../core/realtime/game_event.dart';
 import '../../../../core/session/game_session.dart';
@@ -67,6 +68,7 @@ class _IngamePageState extends State<IngamePage> {
       events: playerEvents,
       crypto: session.crypto,
       repository: repository,
+      localAlarms: getIt<LocalAlarms>(),
       deadChatEvents: channels.deadChat(session.gameId),
       gameId: session.gameId,
       myPlayerId: session.playerId,
