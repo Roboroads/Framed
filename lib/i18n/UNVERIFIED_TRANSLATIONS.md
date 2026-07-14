@@ -39,6 +39,15 @@ still waiting on a human read-through, one per line, grouped by locale.
 - [ ] finish.leaveConfirmBody
 - [ ] finish.leaveConfirmButton
 - [ ] confirmationDialog.cancel
+- [ ] ingame.wakeLockOnTooltip
+- [ ] ingame.wakeLockOffTooltip
+- [ ] ingame.leaveButton
+- [ ] ingame.leaveConfirmTitle
+- [ ] ingame.leaveConfirmBody
+- [ ] ingame.leaveConfirmButton
+- [ ] ingame.deadTitleLeft
+- [ ] ingame.deadCauseLeft
+- [ ] finish.killChainLeft
 
 ## fr
 
@@ -55,6 +64,15 @@ still waiting on a human read-through, one per line, grouped by locale.
 - [ ] finish.leaveConfirmBody
 - [ ] finish.leaveConfirmButton
 - [ ] confirmationDialog.cancel
+- [ ] ingame.wakeLockOnTooltip
+- [ ] ingame.wakeLockOffTooltip
+- [ ] ingame.leaveButton
+- [ ] ingame.leaveConfirmTitle
+- [ ] ingame.leaveConfirmBody
+- [ ] ingame.leaveConfirmButton
+- [ ] ingame.deadTitleLeft
+- [ ] ingame.deadCauseLeft
+- [ ] finish.killChainLeft
 
 ## nl
 
@@ -71,6 +89,15 @@ still waiting on a human read-through, one per line, grouped by locale.
 - [ ] finish.leaveConfirmBody
 - [ ] finish.leaveConfirmButton
 - [ ] confirmationDialog.cancel
+- [ ] ingame.wakeLockOnTooltip
+- [ ] ingame.wakeLockOffTooltip
+- [ ] ingame.leaveButton
+- [ ] ingame.leaveConfirmTitle
+- [ ] ingame.leaveConfirmBody
+- [ ] ingame.leaveConfirmButton
+- [ ] ingame.deadTitleLeft
+- [ ] ingame.deadCauseLeft
+- [ ] finish.killChainLeft
 
 Everything not listed above predates this file and shipped without this
 tracking — not a claim that it's been verified, just that its status

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/crypto/game_crypto.dart';
+import '../../../../core/location/wake_lock_service.dart';
 import '../../../../core/push/local_alarms.dart';
 import '../../../../core/realtime/game_event.dart';
 import '../../../../core/session/game_session.dart';
@@ -20,6 +21,7 @@ class IngameBloc extends Cubit<IngameState> {
     required GameRepository repository,
     required LocalAlarms localAlarms,
     required GameSession session,
+    required WakeLockService wakeLockService,
     // game:{game_id}:dead (#24) — unlike [events], not joined until this
     // player actually dies (RLS refuses the subscribe before then; see
     // _startDeadChat), same lazy-join-on-listen behaviour as GameChannels.
@@ -40,6 +42,7 @@ class IngameBloc extends Cubit<IngameState> {
        _repository = repository,
        _localAlarms = localAlarms,
        _session = session,
+       _wakeLockService = wakeLockService,
        _deadChatEvents = deadChatEvents,
        _gameId = gameId,
        _myPlayerId = myPlayerId,
@@ -49,6 +52,8 @@ class IngameBloc extends Cubit<IngameState> {
          IngameState(phase: IngamePhase.dispersing(endsAt: initialEndsAt)),
        ) {
     _subscription = events.listen(_onEvent);
+    // Default on (#78) — see IngameState.keepAwake.
+    unawaited(_wakeLockService.enable());
     // The one-shot player:{id} broadcast this phase depends on
     // (dispersal_started/target_assigned/you_died) can be missed by a
     // connection that still reports itself joined (#53), or simply never
@@ -68,6 +73,7 @@ class IngameBloc extends Cubit<IngameState> {
   final GameRepository _repository;
   final LocalAlarms _localAlarms;
   final GameSession _session;
+  final WakeLockService _wakeLockService;
   final Stream<GameEvent> _deadChatEvents;
   final String _gameId;
   final String _myPlayerId;
@@ -366,6 +372,15 @@ class IngameBloc extends Cubit<IngameState> {
     await _session.end();
   }
 
+  // Quick on/off (#78) — no persistence across sessions by design, every
+  // game starts with the screen kept awake and a player opts out fresh
+  // each time rather than carrying a stale preference from a past game.
+  Future<void> toggleKeepAwake() async {
+    final next = !state.keepAwake;
+    emit(state.copyWith(keepAwake: next));
+    await (next ? _wakeLockService.enable() : _wakeLockService.disable());
+  }
+
   // No local logic decides when a warning starts or stops — this just
   // mirrors the server's `warning` event onto the state. Also feeds
   // get_my_state's active_warning catch-up (#74), same shape, same
@@ -630,6 +645,7 @@ class IngameBloc extends Cubit<IngameState> {
     _cooldownTimer?.cancel();
     _warningResyncTimer?.cancel();
     unawaited(_localAlarms.cancelAll());
+    unawaited(_wakeLockService.disable());
     return super.close();
   }
 }

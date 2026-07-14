@@ -140,16 +140,18 @@ class _FinishView extends StatelessWidget {
                       for (final entry in state.killChain)
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4),
-                          child: Text(
-                            entry.cause == 'mia'
-                                ? t.finish.killChainMia(
-                                    victim: entry.victimName,
-                                  )
-                                : t.finish.killChainFramed(
-                                    killer: entry.killerName ?? '?',
-                                    victim: entry.victimName,
-                                  ),
-                          ),
+                          child: Text(switch (entry.cause) {
+                            'mia' => t.finish.killChainMia(
+                              victim: entry.victimName,
+                            ),
+                            'left' => t.finish.killChainLeft(
+                              victim: entry.victimName,
+                            ),
+                            _ => t.finish.killChainFramed(
+                              killer: entry.killerName ?? '?',
+                              victim: entry.victimName,
+                            ),
+                          }),
                         ),
                       const SizedBox(height: 24),
                     ],

@@ -189,12 +189,26 @@ begin
   update public.players set left_at = now() where id = me.id;
 end $$;
 
--- leave_active_game(game_id): the caller's own row, dead only — IDEA.md
--- "Game rules"' no-mid-game-quit binds the living only (#77). Unlike
--- leave_lobby/leave_finished_game this happens mid-game: the row stays
--- (still counted in stats/kill_chain), just marked left_at and dropped
--- from the judge pool (notify_judges/cast_vote, 19-frames.sql/20-votes.sql)
--- and the eligible count tick_min_players_check reads below.
+-- leave_active_game(game_id): the caller's own row, dispersing or active
+-- (#78 lifted #77's dead-only restriction — IDEA.md "Game rules" no longer
+-- bars the living from leaving, it just makes leaving while alive cost you
+-- the game). A still-alive caller is killed first (cause 'left', no killer,
+-- no photo) — kill_player's existing relink logic hands your target to
+-- your own assassin exactly like any other death, and voids any frame you
+-- had in flight as assassin. A dead caller (the #77 case) skips straight to
+-- the left_at update. Either way the row stays (still counted in
+-- stats/kill_chain), just marked left_at and dropped from the judge pool
+-- (notify_judges/cast_vote, 19-frames.sql/20-votes.sql) and the eligible
+-- count tick_min_players_check reads below.
+--
+-- Leaving during dispersing relinks too, same as active — target_id is
+-- already set from start_game's shuffle before dispersal even ends, so
+-- kill_player's relink applies unchanged. The one quirk: the leaver's
+-- assassin gets their target_assigned broadcast immediately, ahead of the
+-- rest of the lobby's dispersal countdown. Deliberately not special-cased —
+-- an early target reveal from a rare mid-dispersal quit doesn't undermine
+-- "spread out before you can be framed" the way it would if it happened
+-- routinely.
 create or replace function leave_active_game(game_id uuid)
 returns void language plpgsql security definer set search_path = '' as $$
 declare
@@ -203,13 +217,18 @@ declare
 begin
   select * into g from public.games where id = leave_active_game.game_id;
   if not found then raise exception using message = 'not_found'; end if;
-  if g.status <> 'active' then raise exception using message = 'wrong_status'; end if;
+  if g.status not in ('dispersing', 'active') then
+    raise exception using message = 'wrong_status';
+  end if;
 
   select * into me from public.players p
     where p.game_id = leave_active_game.game_id and p.auth_uid = auth.uid()
     for update;
   if not found then raise exception using message = 'not_member'; end if;
-  if me.status <> 'dead' then raise exception using message = 'must_be_dead'; end if;
+
+  if me.status = 'alive' then
+    perform public.kill_player(me.id, 'left', null, null);
+  end if;
 
   update public.players set left_at = now() where id = me.id and left_at is null;
 end $$;

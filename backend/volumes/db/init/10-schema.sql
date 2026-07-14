@@ -19,6 +19,13 @@ do $$ begin
   create type death_cause as enum ('framed', 'mia');
 exception when duplicate_object then null; end $$;
 
+-- 'left' (#78): a living player leaving mid-game (dispersing or active) —
+-- distinct from 'mia' since it's a deliberate quit, not a punishment.
+-- ALTER TYPE ... ADD VALUE can't run inside the DO block above (can't be
+-- combined with other DDL in one transaction with the type's own creation),
+-- so it's its own statement here instead.
+alter type death_cause add value if not exists 'left';
+
 do $$ begin
   create type frame_status as enum ('held', 'pending', 'passed', 'failed', 'void');
 exception when duplicate_object then null; end $$;

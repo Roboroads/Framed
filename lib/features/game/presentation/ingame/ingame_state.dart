@@ -130,5 +130,8 @@ sealed class IngameState with _$IngameState {
     // Oldest first (#24), history + live merged. Only populated once this
     // player is dead — see IngameBloc._startDeadChat.
     @Default([]) List<IngameChatMessage> deadChat,
+    // Screen-stays-on toggle (#78). Defaults on: a locked/dimmed screen is
+    // how a compass pulse or warning gets missed while playing outside.
+    @Default(true) bool keepAwake,
   }) = _IngameState;
 }

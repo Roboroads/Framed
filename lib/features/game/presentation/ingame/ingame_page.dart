@@ -14,6 +14,7 @@ import '../../../../core/di/injector.dart';
 import '../../../../core/location/compass_math.dart';
 import '../../../../core/location/heading.dart';
 import '../../../../core/location/location_service.dart';
+import '../../../../core/location/wake_lock_service.dart';
 import '../../../../core/push/local_alarms.dart';
 import '../../../../core/realtime/game_channels.dart';
 import '../../../../core/realtime/game_event.dart';
@@ -71,6 +72,7 @@ class _IngamePageState extends State<IngamePage> {
       repository: repository,
       localAlarms: getIt<LocalAlarms>(),
       session: session,
+      wakeLockService: getIt<WakeLockService>(),
       deadChatEvents: channels.deadChat(session.gameId),
       gameId: session.gameId,
       myPlayerId: session.playerId,
@@ -193,6 +195,13 @@ class _IngameView extends StatelessWidget {
                 if (state.myName case final myName?
                     when state.phase is! IngameDead)
                   _SelfNameLabel(name: myName),
+                // The death screen has its own dedicated leave button in
+                // its content flow (#77) — this corner button covers the
+                // two phases before that, dispersing and playing (#78:
+                // "no mid-game quit" no longer blocks the living, it just
+                // makes leaving cost you the game).
+                if (state.phase is! IngameDead) const _LeaveButton(),
+                _WakeLockButton(keepAwake: state.keepAwake),
               ],
             ),
           ),
@@ -285,15 +294,22 @@ class _DeadScreenState extends State<_DeadScreen> {
                   ),
                 ),
               Text(
-                widget.cause == 'mia'
-                    ? t.ingame.deadTitleMia
-                    : t.ingame.deadTitleFramed,
+                switch (widget.cause) {
+                  'mia' => t.ingame.deadTitleMia,
+                  // Only reachable via a crash-resume racing the leave RPC
+                  // itself (#78) — a normal leave ends the session and
+                  // navigates home before this screen would ever render.
+                  'left' => t.ingame.deadTitleLeft,
+                  _ => t.ingame.deadTitleFramed,
+                },
                 style: Theme.of(context).textTheme.headlineMedium,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
               if (widget.cause == 'mia')
                 Text(t.ingame.deadCauseMia, textAlign: TextAlign.center)
+              else if (widget.cause == 'left')
+                Text(t.ingame.deadCauseLeft, textAlign: TextAlign.center)
               else if (widget.killerName != null)
                 Text(
                   t.ingame.deadKilledBy(name: widget.killerName!),
@@ -588,6 +604,78 @@ class _SelfNameLabel extends StatelessWidget {
   }
 }
 
+/// Leave while still alive (#78) — confirmed, since it costs you the game:
+/// the server kills you (cause 'left') and relinks the circle exactly like
+/// any other death. Bottom-left corner: the only one of the four still
+/// free (_SelfNameLabel top-left, _MyLocationButton top-right, the wake
+/// lock toggle bottom-right).
+class _LeaveButton extends StatelessWidget {
+  const _LeaveButton();
+
+  Future<void> _confirmAndLeave(BuildContext context) async {
+    final confirmed = await showConfirmationDialog(
+      context: context,
+      title: t.ingame.leaveConfirmTitle,
+      message: t.ingame.leaveConfirmBody,
+      confirmLabel: t.ingame.leaveConfirmButton,
+      destructive: true,
+    );
+    if (!confirmed || !context.mounted) return;
+    await context.read<IngameBloc>().leave();
+    if (context.mounted) context.go('/');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      bottom: 0,
+      left: 0,
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: FloatingActionButton.small(
+            heroTag: 'leave',
+            tooltip: t.ingame.leaveButton,
+            onPressed: () => _confirmAndLeave(context),
+            child: const Icon(Icons.logout),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Quick on/off for keeping the screen from auto-locking (#78), on by
+/// default (IngameState.keepAwake) so a compass pulse or warning is never
+/// missed to a dimmed screen. Bottom-right corner: the two other corner
+/// overlays (_SelfNameLabel, _MyLocationButton) both sit at the top.
+class _WakeLockButton extends StatelessWidget {
+  const _WakeLockButton({required this.keepAwake});
+
+  final bool keepAwake;
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      bottom: 0,
+      right: 0,
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: FloatingActionButton.small(
+            heroTag: 'wakeLock',
+            tooltip: keepAwake
+                ? t.ingame.wakeLockOnTooltip
+                : t.ingame.wakeLockOffTooltip,
+            onPressed: () => context.read<IngameBloc>().toggleKeepAwake(),
+            child: Icon(keepAwake ? Icons.lightbulb : Icons.lightbulb_outline),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// Opens a full-screen map with the player's own live position and the
 /// play-area boundary (#65) — button rather than a persistent on-screen
 /// map, since the "Game in progress" screen is already dense (target card,
@@ -837,10 +925,14 @@ class _TargetCard extends StatelessWidget {
             onTap: () => FullScreenPhotoPage.open(context, target.selfieBytes),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16),
-              child: Image.memory(
-                target.selfieBytes,
-                height: 320,
-                fit: BoxFit.cover,
+              // BoxFit.cover at a fixed height cropped portrait selfies down
+              // to a near-square sliver — contain (still capped, still
+              // centered) shows the whole photo instead.
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 320),
+                  child: Image.memory(target.selfieBytes, fit: BoxFit.contain),
+                ),
               ),
             ),
           ),

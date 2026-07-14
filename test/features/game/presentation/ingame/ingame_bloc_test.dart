@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:framed/core/crypto/game_crypto.dart';
+import 'package:framed/core/location/wake_lock_service.dart';
 import 'package:framed/core/push/local_alarms.dart';
 import 'package:framed/core/realtime/game_event.dart';
 import 'package:framed/core/session/game_session.dart';
@@ -25,6 +26,24 @@ class _FakeSecureKeyValueStore implements SecureKeyValueStore {
 
   @override
   Future<void> delete(String key) async => _values.remove(key);
+}
+
+class _FakeWakeLockService implements WakeLockService {
+  int enableCallCount = 0;
+  int disableCallCount = 0;
+  bool? lastEnabled;
+
+  @override
+  Future<void> enable() async {
+    enableCallCount++;
+    lastEnabled = true;
+  }
+
+  @override
+  Future<void> disable() async {
+    disableCallCount++;
+    lastEnabled = false;
+  }
 }
 
 class _FakeLocalAlarms implements LocalAlarms {
@@ -240,6 +259,7 @@ void main() {
     late _FakeGameRepository repository;
     late _FakeLocalAlarms localAlarms;
     late GameSession session;
+    late _FakeWakeLockService wakeLockService;
     late StreamController<GameEvent> events;
     late DateTime endsAt;
 
@@ -248,6 +268,7 @@ void main() {
       repository = _FakeGameRepository();
       localAlarms = _FakeLocalAlarms();
       session = GameSession(SessionStore(_FakeSecureKeyValueStore()));
+      wakeLockService = _FakeWakeLockService();
       events = StreamController<GameEvent>();
       endsAt = DateTime.utc(2026, 1, 1, 12);
     });
@@ -261,6 +282,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -282,6 +304,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -300,6 +323,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -318,6 +342,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -353,6 +378,7 @@ void main() {
           repository: repository,
           localAlarms: localAlarms,
           session: session,
+          wakeLockService: wakeLockService,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -386,6 +412,7 @@ void main() {
           repository: repository,
           localAlarms: localAlarms,
           session: session,
+          wakeLockService: wakeLockService,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -446,6 +473,7 @@ void main() {
           repository: repository,
           localAlarms: localAlarms,
           session: session,
+          wakeLockService: wakeLockService,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -472,6 +500,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -514,6 +543,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -548,6 +578,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -579,6 +610,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -608,6 +640,7 @@ void main() {
           repository: repository,
           localAlarms: localAlarms,
           session: session,
+          wakeLockService: wakeLockService,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -639,6 +672,7 @@ void main() {
           repository: repository,
           localAlarms: localAlarms,
           session: session,
+          wakeLockService: wakeLockService,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -664,6 +698,7 @@ void main() {
           repository: repository,
           localAlarms: localAlarms,
           session: session,
+          wakeLockService: wakeLockService,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -686,6 +721,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -707,6 +743,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -729,6 +766,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -761,6 +799,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -793,6 +832,7 @@ void main() {
           repository: repository,
           localAlarms: localAlarms,
           session: session,
+          wakeLockService: wakeLockService,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -836,6 +876,7 @@ void main() {
           repository: repository,
           localAlarms: localAlarms,
           session: session,
+          wakeLockService: wakeLockService,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -859,6 +900,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -880,6 +922,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -903,6 +946,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -937,6 +981,7 @@ void main() {
           repository: repository,
           localAlarms: localAlarms,
           session: session,
+          wakeLockService: wakeLockService,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -972,6 +1017,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1000,6 +1046,7 @@ void main() {
           repository: repository,
           localAlarms: localAlarms,
           session: session,
+          wakeLockService: wakeLockService,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1040,6 +1087,7 @@ void main() {
           repository: repository,
           localAlarms: localAlarms,
           session: session,
+          wakeLockService: wakeLockService,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1072,6 +1120,7 @@ void main() {
           repository: repository,
           localAlarms: localAlarms,
           session: session,
+          wakeLockService: wakeLockService,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1095,6 +1144,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1123,6 +1173,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1139,6 +1190,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1166,6 +1218,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1189,6 +1242,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1217,6 +1271,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1242,6 +1297,7 @@ void main() {
           repository: repository,
           localAlarms: localAlarms,
           session: session,
+          wakeLockService: wakeLockService,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1273,6 +1329,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1309,6 +1366,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1352,6 +1410,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1402,6 +1461,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1440,6 +1500,7 @@ void main() {
           repository: repository,
           localAlarms: localAlarms,
           session: session,
+          wakeLockService: wakeLockService,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1487,6 +1548,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: deadChatEvents.stream,
@@ -1561,6 +1623,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1584,6 +1647,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1609,6 +1673,7 @@ void main() {
         repository: repository,
         localAlarms: localAlarms,
         session: session,
+        wakeLockService: wakeLockService,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1618,6 +1683,66 @@ void main() {
       await bloc.leave();
 
       expect(session.isActive, isFalse);
+    });
+
+    test('enables the wake lock on construction, keepAwake starts true', () {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        localAlarms: localAlarms,
+        session: session,
+        wakeLockService: wakeLockService,
+        gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
+        initialEndsAt: endsAt,
+      );
+
+      expect(bloc.state.keepAwake, isTrue);
+      expect(wakeLockService.enableCallCount, 1);
+    });
+
+    test('toggleKeepAwake() flips state and the wake lock each call', () async {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        localAlarms: localAlarms,
+        session: session,
+        wakeLockService: wakeLockService,
+        gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
+        initialEndsAt: endsAt,
+      );
+
+      await bloc.toggleKeepAwake();
+      expect(bloc.state.keepAwake, isFalse);
+      expect(wakeLockService.disableCallCount, 1);
+
+      await bloc.toggleKeepAwake();
+      expect(bloc.state.keepAwake, isTrue);
+      expect(wakeLockService.enableCallCount, 2);
+    });
+
+    test('close() disables the wake lock', () async {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        localAlarms: localAlarms,
+        session: session,
+        wakeLockService: wakeLockService,
+        gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
+        initialEndsAt: endsAt,
+      );
+
+      await bloc.close();
+
+      expect(wakeLockService.disableCallCount, 1);
     });
   });
 }
