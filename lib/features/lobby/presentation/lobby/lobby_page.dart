@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/crypto/qr_payload.dart';
 import '../../../../core/di/injector.dart';
@@ -361,6 +362,14 @@ class _JoinQrState extends State<_JoinQr> {
                   version: QrVersions.auto,
                   size: 200,
                 ),
+              ),
+              const SizedBox(height: 12),
+              TextButton.icon(
+                onPressed: () => SharePlus.instance.share(
+                  ShareParams(text: payload.encode()),
+                ),
+                icon: const Icon(Icons.share_outlined),
+                label: Text(t.lobby.shareLinkButton),
               ),
             ],
           ),

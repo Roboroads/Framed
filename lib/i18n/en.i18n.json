@@ -116,6 +116,7 @@
     "waitingForHost": "Waiting for the host to start…",
     "changeMode": "Change mode",
     "showQrButton": "Show join QR code",
+    "shareLinkButton": "Share join link",
     "gameSettingsButton": "Game settings",
     "errorGeneric": "Something went wrong. Check your connection and try again."
   },

@@ -30,6 +30,7 @@ dependencies:
   permission_handler: ^12.0.3
   postgrest: ^2.8.0
   qr_flutter: ^4.1.0
+  share_plus: ^13.2.0
   slang: ^4.18.0
   slang_flutter: ^4.18.0
   supabase_flutter: ^2.16.0
