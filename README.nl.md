@@ -10,7 +10,7 @@ Een lokaal, cirkelvormig moordspel dat je in het echt speelt: GPS-ondersteund, f
 
 ## Hoe het werkt
 
-Spelers verzamelen op een startpunt en verspreiden zich zodra de host het spel start. Na een verspreidingstimer krijgt iedereen een doelwit: een andere speler die ze moeten vinden en fotograferen met de camera in de app. Andere spelers vergelijken de foto met de referentieselfie van het doelwit, en bij een meerderheid van "ja"-stemmen sterft het doelwit. De moordenaar erft dan het doelwit van zijn slachtoffer, en de keten gaat verder. Het spel eindigt zodra er één speler overblijft. Standaard wint wie de meeste bevestigde kiekjes heeft, ook als die speler intussen dood is; de host kan in plaats daarvan kiezen voor "laatste speler overeind". GPS handhaaft continu een gedeeld speelgebied, en een speler die dat gebied verlaat of te lang stil blijft, sterft automatisch, gemarkeerd als vermist (MIA).
+Framed is een levensecht moordspel, gespeeld met de GPS en camera van je telefoon in plaats van foam pistolen. Elke speler krijgt een geheim doelwit, en "vermoorden" betekent gewoon een foto van diegene maken zonder dat ze het doorhebben. Fotografeer je doelwit en je erft wie zij aan het jagen waren, zodat de keten doorgaat tot er nog één speler overblijft. Bepaal een speelgebied in de app, verzamel een groep van 3 of meer, en begin.
 
 ## Ontwikkeling
 

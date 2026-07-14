@@ -10,7 +10,7 @@ Un jeu d'assassinat circulaire en extérieur, joué en vrai : assisté par GPS, 
 
 ## Comment ça marche
 
-Les joueurs se retrouvent à un point de départ puis se dispersent quand l'hôte lance la partie. Après un minuteur de dispersion, chaque joueur reçoit une cible : un autre joueur qu'il doit retrouver et photographier avec l'appareil photo intégré à l'application. Les autres joueurs comparent la photo au selfie de référence de la cible, et une majorité de votes "oui" élimine la cible. L'assassin hérite alors de la cible de sa victime, et la chaîne continue. La partie se termine quand il ne reste qu'un joueur. Par défaut, gagne celui qui a le plus de photos confirmées, même s'il est déjà mort ; l'hôte peut choisir le mode "dernier survivant" à la place. Le GPS délimite en permanence une zone de jeu commune, et un joueur qui la quitte ou reste silencieux trop longtemps meurt automatiquement, marqué disparu (MIA).
+Framed est un jeu d'assassinat grandeur nature, joué avec le GPS et l'appareil photo du téléphone à la place de pistolets en mousse. Chaque joueur reçoit une cible secrète, et "l'éliminer" consiste simplement à la prendre en photo à son insu. Si vous photographiez votre cible, vous héritez de la personne qu'elle traquait, et la chaîne continue jusqu'à ce qu'il ne reste qu'un joueur. Délimitez une zone de jeu dans l'application, réunissez un groupe de 3 joueurs ou plus, et lancez-vous.
 
 ## Développement
 

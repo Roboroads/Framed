@@ -10,7 +10,7 @@ Un juego de asesinato circular de área local que se juega en la vida real: asis
 
 ## Cómo funciona
 
-Los jugadores se reúnen en un punto de partida y se dispersan cuando el anfitrión inicia la partida. Tras un temporizador de dispersión, cada jugador recibe un objetivo: otro jugador al que debe encontrar y fotografiar con la cámara integrada de la app. El resto de jugadores compara la foto con el selfie de referencia del objetivo, y una mayoría de votos "sí" mata al objetivo. El asesino hereda entonces el objetivo de su víctima, y la cadena continúa. La partida termina cuando queda un solo jugador. Por defecto gana quien tenga más fotos confirmadas, incluso si ya ha muerto; el anfitrión puede cambiar el modo a "último en pie". El GPS controla en todo momento una zona de juego compartida, y el jugador que la abandone o quede en silencio demasiado tiempo muere automáticamente, marcado como desaparecido (MIA).
+Framed es un juego de asesinatos en la vida real, jugado con el GPS y la cámara del móvil en vez de pistolas de juguete. Cada jugador recibe un objetivo secreto, y "matarlo" consiste en sacarle una foto sin que se dé cuenta. Si fotografías a tu objetivo, heredas a quien él estaba persiguiendo, así que la cadena sigue hasta que queda un solo jugador. Marca una zona de juego en la app, reúne a un grupo de 3 o más, y a jugar.
 
 ## Desarrollo
 

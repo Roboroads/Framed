@@ -8,7 +8,7 @@ A local-area circular assassination game you play IRL — GPS-assisted, photo-ba
 
 ## How it works
 
-Players gather at a starting point and scatter once the host starts the game. After a dispersal timer, everyone gets a target: another player to find and photograph with the in-app camera. Other players judge the photo against the target's reference selfie, and a majority "yes" vote kills the target. The assassin then inherits the target's own target, and the chain continues. The game ends when one player remains. By default the winner is whoever confirmed the most kills, even if they're dead by then; the host can switch to last-player-standing instead. GPS enforces a shared play area throughout, and a player who leaves it or goes silent too long dies automatically, marked MIA.
+Framed is a real-world assassination game, played with your phone's GPS and camera instead of nerf guns. Everyone gets a secret target, and "killing" them just means snapping a candid photo of them off guard. Frame your target and you inherit whoever they were hunting, so the game keeps chaining until one player is left. Set a play area in the app, gather a group of 3 or more, and go.
 
 ## Development
 
