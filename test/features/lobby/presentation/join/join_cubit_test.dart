@@ -94,6 +94,9 @@ class _FakeLobbyRepository implements LobbyRepository {
 
   @override
   Future<void> startGame(String gameId) => throw UnimplementedError();
+
+  @override
+  Future<void> heartbeat(String gameId) => throw UnimplementedError();
 }
 
 void main() {

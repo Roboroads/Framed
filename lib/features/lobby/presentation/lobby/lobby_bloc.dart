@@ -18,17 +18,30 @@ class LobbyBloc extends Cubit<LobbyState> {
     required GameSession session,
     required Stream<GameEvent> events,
     required this.gameId,
+    // Well under the 15-minute per-player expiry (26-lobby-expiry.sql) —
+    // a couple of missed pings from a flaky connection still land inside
+    // the window. Overridable so tests don't wait 5 minutes.
+    Duration heartbeatInterval = const Duration(minutes: 5),
   }) : _repository = repository,
        _session = session,
        super(const LobbyState()) {
     _subscription = events.listen(_onEvent);
     _load();
+    // Immediate first ping, not just the periodic one below — last_seen
+    // otherwise only refreshes at join time, which can already be stale
+    // by the time a resumed session lands back on this screen.
+    unawaited(_sendHeartbeat());
+    _heartbeatTimer = Timer.periodic(
+      heartbeatInterval,
+      (_) => unawaited(_sendHeartbeat()),
+    );
   }
 
   final LobbyRepository _repository;
   final GameSession _session;
   final String gameId;
   late final StreamSubscription<GameEvent> _subscription;
+  late final Timer _heartbeatTimer;
 
   // Events can arrive on the socket while _load()'s fetch is still in
   // flight; applying them immediately against the pre-snapshot (empty)
@@ -293,6 +306,14 @@ class LobbyBloc extends Cubit<LobbyState> {
     }
   }
 
+  // Best-effort (#70) — a missed ping just means the next one, on the
+  // regular timer, is what keeps this player's last_seen current.
+  Future<void> _sendHeartbeat() async {
+    try {
+      await _repository.heartbeat(gameId);
+    } catch (_) {}
+  }
+
   Future<void> leave() async {
     await _repository.leaveLobby(gameId);
     await _session.end();
@@ -301,6 +322,7 @@ class LobbyBloc extends Cubit<LobbyState> {
   @override
   Future<void> close() {
     _subscription.cancel();
+    _heartbeatTimer.cancel();
     return super.close();
   }
 }

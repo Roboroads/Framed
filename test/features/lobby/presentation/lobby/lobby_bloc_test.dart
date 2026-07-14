@@ -35,6 +35,8 @@ class _FakeLobbyRepository implements LobbyRepository {
   String? leftGameId;
   Map<String, dynamic>? capturedSettings;
   int startGameCallCount = 0;
+  int heartbeatCallCount = 0;
+  Object? heartbeatFailure;
 
   /// When set, `fetchLobby` parks on this instead of resolving immediately —
   /// lets a test fire realtime events while the initial load is in flight.
@@ -51,6 +53,12 @@ class _FakeLobbyRepository implements LobbyRepository {
   Future<void> startGame(String gameId) async {
     startGameCallCount++;
     if (startFailure != null) throw startFailure!;
+  }
+
+  @override
+  Future<void> heartbeat(String gameId) async {
+    heartbeatCallCount++;
+    if (heartbeatFailure != null) throw heartbeatFailure!;
   }
 
   @override
@@ -565,6 +573,39 @@ void main() {
 
       expect(repository.leftGameId, gameId);
       expect(session.isActive, isFalse);
+    });
+
+    test('sends an immediate heartbeat on construction', () async {
+      repository.snapshot = snapshotWith();
+      final bloc = LobbyBloc(
+        repository: repository,
+        session: sessionAs('player-host'),
+        events: events.stream,
+        gameId: gameId,
+      );
+      addTearDown(bloc.close);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(repository.heartbeatCallCount, 1);
+    });
+
+    test('sends a heartbeat on every timer tick', () async {
+      repository.snapshot = snapshotWith();
+      final bloc = LobbyBloc(
+        repository: repository,
+        session: sessionAs('player-host'),
+        events: events.stream,
+        gameId: gameId,
+        heartbeatInterval: const Duration(milliseconds: 20),
+      );
+      addTearDown(bloc.close);
+      await Future<void>.delayed(Duration.zero); // the immediate ping
+
+      await Future<void>.delayed(const Duration(milliseconds: 70));
+
+      // Immediate ping + at least 2 ticks in 70ms at a 20ms interval;
+      // exact tick count is timing-sensitive, only the lower bound isn't.
+      expect(repository.heartbeatCallCount, greaterThanOrEqualTo(3));
     });
   });
 }

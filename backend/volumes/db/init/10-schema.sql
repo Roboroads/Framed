@@ -77,6 +77,12 @@ create table if not exists players (
   still_seconds integer not null default 0,
   kills integer not null default 0,
   joined_at timestamptz not null default now(),
+  -- Lobby-only liveness signal (#70): bumped by the client's heartbeat RPC
+  -- while waiting in the lobby, otherwise unused (ingame liveness already
+  -- has last_location_at/is_stale). Defaults to joined_at's value so a
+  -- player who joins and immediately goes dark still has a real timestamp
+  -- to expire from, not an artificial "just seen".
+  last_seen timestamptz not null default now(),
   unique (game_id, auth_uid),  -- one seat per device per game
   unique (game_id, name_hmac)  -- unique names, unreadable by the server
 );

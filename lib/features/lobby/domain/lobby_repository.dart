@@ -60,4 +60,9 @@ abstract interface class LobbyRepository {
   /// Assigns targets and moves the game to `dispersing`. The server
   /// re-checks the ready-player minimum; a disabled button is UX only.
   Future<void> startGame(String gameId);
+
+  /// `heartbeat(game_id)` (#70) — bumps this player's `last_seen`, the
+  /// signal a quiet lobby or a quiet individual player expires from.
+  /// [LobbyBloc] calls this on a timer while the lobby screen is open.
+  Future<void> heartbeat(String gameId);
 }

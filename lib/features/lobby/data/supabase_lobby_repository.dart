@@ -148,4 +148,9 @@ class SupabaseLobbyRepository implements LobbyRepository {
   Future<void> startGame(String gameId) {
     return _client.rpc('start_game', params: {'game_id': gameId});
   }
+
+  @override
+  Future<void> heartbeat(String gameId) {
+    return _client.rpc('heartbeat', params: {'game_id': gameId});
+  }
 }

@@ -93,6 +93,8 @@ begin
     perform public.tick_pulses(g);
     perform public.tick_vote_timeouts(g);
     perform public.tick_win_check(g);
+    perform public.tick_inactive_lobby_players(g);
+    perform public.tick_lobby_expiry(g);
   end loop;
 
   -- Not per-game: tick_cleanup (#29) needs finished games too, which the

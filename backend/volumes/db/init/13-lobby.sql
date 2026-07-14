@@ -188,38 +188,30 @@ begin
   return jsonb_build_object('game_id', g.id, 'player_id', pid);
 end $$;
 
--- leave_lobby(game_id): remove own player row (and selfie); transfer host to
--- the earliest joined_at; delete the game when the last player leaves.
-create or replace function leave_lobby(game_id uuid)
-returns void language plpgsql security definer set search_path = '' as $$
-declare
-  g public.games%rowtype;
-  me public.players%rowtype;
-  heir uuid;
+-- Removes one player from a still-open lobby: their selfie + row, host
+-- handoff to the earliest joined_at if they held it, the game itself if
+-- they were the last player, otherwise a player_left broadcast. Shared by
+-- leave_lobby below (a live player leaving) and tick_inactive_lobby_players
+-- (26-lobby-expiry.sql, #70 — the server deciding for a quiet one instead).
+create or replace function remove_lobby_player(g public.games, pid uuid) returns void
+language plpgsql set search_path = '' as $$
+declare heir uuid;
 begin
-  select * into g from public.games where id = game_id for update;
-  if not found then raise exception using message = 'not_found'; end if;
-  if g.status <> 'lobby' then raise exception using message = 'wrong_status'; end if;
-
-  select * into me from public.players p
-    where p.game_id = leave_lobby.game_id and p.auth_uid = auth.uid();
-  if not found then raise exception using message = 'not_member'; end if;
-
   -- the row delete unlinks the blob; physical file cleanup is the cleanup
   -- issue's job (the bytes are AES-GCM ciphertext either way)
   perform set_config('storage.allow_delete_query', 'true', true);
   delete from storage.objects
-    where bucket_id = 'selfies' and name = g.id || '/' || me.id;
+    where bucket_id = 'selfies' and name = g.id || '/' || pid;
   perform set_config('storage.allow_delete_query', 'false', true);
 
-  delete from public.players where id = me.id;
+  delete from public.players where id = pid;
 
   if not exists (select 1 from public.players p where p.game_id = g.id) then
     delete from public.games where id = g.id;
     return;
   end if;
 
-  if g.host_player_id = me.id then
+  if g.host_player_id = pid then
     select p.id into heir from public.players p
       where p.game_id = g.id order by p.joined_at, p.id limit 1;
     update public.games set host_player_id = heir where id = g.id;
@@ -229,7 +221,27 @@ begin
   end if;
 
   perform public.emit('game:' || g.id, 'player_left',
-    jsonb_build_object('player_id', me.id));
+    jsonb_build_object('player_id', pid));
+end $$;
+
+revoke execute on function remove_lobby_player(public.games, uuid) from public, anon, authenticated;
+
+-- leave_lobby(game_id): the calling player's own row, via remove_lobby_player.
+create or replace function leave_lobby(game_id uuid)
+returns void language plpgsql security definer set search_path = '' as $$
+declare
+  g public.games%rowtype;
+  me public.players%rowtype;
+begin
+  select * into g from public.games where id = game_id for update;
+  if not found then raise exception using message = 'not_found'; end if;
+  if g.status <> 'lobby' then raise exception using message = 'wrong_status'; end if;
+
+  select * into me from public.players p
+    where p.game_id = leave_lobby.game_id and p.auth_uid = auth.uid();
+  if not found then raise exception using message = 'not_member'; end if;
+
+  perform public.remove_lobby_player(g, me.id);
 end $$;
 
 -- set_selfie(game_id, path): client uploaded the encrypted selfie to the
