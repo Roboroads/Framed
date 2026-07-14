@@ -101,6 +101,11 @@ begin
     perform public.tick_pulses(g);
     perform public.tick_vote_timeouts(g);
     perform public.tick_win_check(g);
+    -- #77: below tick_win_check so a normal alive_count<=1 win (e.g. the
+    -- Final Duel resolving) takes priority when both conditions happen to
+    -- coincide in the same tick — finish_game's own update-as-lock (see
+    -- 23-finish.sql) makes whichever runs second here a safe no-op either way.
+    perform public.tick_min_players_check(g);
     perform public.tick_inactive_lobby_players(g);
     perform public.tick_lobby_expiry(g);
   end loop;

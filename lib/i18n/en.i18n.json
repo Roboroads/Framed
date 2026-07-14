@@ -125,6 +125,10 @@
     "showQrButton": "Show join QR code",
     "shareLinkButton": "Share join link",
     "gameSettingsButton": "Game settings",
+    "leaveButton": "Leave lobby",
+    "leaveConfirmTitle": "Leave the lobby?",
+    "leaveConfirmBody": "You'll lose your spot. Rejoin with the same QR code or link, as long as the game hasn't started yet.",
+    "leaveConfirmButton": "Leave",
     "errorGeneric": "Something went wrong. Check your connection and try again."
   },
   "ingame": {
@@ -158,7 +162,12 @@
     "deadSurvivedFor": "Survived $time",
     "deadChatEmpty": "No one's said anything yet.",
     "deadChatHint": "Message the dead",
-    "deadChatSendButton": "Send"
+    "deadChatSendButton": "Send",
+    "deadLeaveButton": "Leave game",
+    "deadLeaveWarning": "Leaving might end the game early for everyone still playing, if too few players are left to judge a frame.",
+    "deadLeaveConfirmTitle": "Leave the game?",
+    "deadLeaveConfirmBody": "You'll stop judging frames and chatting with the dead. If this drops the game below 3 players, it ends immediately and whoever has the most confirmed frames right now wins.",
+    "deadLeaveConfirmButton": "Leave"
   },
   "finish": {
     "title": "Game over",
@@ -176,7 +185,10 @@
     "killChainMia": "$victim went MIA",
     "replayButton": "Replay with same players",
     "replayError": "Couldn't start the replay. Try again.",
-    "leaveButton": "Leave game"
+    "leaveButton": "Leave game",
+    "leaveConfirmTitle": "Leave the game?",
+    "leaveConfirmBody": "You won't be able to rejoin this game.",
+    "leaveConfirmButton": "Leave"
   },
   "scan": {
     "title": "Scan to join",
@@ -198,6 +210,9 @@
     "permissionDeniedBody": "Framed needs camera access for this. Grant it, then try again.",
     "errorGeneric": "Couldn't start the camera. Try again.",
     "retry": "Try again"
+  },
+  "confirmationDialog": {
+    "cancel": "Cancel"
   },
   "permissionRationale": {
     "ok": "OK",

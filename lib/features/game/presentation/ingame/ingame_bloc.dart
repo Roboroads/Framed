@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/crypto/game_crypto.dart';
 import '../../../../core/push/local_alarms.dart';
 import '../../../../core/realtime/game_event.dart';
+import '../../../../core/session/game_session.dart';
 import '../../domain/frame_error.dart';
 import '../../domain/game_repository.dart';
 import '../../domain/judging_frame.dart';
@@ -18,6 +19,7 @@ class IngameBloc extends Cubit<IngameState> {
     required GameCrypto crypto,
     required GameRepository repository,
     required LocalAlarms localAlarms,
+    required GameSession session,
     // game:{game_id}:dead (#24) — unlike [events], not joined until this
     // player actually dies (RLS refuses the subscribe before then; see
     // _startDeadChat), same lazy-join-on-listen behaviour as GameChannels.
@@ -37,6 +39,7 @@ class IngameBloc extends Cubit<IngameState> {
   }) : _crypto = crypto,
        _repository = repository,
        _localAlarms = localAlarms,
+       _session = session,
        _deadChatEvents = deadChatEvents,
        _gameId = gameId,
        _myPlayerId = myPlayerId,
@@ -64,6 +67,7 @@ class IngameBloc extends Cubit<IngameState> {
   final GameCrypto _crypto;
   final GameRepository _repository;
   final LocalAlarms _localAlarms;
+  final GameSession _session;
   final Stream<GameEvent> _deadChatEvents;
   final String _gameId;
   final String _myPlayerId;
@@ -348,6 +352,18 @@ class IngameBloc extends Cubit<IngameState> {
     } catch (_) {
       // Nothing to reconcile — the composer just keeps the user's draft.
     }
+  }
+
+  // Death screen leave button (#77) — `leave_active_game` rejects a
+  // still-alive caller server-side; the UI only ever offers this button
+  // once IngameState.phase is IngameDead, so that never happens in
+  // practice. Same best-effort shape as LobbyBloc/FinishBloc.leave(): the
+  // player still wants out even if the network call failed.
+  Future<void> leave() async {
+    try {
+      await _repository.leaveActiveGame(_gameId);
+    } catch (_) {}
+    await _session.end();
   }
 
   // No local logic decides when a warning starts or stops — this just

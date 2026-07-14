@@ -76,7 +76,7 @@ Push delivery isn't guaranteed-instant, so the two moments where a late or dropp
   - **Warning modal.** Shown while you're breaking a rule (e.g. outside the geofence) until you stop or die.
   - **Play-area edge banner.** A small, dismissable-by-nature banner (not a modal, doesn't block anything) while you're still inside the geofence but close to its edge — a heads-up before the warning modal above would ever trigger.
   - **My location.** A button (available during disperse and game in progress) opens a full-screen map showing your own live position against the play-area boundary — distinct from the target's soft-punishment map above, which is about someone else's location, not your own.
-- **Death screen.** How you died, how long you survived, the photo that framed you, and **who your assassin was**. Includes a chat with the other dead players so they can set up a meeting spot. Dead players still receive judging modals.
+- **Death screen.** How you died, how long you survived, the photo that framed you, and **who your assassin was**. Includes a chat with the other dead players so they can set up a meeting spot. Dead players still receive judging modals. A confirmed "Leave game" button is here too, with a note that leaving might end the game early for everyone (see Game rules).
 - **Game finish.** Winner (per the game mode, with the mode named on screen) plus stats (most kills, most stand-still player, most moved player, combined movement, etc.) and the full kill chain. The host can choose "replay with same players" (same lobby, same selfies, reshuffled targets); players can only "Leave game".
 
 ## Game options
@@ -107,6 +107,7 @@ Set by the host in the lobby:
   - Stale for `hard_punishment_minutes` straight → MIA death (this covers dead phones and force-closed apps). Any successful update resets the timer.
   - There is no mid-game quit. Reopening the app after a crash or force-close resumes exactly where you left off (#54) — the app itself doesn't kill you. But nothing pauses the staleness clock while you're gone, so silence for `hard_punishment_minutes` still kills you as MIA whether that silence is a crash, a dead phone, or someone deliberately sitting out. Reconnecting only saves you if you're back before that timer runs out.
   - This rule binds the living only. Once dead you may close the app freely — you just stop judging and chatting.
+  - **Dead players can leave, with a confirmation dialog first.** The lobby, death screen, and finish screen all offer a "Leave" button, none of them one tap away — leaving from the lobby or finish screen just gives up your seat, but leaving mid-game (death screen) drops you out of the judge pool for every future vote. If that drops the game's roster (everyone who hasn't left) below 3 players, there's no way to guarantee a judge for whoever's left, so the game ends immediately: whoever currently has the most confirmed frames wins, the same "tolerates a dead winner" rule as most-frames mode.
 - **You must vote on pending frames.**
   - While you have an unvoted frame open, you receive no compass update at a pulse. Lazy judges lose their own intel.
 - **Votes are final.**
@@ -127,7 +128,7 @@ The app can't enforce these; they're shown at pre-join alongside the play-fair d
 
 ## Edge cases
 
-- **Final duel (2 alive):** both players target each other; the dead are the jury.
+- **Final duel (2 alive):** both players target each other; the dead are the jury. Still holds as long as the roster (everyone who hasn't left) stays at 3 or more — below that, the low-player-count rule above ends the game first.
 - **Target killed by someone else while a frame on them is pending:** impossible — each player has exactly one assassin in the circle.
 - **Assassin dies via MIA while their frame is pending:** the pending vote is cancelled.
 - **Simultaneous pending frames** (A framed B while B's frame of C is pending): B's held frame resolves after B's own verdict — if B dies, B's frame is void.

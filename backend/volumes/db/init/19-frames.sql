@@ -7,8 +7,10 @@
 alter table frames add column if not exists judge_count integer;
 
 -- Fan a pending frame out to every judge: all players but the assassin and
--- target, alive or dead. Shared with #20, which calls this when a held
--- frame is released and becomes pending.
+-- target, alive or dead, minus anyone who's left the game mid-game (#77 —
+-- left_at is otherwise only ever set pre-game/post-finish, see
+-- 23-finish.sql). Shared with #20, which calls this when a held frame is
+-- released and becomes pending.
 create or replace function notify_judges(p_frame_id uuid) returns void
 language plpgsql security definer set search_path = '' as $$
 declare
@@ -20,6 +22,7 @@ begin
   select * into target from public.players where id = f.target_id;
   for j in select * from public.players
     where game_id = f.game_id and id not in (f.assassin_id, f.target_id)
+      and left_at is null
   loop
     perform public.emit('player:' || j.id, 'frame_to_judge',
       jsonb_build_object(
@@ -82,7 +85,12 @@ begin
     case when held then 'held' else 'pending' end::public.frame_status,
     case when held then null else now() end,
     case when held then null else now() + (g.vote_timeout_minutes || ' minutes')::interval end,
-    (select count(*) from public.players p2 where p2.game_id = me.game_id) - 2
+    -- left_at-filtered (#77): the assassin and target are always still in
+    -- the eligible pool themselves (leaving is dead-only, and a frame's
+    -- target is by definition still alive until this vote resolves), so
+    -- the "-2" for them stays correct against this narrower count.
+    (select count(*) from public.players p2
+       where p2.game_id = me.game_id and p2.left_at is null) - 2
   )
   returning id into new_id;
 

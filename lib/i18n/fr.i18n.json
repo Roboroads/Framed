@@ -125,6 +125,10 @@
     "showQrButton": "Afficher le QR code d'invitation",
     "shareLinkButton": "Partager le lien d'invitation",
     "gameSettingsButton": "Réglages de la partie",
+    "leaveButton": "Quitter la salle",
+    "leaveConfirmTitle": "Quitter la salle d'attente ?",
+    "leaveConfirmBody": "Vous perdrez votre place. Vous pouvez rejoindre à nouveau avec le même QR code ou lien, tant que la partie n'a pas commencé.",
+    "leaveConfirmButton": "Quitter",
     "errorGeneric": "Quelque chose s'est mal passé. Vérifiez votre connexion et réessayez."
   },
   "ingame": {
@@ -158,7 +162,12 @@
     "deadSurvivedFor": "A survécu $time",
     "deadChatEmpty": "Personne n'a encore rien dit.",
     "deadChatHint": "Message aux éliminés",
-    "deadChatSendButton": "Envoyer"
+    "deadChatSendButton": "Envoyer",
+    "deadLeaveButton": "Quitter la partie",
+    "deadLeaveWarning": "Partir peut mettre fin à la partie plus tôt pour tout le monde, s'il ne reste plus assez de joueurs pour juger un piégeage.",
+    "deadLeaveConfirmTitle": "Quitter la partie ?",
+    "deadLeaveConfirmBody": "Vous arrêterez de juger les piégeages et de discuter avec les éliminés. Si cela fait passer la partie sous 3 joueurs, elle se termine immédiatement et celui ou celle qui a le plus de piégeages confirmés à ce moment-là gagne.",
+    "deadLeaveConfirmButton": "Quitter"
   },
   "finish": {
     "title": "Partie terminée",
@@ -176,7 +185,10 @@
     "killChainMia": "$victim a disparu",
     "replayButton": "Rejouer avec les mêmes joueurs",
     "replayError": "Impossible de démarrer la nouvelle partie. Réessayez.",
-    "leaveButton": "Quitter la partie"
+    "leaveButton": "Quitter la partie",
+    "leaveConfirmTitle": "Quitter la partie ?",
+    "leaveConfirmBody": "Vous ne pourrez pas rejoindre cette partie à nouveau.",
+    "leaveConfirmButton": "Quitter"
   },
   "scan": {
     "title": "Scannez pour rejoindre",
@@ -198,6 +210,9 @@
     "permissionDeniedBody": "Framed a besoin de l'accès à l'appareil photo pour cela. Autorisez-le puis réessayez.",
     "errorGeneric": "Impossible de démarrer l'appareil photo. Réessayez.",
     "retry": "Réessayer"
+  },
+  "confirmationDialog": {
+    "cancel": "Annuler"
   },
   "permissionRationale": {
     "ok": "OK",

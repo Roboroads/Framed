@@ -5,12 +5,27 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:framed/core/crypto/game_crypto.dart';
 import 'package:framed/core/push/local_alarms.dart';
 import 'package:framed/core/realtime/game_event.dart';
+import 'package:framed/core/session/game_session.dart';
+import 'package:framed/core/session/session_store.dart';
 import 'package:framed/features/game/domain/frame_error.dart';
 import 'package:framed/features/game/domain/game_repository.dart';
 import 'package:framed/features/game/domain/geofence_info.dart';
 import 'package:framed/features/game/presentation/ingame/ingame_bloc.dart';
 import 'package:framed/features/game/presentation/ingame/ingame_state.dart';
 import 'package:postgrest/postgrest.dart';
+
+class _FakeSecureKeyValueStore implements SecureKeyValueStore {
+  final _values = <String, String>{};
+
+  @override
+  Future<String?> read(String key) async => _values[key];
+
+  @override
+  Future<void> write(String key, String value) async => _values[key] = value;
+
+  @override
+  Future<void> delete(String key) async => _values.remove(key);
+}
 
 class _FakeLocalAlarms implements LocalAlarms {
   DateTime? scheduledCompassPulse;
@@ -203,6 +218,15 @@ class _FakeGameRepository implements GameRepository {
   @override
   Future<void> leaveFinishedGame(String gameId) => throw UnimplementedError();
 
+  bool leaveActiveCalled = false;
+  Object? leaveActiveFailure;
+
+  @override
+  Future<void> leaveActiveGame(String gameId) async {
+    leaveActiveCalled = true;
+    if (leaveActiveFailure != null) throw leaveActiveFailure!;
+  }
+
   @override
   Future<void> updatePushToken({
     required String gameId,
@@ -215,6 +239,7 @@ void main() {
     late GameCrypto crypto;
     late _FakeGameRepository repository;
     late _FakeLocalAlarms localAlarms;
+    late GameSession session;
     late StreamController<GameEvent> events;
     late DateTime endsAt;
 
@@ -222,6 +247,7 @@ void main() {
       crypto = await GameCrypto.generate();
       repository = _FakeGameRepository();
       localAlarms = _FakeLocalAlarms();
+      session = GameSession(SessionStore(_FakeSecureKeyValueStore()));
       events = StreamController<GameEvent>();
       endsAt = DateTime.utc(2026, 1, 1, 12);
     });
@@ -234,6 +260,7 @@ void main() {
         crypto: crypto,
         repository: repository,
         localAlarms: localAlarms,
+        session: session,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -254,6 +281,7 @@ void main() {
         crypto: crypto,
         repository: repository,
         localAlarms: localAlarms,
+        session: session,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -271,6 +299,7 @@ void main() {
         crypto: crypto,
         repository: repository,
         localAlarms: localAlarms,
+        session: session,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -288,6 +317,7 @@ void main() {
         crypto: crypto,
         repository: repository,
         localAlarms: localAlarms,
+        session: session,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -322,6 +352,7 @@ void main() {
           crypto: crypto,
           repository: repository,
           localAlarms: localAlarms,
+          session: session,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -354,6 +385,7 @@ void main() {
           crypto: crypto,
           repository: repository,
           localAlarms: localAlarms,
+          session: session,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -413,6 +445,7 @@ void main() {
           crypto: crypto,
           repository: repository,
           localAlarms: localAlarms,
+          session: session,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -438,6 +471,7 @@ void main() {
         crypto: crypto,
         repository: repository,
         localAlarms: localAlarms,
+        session: session,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -479,6 +513,7 @@ void main() {
         crypto: crypto,
         repository: repository,
         localAlarms: localAlarms,
+        session: session,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -512,6 +547,7 @@ void main() {
         crypto: crypto,
         repository: repository,
         localAlarms: localAlarms,
+        session: session,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -542,6 +578,7 @@ void main() {
         crypto: crypto,
         repository: repository,
         localAlarms: localAlarms,
+        session: session,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -570,6 +607,7 @@ void main() {
           crypto: crypto,
           repository: repository,
           localAlarms: localAlarms,
+          session: session,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -600,6 +638,7 @@ void main() {
           crypto: crypto,
           repository: repository,
           localAlarms: localAlarms,
+          session: session,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -624,6 +663,7 @@ void main() {
           crypto: crypto,
           repository: repository,
           localAlarms: localAlarms,
+          session: session,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -645,6 +685,7 @@ void main() {
         crypto: crypto,
         repository: repository,
         localAlarms: localAlarms,
+        session: session,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -665,6 +706,7 @@ void main() {
         crypto: crypto,
         repository: repository,
         localAlarms: localAlarms,
+        session: session,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -686,6 +728,7 @@ void main() {
         crypto: crypto,
         repository: repository,
         localAlarms: localAlarms,
+        session: session,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -717,6 +760,7 @@ void main() {
         crypto: crypto,
         repository: repository,
         localAlarms: localAlarms,
+        session: session,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -748,6 +792,7 @@ void main() {
           crypto: crypto,
           repository: repository,
           localAlarms: localAlarms,
+          session: session,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -790,6 +835,7 @@ void main() {
           crypto: crypto,
           repository: repository,
           localAlarms: localAlarms,
+          session: session,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -812,6 +858,7 @@ void main() {
         crypto: crypto,
         repository: repository,
         localAlarms: localAlarms,
+        session: session,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -832,6 +879,7 @@ void main() {
         crypto: crypto,
         repository: repository,
         localAlarms: localAlarms,
+        session: session,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -854,6 +902,7 @@ void main() {
         crypto: crypto,
         repository: repository,
         localAlarms: localAlarms,
+        session: session,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -887,6 +936,7 @@ void main() {
           crypto: crypto,
           repository: repository,
           localAlarms: localAlarms,
+          session: session,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -921,6 +971,7 @@ void main() {
         crypto: crypto,
         repository: repository,
         localAlarms: localAlarms,
+        session: session,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -948,6 +999,7 @@ void main() {
           crypto: crypto,
           repository: repository,
           localAlarms: localAlarms,
+          session: session,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -987,6 +1039,7 @@ void main() {
           crypto: crypto,
           repository: repository,
           localAlarms: localAlarms,
+          session: session,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1018,6 +1071,7 @@ void main() {
           crypto: crypto,
           repository: repository,
           localAlarms: localAlarms,
+          session: session,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1040,6 +1094,7 @@ void main() {
         crypto: crypto,
         repository: repository,
         localAlarms: localAlarms,
+        session: session,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1067,6 +1122,7 @@ void main() {
         crypto: crypto,
         repository: repository,
         localAlarms: localAlarms,
+        session: session,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1082,6 +1138,7 @@ void main() {
         crypto: crypto,
         repository: repository,
         localAlarms: localAlarms,
+        session: session,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1108,6 +1165,7 @@ void main() {
         crypto: crypto,
         repository: repository,
         localAlarms: localAlarms,
+        session: session,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1130,6 +1188,7 @@ void main() {
         crypto: crypto,
         repository: repository,
         localAlarms: localAlarms,
+        session: session,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1157,6 +1216,7 @@ void main() {
         crypto: crypto,
         repository: repository,
         localAlarms: localAlarms,
+        session: session,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1181,6 +1241,7 @@ void main() {
           crypto: crypto,
           repository: repository,
           localAlarms: localAlarms,
+          session: session,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1211,6 +1272,7 @@ void main() {
         crypto: crypto,
         repository: repository,
         localAlarms: localAlarms,
+        session: session,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1246,6 +1308,7 @@ void main() {
         crypto: crypto,
         repository: repository,
         localAlarms: localAlarms,
+        session: session,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1288,6 +1351,7 @@ void main() {
         crypto: crypto,
         repository: repository,
         localAlarms: localAlarms,
+        session: session,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1337,6 +1401,7 @@ void main() {
         crypto: crypto,
         repository: repository,
         localAlarms: localAlarms,
+        session: session,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1374,6 +1439,7 @@ void main() {
           crypto: crypto,
           repository: repository,
           localAlarms: localAlarms,
+          session: session,
           gameId: 'game-1',
           myPlayerId: 'player-me',
           deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1420,6 +1486,7 @@ void main() {
         crypto: crypto,
         repository: repository,
         localAlarms: localAlarms,
+        session: session,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: deadChatEvents.stream,
@@ -1493,6 +1560,7 @@ void main() {
         crypto: crypto,
         repository: repository,
         localAlarms: localAlarms,
+        session: session,
         gameId: 'game-1',
         myPlayerId: 'player-me',
         deadChatEvents: const Stream<GameEvent>.empty(),
@@ -1502,6 +1570,54 @@ void main() {
       await bloc.close();
 
       expect(localAlarms.cancelAllCallCount, 1);
+    });
+
+    test('leave() calls leave_active_game and clears the session', () async {
+      await session.begin(
+        gameId: 'game-1',
+        playerId: 'player-me',
+        crypto: crypto,
+      );
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        localAlarms: localAlarms,
+        session: session,
+        gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
+        initialEndsAt: endsAt,
+      );
+
+      await bloc.leave();
+
+      expect(repository.leaveActiveCalled, isTrue);
+      expect(session.isActive, isFalse);
+    });
+
+    test('leave() clears the session even when the RPC call fails', () async {
+      repository.leaveActiveFailure = Exception('offline');
+      await session.begin(
+        gameId: 'game-1',
+        playerId: 'player-me',
+        crypto: crypto,
+      );
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        localAlarms: localAlarms,
+        session: session,
+        gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
+        initialEndsAt: endsAt,
+      );
+
+      await bloc.leave();
+
+      expect(session.isActive, isFalse);
     });
   });
 }

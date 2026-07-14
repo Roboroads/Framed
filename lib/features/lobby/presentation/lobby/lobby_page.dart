@@ -11,6 +11,7 @@ import '../../../../core/crypto/qr_payload.dart';
 import '../../../../core/di/injector.dart';
 import '../../../../core/realtime/game_channels.dart';
 import '../../../../core/session/game_session.dart';
+import '../../../../core/widgets/confirmation_dialog.dart';
 import '../../../../core/widgets/geofence_map.dart';
 import '../../../../core/widgets/geofence_map_viewer_page.dart';
 import '../../../../i18n/strings.g.dart';
@@ -52,13 +53,7 @@ class _LobbyView extends StatelessWidget {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
-        try {
-          await context.read<LobbyBloc>().leave();
-        } catch (_) {
-          // Best-effort: the player still wants out even if the network
-          // call failed. The game/lobby cleans up stale players anyway.
-        }
-        if (context.mounted) context.go('/');
+        await _confirmAndLeave(context);
       },
       child: BlocConsumer<LobbyBloc, LobbyState>(
         listenWhen: (previous, current) =>
@@ -76,7 +71,16 @@ class _LobbyView extends StatelessWidget {
         },
         builder: (context, state) {
           return Scaffold(
-            appBar: AppBar(title: Text(t.lobby.title)),
+            appBar: AppBar(
+              title: Text(t.lobby.title),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.logout),
+                  tooltip: t.lobby.leaveButton,
+                  onPressed: () => _confirmAndLeave(context),
+                ),
+              ],
+            ),
             body: switch (state.phase) {
               LobbyPhase.loading => const Center(
                 child: CircularProgressIndicator(),
@@ -96,6 +100,27 @@ class _LobbyView extends StatelessWidget {
     LobbyError.tooFewPlayers => t.lobby.startTooFewPlayers,
     _ => t.lobby.errorGeneric,
   };
+
+  // Shared by the back gesture and the AppBar button (#77) — leaving used
+  // to be silent and accidental (a bare back-gesture PopScope with no
+  // confirmation, no visible button).
+  Future<void> _confirmAndLeave(BuildContext context) async {
+    final confirmed = await showConfirmationDialog(
+      context: context,
+      title: t.lobby.leaveConfirmTitle,
+      message: t.lobby.leaveConfirmBody,
+      confirmLabel: t.lobby.leaveConfirmButton,
+      destructive: true,
+    );
+    if (!confirmed || !context.mounted) return;
+    try {
+      await context.read<LobbyBloc>().leave();
+    } catch (_) {
+      // Best-effort: the player still wants out even if the network call
+      // failed. The game/lobby cleans up stale players anyway.
+    }
+    if (context.mounted) context.go('/');
+  }
 }
 
 class _LobbyBody extends StatefulWidget {

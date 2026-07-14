@@ -125,6 +125,10 @@
     "showQrButton": "Join-QR-code tonen",
     "shareLinkButton": "Join-link delen",
     "gameSettingsButton": "Spelinstellingen",
+    "leaveButton": "Lobby verlaten",
+    "leaveConfirmTitle": "Lobby verlaten?",
+    "leaveConfirmBody": "Je verliest je plek. Je kunt opnieuw meedoen met dezelfde QR-code of link, zolang het spel nog niet is begonnen.",
+    "leaveConfirmButton": "Verlaten",
     "errorGeneric": "Er is iets misgegaan. Controleer je verbinding en probeer het opnieuw."
   },
   "ingame": {
@@ -158,7 +162,12 @@
     "deadSurvivedFor": "Overleefde $time",
     "deadChatEmpty": "Nog niemand heeft iets gezegd.",
     "deadChatHint": "Bericht aan de doden",
-    "deadChatSendButton": "Versturen"
+    "deadChatSendButton": "Versturen",
+    "deadLeaveButton": "Spel verlaten",
+    "deadLeaveWarning": "Vertrekken kan het spel voor iedereen vroegtijdig beëindigen, als er te weinig spelers overblijven om een frame te beoordelen.",
+    "deadLeaveConfirmTitle": "Spel verlaten?",
+    "deadLeaveConfirmBody": "Je stopt met het beoordelen van frames en chatten met de doden. Als het spel hierdoor onder 3 spelers komt, eindigt het meteen en wint wie op dat moment de meeste bevestigde frames heeft.",
+    "deadLeaveConfirmButton": "Verlaten"
   },
   "finish": {
     "title": "Spel afgelopen",
@@ -176,7 +185,10 @@
     "killChainMia": "$victim is vermist geraakt",
     "replayButton": "Opnieuw spelen met dezelfde spelers",
     "replayError": "Kon de replay niet starten. Probeer het opnieuw.",
-    "leaveButton": "Spel verlaten"
+    "leaveButton": "Spel verlaten",
+    "leaveConfirmTitle": "Spel verlaten?",
+    "leaveConfirmBody": "Je kunt niet opnieuw meedoen aan dit spel.",
+    "leaveConfirmButton": "Verlaten"
   },
   "scan": {
     "title": "Scan om mee te doen",
@@ -198,6 +210,9 @@
     "permissionDeniedBody": "Framed heeft hiervoor cameratoegang nodig. Geef toestemming en probeer het opnieuw.",
     "errorGeneric": "Kon de camera niet starten. Probeer het opnieuw.",
     "retry": "Opnieuw proberen"
+  },
+  "confirmationDialog": {
+    "cancel": "Annuleren"
   },
   "permissionRationale": {
     "ok": "OK",

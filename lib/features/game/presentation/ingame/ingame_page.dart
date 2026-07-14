@@ -19,6 +19,7 @@ import '../../../../core/realtime/game_channels.dart';
 import '../../../../core/realtime/game_event.dart';
 import '../../../../core/session/game_session.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/confirmation_dialog.dart';
 import '../../../../core/widgets/full_screen_photo_page.dart';
 import '../../../../core/widgets/geofence_map.dart';
 import '../../../../core/widgets/geofence_map_viewer_page.dart';
@@ -69,6 +70,7 @@ class _IngamePageState extends State<IngamePage> {
       crypto: session.crypto,
       repository: repository,
       localAlarms: getIt<LocalAlarms>(),
+      session: session,
       deadChatEvents: channels.deadChat(session.gameId),
       gameId: session.gameId,
       myPlayerId: session.playerId,
@@ -238,6 +240,22 @@ class _DeadScreenState extends State<_DeadScreen> {
     _composer.clear();
   }
 
+  // No leave option existed on this screen before #77 — only force-closing
+  // the app. Dead-only: IDEA.md "Game rules"' no-mid-game-quit still binds
+  // the living, this screen only ever renders once already dead.
+  Future<void> _confirmAndLeave(BuildContext context) async {
+    final confirmed = await showConfirmationDialog(
+      context: context,
+      title: t.ingame.deadLeaveConfirmTitle,
+      message: t.ingame.deadLeaveConfirmBody,
+      confirmLabel: t.ingame.deadLeaveConfirmButton,
+      destructive: true,
+    );
+    if (!confirmed || !context.mounted) return;
+    await context.read<IngameBloc>().leave();
+    if (context.mounted) context.go('/');
+  }
+
   @override
   Widget build(BuildContext context) {
     final myPlayerId = getIt<GameSession>().playerId;
@@ -287,6 +305,18 @@ class _DeadScreenState extends State<_DeadScreen> {
                   time: _formatSurvived(widget.survivedSeconds),
                 ),
                 textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                t.ingame.deadLeaveWarning,
+                style: Theme.of(context).textTheme.bodySmall,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              OutlinedButton.icon(
+                onPressed: () => _confirmAndLeave(context),
+                icon: const Icon(Icons.logout),
+                label: Text(t.ingame.deadLeaveButton),
               ),
             ],
           ),

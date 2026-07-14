@@ -6,6 +6,7 @@ import '../../../../core/di/injector.dart';
 import '../../../../core/realtime/game_channels.dart';
 import '../../../../core/realtime/game_event.dart';
 import '../../../../core/session/game_session.dart';
+import '../../../../core/widgets/confirmation_dialog.dart';
 import '../../../../i18n/strings.g.dart';
 import '../../domain/game_repository.dart';
 import 'finish_bloc.dart';
@@ -177,10 +178,7 @@ class _FinishView extends StatelessWidget {
                                 : Text(t.finish.replayButton),
                           )
                         : FilledButton(
-                            onPressed: () async {
-                              await context.read<FinishBloc>().leave();
-                              if (context.mounted) context.go('/');
-                            },
+                            onPressed: () => _confirmAndLeave(context),
                             child: Text(t.finish.leaveButton),
                           ),
                   ),
@@ -202,6 +200,20 @@ class _FinishView extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  // The button already fired without confirmation before #77.
+  Future<void> _confirmAndLeave(BuildContext context) async {
+    final confirmed = await showConfirmationDialog(
+      context: context,
+      title: t.finish.leaveConfirmTitle,
+      message: t.finish.leaveConfirmBody,
+      confirmLabel: t.finish.leaveConfirmButton,
+      destructive: true,
+    );
+    if (!confirmed || !context.mounted) return;
+    await context.read<FinishBloc>().leave();
+    if (context.mounted) context.go('/');
   }
 
   String _winnerLine(FinishState state) {

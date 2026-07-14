@@ -109,6 +109,12 @@ begin
   if me.id = f.assassin_id or me.id = f.target_id then
     raise exception using message = 'not_a_judge';
   end if;
+  -- #77: a judge who's since left the game (left_at) can't cast a fresh
+  -- vote — notify_judges already excludes them from the fan-out, this
+  -- closes the same door for a vote cast without that push/broadcast.
+  if me.left_at is not null then
+    raise exception using message = 'not_a_judge';
+  end if;
   if f.status <> 'pending' then return; end if;
 
   insert into public.frame_votes (frame_id, judge_id, vote)

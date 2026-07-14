@@ -115,6 +115,12 @@ abstract interface class GameRepository {
   /// `leave_finished_game(game_id)` (#25).
   Future<void> leaveFinishedGame(String gameId);
 
+  /// `leave_active_game(game_id)` (#77) — the death screen's leave button.
+  /// Dead only; the server rejects a still-alive caller. Unlike
+  /// [leaveFinishedGame] this can end the game outright for everyone else,
+  /// if it drops the eligible player count below what a fair vote needs.
+  Future<void> leaveActiveGame(String gameId);
+
   /// Persists an FCM/APNs token rotation (#28) — the caller's own row
   /// only, per the `push_token`-only update grant (11-policies.sql).
   Future<void> updatePushToken({required String gameId, required String token});

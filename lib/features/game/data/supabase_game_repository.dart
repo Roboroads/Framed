@@ -222,6 +222,11 @@ class SupabaseGameRepository implements GameRepository {
   }
 
   @override
+  Future<void> leaveActiveGame(String gameId) async {
+    await _client.rpc('leave_active_game', params: {'game_id': gameId});
+  }
+
+  @override
   Future<void> updatePushToken({
     required String gameId,
     required String token,

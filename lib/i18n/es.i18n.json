@@ -125,6 +125,10 @@
     "showQrButton": "Mostrar código QR de unión",
     "shareLinkButton": "Compartir enlace de unión",
     "gameSettingsButton": "Ajustes de la partida",
+    "leaveButton": "Salir de la sala",
+    "leaveConfirmTitle": "¿Salir de la sala de espera?",
+    "leaveConfirmBody": "Perderás tu sitio. Puedes volver a unirte con el mismo código QR o enlace, mientras la partida no haya empezado.",
+    "leaveConfirmButton": "Salir",
     "errorGeneric": "Algo ha ido mal. Comprueba tu conexión e inténtalo de nuevo."
   },
   "ingame": {
@@ -158,7 +162,12 @@
     "deadSurvivedFor": "Sobreviviste $time",
     "deadChatEmpty": "Todavía nadie ha dicho nada.",
     "deadChatHint": "Mensaje para los eliminados",
-    "deadChatSendButton": "Enviar"
+    "deadChatSendButton": "Enviar",
+    "deadLeaveButton": "Salir de la partida",
+    "deadLeaveWarning": "Salir puede terminar la partida antes de tiempo para el resto, si quedan muy pocos jugadores para juzgar una foto.",
+    "deadLeaveConfirmTitle": "¿Salir de la partida?",
+    "deadLeaveConfirmBody": "Dejarás de juzgar fotos y de chatear con los eliminados. Si esto deja la partida por debajo de 3 jugadores, termina de inmediato y gana quien tenga más eliminaciones confirmadas en ese momento.",
+    "deadLeaveConfirmButton": "Salir"
   },
   "finish": {
     "title": "Partida terminada",
@@ -176,7 +185,10 @@
     "killChainMia": "$victim desapareció",
     "replayButton": "Repetir con los mismos jugadores",
     "replayError": "No se pudo iniciar la repetición. Inténtalo de nuevo.",
-    "leaveButton": "Salir de la partida"
+    "leaveButton": "Salir de la partida",
+    "leaveConfirmTitle": "¿Salir de la partida?",
+    "leaveConfirmBody": "No podrás volver a unirte a esta partida.",
+    "leaveConfirmButton": "Salir"
   },
   "scan": {
     "title": "Escanea para unirte",
@@ -198,6 +210,9 @@
     "permissionDeniedBody": "Framed necesita acceso a la cámara para esto. Concédelo e inténtalo de nuevo.",
     "errorGeneric": "No se pudo iniciar la cámara. Inténtalo de nuevo.",
     "retry": "Reintentar"
+  },
+  "confirmationDialog": {
+    "cancel": "Cancelar"
   },
   "permissionRationale": {
     "ok": "Aceptar",
