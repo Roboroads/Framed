@@ -5,7 +5,8 @@
       "namespace": "android_app",
       "package_name": "me.roboroads.framed",
       "sha256_cert_fingerprints": [
-        "FIXME: SHA256 fingerprint of the release signing certificate — get it with `keytool -list -v -keystore <release.jks> | grep SHA256`, or from Play Console > Setup > App integrity once a release build has been uploaded there. App Links verification silently fails until this is a real fingerprint."
+        "FIXME: SHA256 fingerprint of the release signing certificate — get it with `keytool -list -v -keystore <release.jks> | grep SHA256`, or from Play Console > Setup > App integrity once a release build has been uploaded there. App Links verification silently fails until this is a real fingerprint.",
+        "0D:97:93:34:A3:A1:BB:50:F3:5F:47:22:2D:09:37:5B:97:34:08:40:99:5A:FC:80:F7:5D:D9:D5:96:AC:2A:98"
       ]
     }
   }
