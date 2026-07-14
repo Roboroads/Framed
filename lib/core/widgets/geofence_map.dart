@@ -35,6 +35,8 @@ class GeofenceMap extends StatefulWidget {
     this.targetLabel,
     this.selfMarker,
     this.interactive = false,
+    this.showFill = true,
+    this.showCenterMarker = true,
     super.key,
   });
 
@@ -51,6 +53,15 @@ class GeofenceMap extends StatefulWidget {
 
   /// Enables pan/zoom for looking around — never repositioning the center.
   final bool interactive;
+
+  /// The circle's semi-transparent fill. Off for the ingame "my location"
+  /// viewer (#71): with a live self-marker already on screen, the fill and
+  /// center pin add clutter without helping judge the boundary against the
+  /// street map underneath. Host setup and lobby settings keep it on.
+  final bool showFill;
+
+  /// The pin at [center]. Same rationale as [showFill].
+  final bool showCenterMarker;
 
   @override
   State<GeofenceMap> createState() => _GeofenceMapState();
@@ -135,9 +146,9 @@ class _GeofenceMapState extends State<GeofenceMap> {
               point: center,
               radius: radiusM,
               useRadiusInMeter: true,
-              color: Theme.of(
-                context,
-              ).colorScheme.primary.withValues(alpha: 0.2),
+              color: widget.showFill
+                  ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)
+                  : Colors.transparent,
               borderColor: Theme.of(context).colorScheme.primary,
               borderStrokeWidth: 2,
             ),
@@ -145,19 +156,20 @@ class _GeofenceMapState extends State<GeofenceMap> {
         ),
         MarkerLayer(
           markers: [
-            Marker(
-              point: center,
-              // #59: location_pin's visual tip sits at the bottom-center of
-              // its bounding box, not the box's geometric center (the
-              // default alignment) — without this the pin renders visibly
-              // off the circle's true center.
-              alignment: Alignment.topCenter,
-              child: Icon(
-                Icons.location_pin,
-                color: Theme.of(context).colorScheme.primary,
-                size: 36,
+            if (widget.showCenterMarker)
+              Marker(
+                point: center,
+                // #59: location_pin's visual tip sits at the bottom-center
+                // of its bounding box, not the box's geometric center (the
+                // default alignment) — without this the pin renders visibly
+                // off the circle's true center.
+                alignment: Alignment.topCenter,
+                child: Icon(
+                  Icons.location_pin,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 36,
+                ),
               ),
-            ),
             if (target != null)
               Marker(
                 point: target,

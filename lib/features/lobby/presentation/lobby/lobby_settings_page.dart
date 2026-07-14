@@ -77,6 +77,23 @@ class LobbySettingsPage extends StatelessWidget {
                   ),
                   onChanged: (v) => bloc.changeGeofenceRadius(v.round()),
                 ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton.icon(
+                    onPressed: () async {
+                      final fallback = LatLng(lat, lng);
+                      final center = await currentLocationOrFallback(
+                        context,
+                        fallback,
+                      );
+                      if (center != fallback) {
+                        await bloc.changeGeofenceCenter(center);
+                      }
+                    },
+                    icon: const Icon(Icons.my_location),
+                    label: Text(t.hostSetup.recenterButton),
+                  ),
+                ),
               ],
               const Divider(height: 32),
               Text(

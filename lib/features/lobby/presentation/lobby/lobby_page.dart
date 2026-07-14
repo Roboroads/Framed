@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -10,6 +11,8 @@ import '../../../../core/crypto/qr_payload.dart';
 import '../../../../core/di/injector.dart';
 import '../../../../core/realtime/game_channels.dart';
 import '../../../../core/session/game_session.dart';
+import '../../../../core/widgets/geofence_map.dart';
+import '../../../../core/widgets/geofence_map_viewer_page.dart';
 import '../../../../i18n/strings.g.dart';
 import '../../domain/game_mode.dart';
 import '../../domain/lobby_error.dart';
@@ -133,6 +136,11 @@ class _LobbyBodyState extends State<_LobbyBody> {
         Expanded(
           child: ListView(
             children: [
+              if (state.geofenceLat != null && state.geofenceLng != null)
+                _GeofencePreview(
+                  center: LatLng(state.geofenceLat!, state.geofenceLng!),
+                  radiusM: state.geofenceRadiusM.toDouble(),
+                ),
               for (final player in state.roster)
                 _RosterTile(
                   player: player,
@@ -284,6 +292,41 @@ class _ModeBanner extends StatelessWidget {
                 value: GameMode.lastManStanding,
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The play area, visible to every player waiting in the lobby, not just
+/// the host — before #71 nobody but the host could see the boundary until
+/// the game actually started. Tapping it opens the same full-screen,
+/// pannable viewer the host's "Game settings" screen uses.
+class _GeofencePreview extends StatelessWidget {
+  const _GeofencePreview({required this.center, required this.radiusM});
+
+  final LatLng center;
+  final double radiusM;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: SizedBox(
+          height: 160,
+          child: GestureDetector(
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) =>
+                    GeofenceMapViewerPage(center: center, radiusM: radiusM),
+              ),
+            ),
+            child: AbsorbPointer(
+              child: GeofenceMap(center: center, radiusM: radiusM),
+            ),
           ),
         ),
       ),

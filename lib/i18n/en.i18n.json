@@ -79,6 +79,7 @@
     "geofenceSectionTitle": "Play area",
     "geofenceInfo": "The circle everyone has to stay inside. The server enforces this: leaving it for too long counts as breaking a rule.",
     "geofenceRadiusLabel": "$radius m radius",
+    "recenterButton": "Re-center on my location",
     "timingSectionTitle": "Timing",
     "unitMinutesShort": "min",
     "unitSecondsShort": "sec",

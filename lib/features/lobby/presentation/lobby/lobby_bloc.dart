@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:latlong2/latlong.dart';
 
 import '../../../../core/crypto/game_crypto.dart';
 import '../../../../core/realtime/game_event.dart';
@@ -179,6 +180,12 @@ class LobbyBloc extends Cubit<LobbyState> {
     if (settings['geofence_radius_m'] case final int v) {
       next = next.copyWith(geofenceRadiusM: v);
     }
+    if (settings['geofence_lat'] case final num v) {
+      next = next.copyWith(geofenceLat: v.toDouble());
+    }
+    if (settings['geofence_lng'] case final num v) {
+      next = next.copyWith(geofenceLng: v.toDouble());
+    }
     return next;
   }
 
@@ -193,9 +200,10 @@ class LobbyBloc extends Cubit<LobbyState> {
   }
 
   // Game settings screen (#62) — same one-field-per-call shape as
-  // changeMode, one per editable field. geofence_lat/geofence_lng are
-  // deliberately never sent: the center always tracks GPS and isn't
-  // user-adjustable (#43); only the radius is.
+  // changeMode, one per editable field. The center still isn't a
+  // free-placement picker (#43 — no drag-to-move on the map); the one way
+  // to move it is changeGeofenceCenter below, an explicit re-center on the
+  // host's current GPS fix (#71).
   //
   // Every one of these must await internally, same reason as changeMode:
   // the callers (Slider.onChanged, IconButton.onPressed) all discard the
@@ -209,6 +217,16 @@ class LobbyBloc extends Cubit<LobbyState> {
     await _repository.updateSettings(
       gameId: gameId,
       settings: {'geofence_radius_m': radiusM},
+    );
+  }
+
+  Future<void> changeGeofenceCenter(LatLng center) async {
+    await _repository.updateSettings(
+      gameId: gameId,
+      settings: {
+        'geofence_lat': center.latitude,
+        'geofence_lng': center.longitude,
+      },
     );
   }
 

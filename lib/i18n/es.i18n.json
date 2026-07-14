@@ -79,6 +79,7 @@
     "geofenceSectionTitle": "Área de juego",
     "geofenceInfo": "El círculo dentro del cual todos deben quedarse. El servidor lo hace cumplir: salir de él demasiado tiempo cuenta como incumplir una regla.",
     "geofenceRadiusLabel": "$radius m de radio",
+    "recenterButton": "Recentrar en mi ubicación",
     "timingSectionTitle": "Tiempos",
     "unitMinutesShort": "min",
     "unitSecondsShort": "seg",

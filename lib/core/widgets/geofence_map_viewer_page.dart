@@ -47,6 +47,8 @@ class GeofenceMapViewerPage extends StatelessWidget {
                 radiusM: radiusM,
                 interactive: true,
                 selfMarker: snapshot.data,
+                showFill: false,
+                showCenterMarker: false,
               ),
             ),
     );

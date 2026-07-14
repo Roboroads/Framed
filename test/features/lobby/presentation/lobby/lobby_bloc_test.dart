@@ -13,6 +13,7 @@ import 'package:framed/features/lobby/domain/lobby_roster_entry.dart';
 import 'package:framed/features/lobby/domain/lobby_snapshot.dart';
 import 'package:framed/features/lobby/presentation/lobby/lobby_bloc.dart';
 import 'package:framed/features/lobby/presentation/lobby/lobby_state.dart';
+import 'package:latlong2/latlong.dart';
 
 class _FakeSecureKeyValueStore implements SecureKeyValueStore {
   final _values = <String, String>{};
@@ -391,6 +392,52 @@ void main() {
       await Future<void>.delayed(Duration.zero);
 
       expect(bloc.state.geofenceRadiusM, 500);
+    });
+
+    test(
+      'changeGeofenceCenter sends the new center to the repository',
+      () async {
+        repository.snapshot = snapshotWith();
+        final bloc = LobbyBloc(
+          repository: repository,
+          session: sessionAs('player-host'),
+          events: events.stream,
+          gameId: gameId,
+        );
+        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+
+        await bloc.changeGeofenceCenter(const LatLng(52.5, 4.9));
+
+        expect(repository.capturedSettings, {
+          'geofence_lat': 52.5,
+          'geofence_lng': 4.9,
+        });
+      },
+    );
+
+    test('settings_changed updates the geofence center live', () async {
+      repository.snapshot = snapshotWith();
+      final bloc = LobbyBloc(
+        repository: repository,
+        session: sessionAs('player-host'),
+        events: events.stream,
+        gameId: gameId,
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+      expect(bloc.state.geofenceLat, 52.0907);
+      expect(bloc.state.geofenceLng, 5.1214);
+
+      events.add(
+        const GameEvent.settingsChanged(
+          settings: {'geofence_lat': 52.5, 'geofence_lng': 4.9},
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.geofenceLat, 52.5);
+      expect(bloc.state.geofenceLng, 4.9);
     });
 
     test('canStart flips true only once 3 players are ready', () async {
