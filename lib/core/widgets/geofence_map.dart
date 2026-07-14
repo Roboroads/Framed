@@ -204,14 +204,23 @@ class _GeofenceMapState extends State<GeofenceMap> {
         ),
         // OSM tile usage policy (#75): "Display visible licence attribution
         // on maps... Never hide attribution behind toggles or off-screen."
-        // SimpleAttributionWidget over RichAttributionWidget for its fixed,
-        // always-visible box — this widget renders as small as ~160px tall
-        // in some callers, too little room for Rich's expandable layout.
-        SimpleAttributionWidget(
-          source: Text(t.hostSetup.osmAttribution),
-          backgroundColor: Theme.of(
-            context,
-          ).colorScheme.surface.withValues(alpha: 0.8),
+        // A plain fixed, always-visible box rather than RichAttributionWidget
+        // — this widget renders as small as ~160px tall in some callers, too
+        // little room for Rich's expandable layout. Not SimpleAttributionWidget
+        // either: it hardcodes a "flutter_map | " prefix ahead of the source.
+        SafeArea(
+          child: Align(
+            alignment: Alignment.bottomRight,
+            child: ColoredBox(
+              color: Theme.of(
+                context,
+              ).colorScheme.surface.withValues(alpha: 0.8),
+              child: Padding(
+                padding: const EdgeInsets.all(3),
+                child: Text(t.hostSetup.osmAttribution),
+              ),
+            ),
+          ),
         ),
       ],
     );
