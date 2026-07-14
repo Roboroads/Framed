@@ -29,3 +29,20 @@ The `framed-sql` one-shot container applies `volumes/db/init/*.sql` (idempotent 
 
 `.env` contains the **publicly documented demo keys** — fine for local dev only.
 For the EU production server, regenerate `POSTGRES_PASSWORD`, `JWT_SECRET`, `ANON_KEY`, `SERVICE_ROLE_KEY`, and the dashboard login per the [self-hosting guide](https://supabase.com/docs/guides/self-hosting/docker#securing-your-services). Never commit that `.env`.
+
+## Push notifications (issue #27)
+
+The `push` Edge Function (`volumes/functions/push/`) sends the data-only
+wake-up push described in IDEA.md "Notifications". Without these set, it
+logs what it would have sent instead of sending — the local stack runs
+clean with zero setup:
+
+- `FCM_SERVICE_ACCOUNT_JSON` — the full service account JSON (as a string)
+  for an Android FCM project.
+- `APNS_KEY_P8` — the `.p8` private key contents for iOS APNs token auth.
+- `APNS_KEY_ID`, `APNS_TEAM_ID` — from the Apple Developer portal, paired
+  with the key above.
+- `APNS_BUNDLE_ID` — defaults to `me.roboroads.framed`.
+
+No Firebase project or APNs credentials exist for this app yet — real key
+provisioning and live push delivery are tracked separately (#31).

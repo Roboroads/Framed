@@ -72,6 +72,7 @@ begin
         jsonb_build_object('target_id', new_target.id,
                             'name_ciphertext', new_target.name_ciphertext,
                             'selfie_path', new_target.selfie_path));
+      perform public.enqueue_push(assassin_id, 'target_assigned');
       perform public.send_pulse_to(assassin_id);
     end if;
   end if;
@@ -87,6 +88,7 @@ begin
       'photo_path', photo_path,
       'survived_seconds', extract(epoch from now() - coalesce(g.active_at, victim.joined_at))::int
     ));
+  perform public.enqueue_push(victim.id, 'you_died');
 end $$;
 
 revoke execute on function kill_player(uuid, public.death_cause, uuid, text)
@@ -152,6 +154,11 @@ begin
       if p.rule_break_since is null then
         p.rule_break_since := now();
         update public.players set rule_break_since = now() where id = p.id;
+        -- Activation only, not every tick a player stays broken (#27) —
+        -- push.reasons re-fires below with the same/updated reasons every
+        -- tick regardless; that repetition is fine on the realtime channel
+        -- (harmless while foregrounded) but would spam the pocket path.
+        perform public.enqueue_push(p.id, 'warning');
       end if;
       perform public.emit('player:' || p.id, 'warning',
         jsonb_build_object(

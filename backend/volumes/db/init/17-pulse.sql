@@ -30,6 +30,7 @@ begin
       'distance_m', public.st_distance(me.last_location, target.last_location),
       'expires_at', now() + (g.compass_view_seconds || ' seconds')::interval
     ));
+  perform public.enqueue_push(me.id, 'compass_pulse');
 end $$;
 
 revoke execute on function send_pulse_to(uuid) from public, anon, authenticated;

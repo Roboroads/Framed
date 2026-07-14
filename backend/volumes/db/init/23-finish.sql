@@ -63,6 +63,10 @@ begin
 
   perform public.emit('game:' || g.id, 'game_finished',
     jsonb_build_object('winner_id', winner.id, 'stats', stats, 'kill_chain', kill_chain));
+  -- game:{id} is one broadcast for everyone; push is per-player (#27), so
+  -- this is the one enqueue site that fans out to the whole roster.
+  perform public.enqueue_push(p.id, 'game_finished')
+  from public.players p where p.game_id = g.id;
 end $$;
 
 -- replay_game(game_id, key_ciphertext, settings) -> new_game_id. Host only,

@@ -27,6 +27,7 @@ begin
         'photo_path', f.photo_path,
         'target_name_ciphertext', target.name_ciphertext,
         'target_selfie_path', target.selfie_path));
+    perform public.enqueue_push(j.id, 'frame_to_judge');
   end loop;
 end $$;
 

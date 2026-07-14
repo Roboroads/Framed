@@ -74,11 +74,13 @@ begin
     perform public.send_pulse_to(f.assassin_id);
     perform public.emit('player:' || f.assassin_id, 'frame_verdict',
       jsonb_build_object('passed', true));
+    perform public.enqueue_push(f.assassin_id, 'frame_verdict');
   else
     cooldown_until := now() + (g.frame_cooldown_minutes || ' minutes')::interval;
     update public.players set frame_cooldown_until = cooldown_until where id = f.assassin_id;
     perform public.emit('player:' || f.assassin_id, 'frame_verdict',
       jsonb_build_object('passed', false, 'cooldown_until', cooldown_until));
+    perform public.enqueue_push(f.assassin_id, 'frame_verdict');
     -- the target survives: whatever held frame was waiting on their own
     -- verdict is now free to be judged
     perform public.release_held_frame(f.target_id);

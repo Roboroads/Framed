@@ -74,6 +74,10 @@ begin
                         'selfie_path', t.selfie_path))
   from public.players p join public.players t on t.id = p.target_id
   where p.game_id = g.id and p.status = 'alive';
+
+  perform public.enqueue_push(p.id, 'target_assigned')
+  from public.players p
+  where p.game_id = g.id and p.status = 'alive' and p.target_id is not null;
 end $$;
 
 create or replace function game_tick() returns void
