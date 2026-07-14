@@ -87,42 +87,49 @@ class LobbySettingsPage extends StatelessWidget {
                 label: t.hostSetup.disperseMinutes,
                 info: t.hostSetup.disperseMinutesInfo,
                 value: state.disperseMinutes,
+                unit: t.hostSetup.unitMinutesShort,
                 onChanged: bloc.changeDisperseMinutes,
               ),
               _Stepper(
                 label: t.hostSetup.softPunishmentMinutes,
                 info: t.hostSetup.softPunishmentMinutesInfo,
                 value: state.softPunishmentMinutes,
+                unit: t.hostSetup.unitMinutesShort,
                 onChanged: bloc.changeSoftPunishmentMinutes,
               ),
               _Stepper(
                 label: t.hostSetup.hardPunishmentMinutes,
                 info: t.hostSetup.hardPunishmentMinutesInfo,
                 value: state.hardPunishmentMinutes,
+                unit: t.hostSetup.unitMinutesShort,
                 onChanged: bloc.changeHardPunishmentMinutes,
               ),
               _Stepper(
                 label: t.hostSetup.compassUpdateIntervalMinutes,
                 info: t.hostSetup.compassUpdateIntervalMinutesInfo,
                 value: state.compassUpdateIntervalMinutes,
+                unit: t.hostSetup.unitMinutesShort,
                 onChanged: bloc.changeCompassUpdateIntervalMinutes,
               ),
               _Stepper(
                 label: t.hostSetup.compassViewSeconds,
                 info: t.hostSetup.compassViewSecondsInfo,
                 value: state.compassViewSeconds,
+                unit: t.hostSetup.unitSecondsShort,
                 onChanged: bloc.changeCompassViewSeconds,
               ),
               _Stepper(
                 label: t.hostSetup.voteTimeoutMinutes,
                 info: t.hostSetup.voteTimeoutMinutesInfo,
                 value: state.voteTimeoutMinutes,
+                unit: t.hostSetup.unitMinutesShort,
                 onChanged: bloc.changeVoteTimeoutMinutes,
               ),
               _Stepper(
                 label: t.hostSetup.frameCooldownMinutes,
                 info: t.hostSetup.frameCooldownMinutesInfo,
                 value: state.frameCooldownMinutes,
+                unit: t.hostSetup.unitMinutesShort,
                 onChanged: bloc.changeFrameCooldownMinutes,
               ),
             ],
@@ -133,11 +140,12 @@ class LobbySettingsPage extends StatelessWidget {
   }
 }
 
-class _Stepper extends StatelessWidget {
+class _Stepper extends StatefulWidget {
   const _Stepper({
     required this.label,
     required this.info,
     required this.value,
+    required this.unit,
     required this.onChanged,
   });
 
@@ -146,16 +154,53 @@ class _Stepper extends StatelessWidget {
   final String label;
   final String info;
   final int value;
+  final String unit;
   final ValueChanged<int> onChanged;
+
+  @override
+  State<_Stepper> createState() => _StepperState();
+}
+
+class _StepperState extends State<_Stepper> {
+  late final _controller = TextEditingController(text: '${widget.value}');
+  late final _focusNode = FocusNode()..addListener(_onFocusChange);
+
+  @override
+  void didUpdateWidget(covariant _Stepper old) {
+    super.didUpdateWidget(old);
+    if (widget.value != old.value && !_focusNode.hasFocus) {
+      _controller.text = '${widget.value}';
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    if (!_focusNode.hasFocus) _commit();
+  }
+
+  void _commit() {
+    final typed = int.tryParse(_controller.text);
+    final clamped = (typed ?? widget.value) < _Stepper._min
+        ? _Stepper._min
+        : (typed ?? widget.value);
+    if (clamped != widget.value) widget.onChanged(clamped);
+    _controller.text = '$clamped';
+  }
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       title: Row(
         children: [
-          Expanded(child: Text(label)),
+          Expanded(child: Text(widget.label)),
           const SizedBox(width: 4),
-          _InfoIcon(message: info),
+          _InfoIcon(message: widget.info),
         ],
       ),
       trailing: Row(
@@ -163,15 +208,28 @@ class _Stepper extends StatelessWidget {
         children: [
           IconButton(
             icon: const Icon(Icons.remove_circle_outline),
-            onPressed: value > _min ? () => onChanged(value - 1) : null,
+            onPressed: widget.value > _Stepper._min
+                ? () => widget.onChanged(widget.value - 1)
+                : null,
           ),
           SizedBox(
-            width: 32,
-            child: Text('$value', textAlign: TextAlign.center),
+            width: 72,
+            child: TextField(
+              controller: _controller,
+              focusNode: _focusNode,
+              textAlign: TextAlign.center,
+              keyboardType: TextInputType.number,
+              onSubmitted: (_) => _focusNode.unfocus(),
+              decoration: InputDecoration(
+                isDense: true,
+                border: InputBorder.none,
+                suffixText: widget.unit,
+              ),
+            ),
           ),
           IconButton(
             icon: const Icon(Icons.add_circle_outline),
-            onPressed: () => onChanged(value + 1),
+            onPressed: () => widget.onChanged(widget.value + 1),
           ),
         ],
       ),
