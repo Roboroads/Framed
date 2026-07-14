@@ -32,8 +32,13 @@ final appRouter = GoRouter(
     GoRoute(path: '/', builder: (context, state) => const HomePage()),
     GoRoute(
       path: '/permission-gate',
-      builder: (context, state) =>
-          PermissionGate(nextRoute: state.extra! as String),
+      // Two callers: an in-app push with `extra` set to the next route
+      // (home_page's QR-scan entry), or the join-link redirect below, which
+      // can only pass a location string (redirect has no `extra` param) —
+      // carried as a `next` query parameter instead.
+      builder: (context, state) => PermissionGate(
+        nextRoute: state.extra as String? ?? state.uri.queryParameters['next']!,
+      ),
     ),
     GoRoute(path: '/scan', builder: (context, state) => const ScanPage()),
     GoRoute(path: '/join', builder: _buildJoinPage),
@@ -65,9 +70,11 @@ final appRouter = GoRouter(
 // #66) has "join" as a *path* segment, but go_router's own route table
 // only ever sees a same-app in-app navigation as far as its `path` field —
 // it has no way to match "https://getframed.fun/join" against a plain
-// "/join" GoRoute. Rewrite it to that bare path once, here, preserving the
-// query (v, t) and fragment (k) exactly, rather than changing the wire
-// format QR codes and shared links use.
+// "/join" GoRoute. Rewrite it to /permission-gate once, here, preserving
+// the query (v, t) and fragment (k) as the gate's `next` destination —
+// same PermissionGate stop the QR-scan path already goes through (#76:
+// a join link used to skip it and land straight on JoinPage), rather than
+// changing the wire format QR codes and shared links use.
 //
 // Android redelivers the same intent (singleTop launch mode) on a second
 // tap of the link, or any other stale VIEW redelivery — see #72. Without a
@@ -86,10 +93,14 @@ String? _redirectJoinLink(BuildContext context, GoRouterState state) {
   final uri = state.uri;
   if (uri.host != 'getframed.fun' || uri.path != '/join') return null;
   if (getIt<GameSession>().isActive) return '/';
-  return Uri(
+  final next = Uri(
     path: '/join',
     queryParameters: uri.queryParameters,
     fragment: uri.fragment,
+  ).toString();
+  return Uri(
+    path: '/permission-gate',
+    queryParameters: {'next': next},
   ).toString();
 }
 
@@ -100,11 +111,12 @@ Widget _buildJoinPage(BuildContext context, GoRouterState state) {
       gameKeyBytes: payload.keyBytes,
     );
   }
-  // No extra: reached via an https://getframed.fun/join link, already
-  // rewritten to a bare /join?...#... path by the redirect above — parse
-  // it directly, reusing QrPayload's own validation rather than
-  // duplicating it (QrPayload.parse doesn't check scheme/host itself,
-  // exactly so this bare-path shape parses too).
+  // No extra: reached via an https://getframed.fun/join link, routed
+  // through /permission-gate first and pushed here as a bare
+  // /join?...#... path once permissions are granted — parse it directly,
+  // reusing QrPayload's own validation rather than duplicating it
+  // (QrPayload.parse doesn't check scheme/host itself, exactly so this
+  // bare-path shape parses too).
   try {
     final payload = QrPayload.parse(state.uri.toString());
     return JoinPage(
