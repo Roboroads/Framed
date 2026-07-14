@@ -1,8 +1,14 @@
 # Framed
 
+*Also available in: [Español](README.es.md) · [Français](README.fr.md) · [Nederlands](README.nl.md)*
+
 A local-area circular assassination game you play IRL — GPS-assisted, photo-based. Two game modes: most frames wins (default) or last player standing.
 
 **[IDEA.md](IDEA.md)** holds the full game design.
+
+## How it works
+
+Players gather at a starting point and scatter once the host starts the game. After a dispersal timer, everyone gets a target: another player to find and photograph with the in-app camera. Other players judge the photo against the target's reference selfie, and a majority "yes" vote kills the target. The assassin then inherits the target's own target, and the chain continues. The game ends when one player remains. By default the winner is whoever confirmed the most kills, even if they're dead by then; the host can switch to last-player-standing instead. GPS enforces a shared play area throughout, and a player who leaves it or goes silent too long dies automatically, marked MIA.
 
 ## Development
 
