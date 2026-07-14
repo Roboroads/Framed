@@ -6,6 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../i18n/strings.g.dart';
+import '../config/env.dart';
 import '../theme/app_theme.dart';
 import 'permission_rationale.dart';
 
@@ -137,7 +138,7 @@ class _GeofenceMapState extends State<GeofenceMap> {
       ),
       children: [
         TileLayer(
-          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          urlTemplate: Env.tileUrlTemplate,
           userAgentPackageName: 'me.roboroads.framed',
         ),
         CircleLayer(
@@ -200,6 +201,17 @@ class _GeofenceMapState extends State<GeofenceMap> {
                 ),
               ),
           ],
+        ),
+        // OSM tile usage policy (#75): "Display visible licence attribution
+        // on maps... Never hide attribution behind toggles or off-screen."
+        // SimpleAttributionWidget over RichAttributionWidget for its fixed,
+        // always-visible box — this widget renders as small as ~160px tall
+        // in some callers, too little room for Rich's expandable layout.
+        SimpleAttributionWidget(
+          source: Text(t.hostSetup.osmAttribution),
+          backgroundColor: Theme.of(
+            context,
+          ).colorScheme.surface.withValues(alpha: 0.8),
         ),
       ],
     );

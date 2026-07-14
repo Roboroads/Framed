@@ -78,6 +78,7 @@
     "modeLastManStandingDescription": "De laatste speler die in leven is wint.",
     "geofenceSectionTitle": "Speelgebied",
     "geofenceInfo": "De cirkel waar iedereen binnen moet blijven. De server handhaaft dit: hem te lang verlaten telt als een regelovertreding.",
+    "osmAttribution": "OpenStreetMap-bijdragers",
     "geofenceRadiusLabel": "$radius m straal",
     "recenterButton": "Centreren op mijn locatie",
     "timingSectionTitle": "Timing",

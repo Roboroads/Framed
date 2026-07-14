@@ -78,6 +78,7 @@
     "modeLastManStandingDescription": "Le dernier joueur en vie gagne.",
     "geofenceSectionTitle": "Zone de jeu",
     "geofenceInfo": "Le cercle à l'intérieur duquel tout le monde doit rester. Le serveur le fait respecter : le quitter trop longtemps compte comme une infraction.",
+    "osmAttribution": "contributeurs d'OpenStreetMap",
     "geofenceRadiusLabel": "$radius m de rayon",
     "recenterButton": "Recentrer sur ma position",
     "timingSectionTitle": "Minutage",
