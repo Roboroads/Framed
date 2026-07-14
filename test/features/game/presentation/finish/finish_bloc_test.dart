@@ -133,8 +133,7 @@ class _FakeGameRepository implements GameRepository {
   }) => throw UnimplementedError();
 
   @override
-  Future<(String, GameEvent?, DateTime?)> getMyState(String gameId) =>
-      throw UnimplementedError();
+  Future<MyStateResult> getMyState(String gameId) => throw UnimplementedError();
 
   @override
   Future<List<ChatMessageEvent>> fetchChatHistory(String gameId) =>

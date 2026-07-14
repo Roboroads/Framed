@@ -29,12 +29,16 @@ class IngameBloc extends Cubit<IngameState> {
     // ever proves flaky in practice, add the explicit server event rather
     // than tuning this further. Overridable so tests don't wait 70s.
     Duration targetLocationTimeout = const Duration(seconds: 70),
+    // A full tick cycle (30s) past a warning's hard_deadline, plus slack
+    // (#74) — see _onWarning. Overridable so tests don't wait 35s.
+    Duration warningResyncGrace = const Duration(seconds: 35),
   }) : _crypto = crypto,
        _repository = repository,
        _deadChatEvents = deadChatEvents,
        _gameId = gameId,
        _myPlayerId = myPlayerId,
        _targetLocationTimeout = targetLocationTimeout,
+       _warningResyncGrace = warningResyncGrace,
        super(
          IngameState(phase: IngamePhase.dispersing(endsAt: initialEndsAt)),
        ) {
@@ -60,6 +64,7 @@ class IngameBloc extends Cubit<IngameState> {
   final String _gameId;
   final String _myPlayerId;
   final Duration _targetLocationTimeout;
+  final Duration _warningResyncGrace;
   late final StreamSubscription<GameEvent> _subscription;
   Timer? _cooldownTimer;
 
@@ -91,6 +96,11 @@ class IngameBloc extends Cubit<IngameState> {
   Timer? _compassTimer;
 
   Timer? _targetLocationTimer;
+
+  // Self-heal (#74) for a warning countdown that reaches its deadline with
+  // no resolution: rescheduled on every warning update (live or caught up),
+  // cancelled once the rule-break clears or this player dies either way.
+  Timer? _warningResyncTimer;
 
   Future<void> _onEvent(GameEvent event) async {
     if (event is Warning) {
@@ -138,24 +148,24 @@ class IngameBloc extends Cubit<IngameState> {
   // when the server genuinely has nothing to report yet.
   Future<void> _fetchCurrentState() async {
     final generation = ++_targetGeneration;
-    GameEvent? event;
-    DateTime? nextPulseAt;
+    MyStateResult result;
     try {
-      (_, event, nextPulseAt) = await _repository.getMyState(_gameId);
+      result = await _repository.getMyState(_gameId);
     } catch (_) {
       return;
     }
     if (isClosed || generation != _targetGeneration) return;
-    if (nextPulseAt != null) emit(state.copyWith(nextPulseAt: nextPulseAt));
-    switch (event) {
-      case TargetAssigned():
+    if (result.nextPulseAt case final nextPulseAt?) {
+      emit(state.copyWith(nextPulseAt: nextPulseAt));
+    }
+    if (result.activeWarning case Warning warning) _onWarning(warning);
+    switch (result.event) {
+      case TargetAssigned event:
         await _applyTargetAssigned(event, generation: generation);
-      case YouDied():
+      case YouDied event:
         await _applyYouDied(event, generation: generation);
-      case DispersalStarted():
-        emit(
-          state.copyWith(phase: IngamePhase.dispersing(endsAt: event.endsAt)),
-        );
+      case DispersalStarted(:final endsAt):
+        emit(state.copyWith(phase: IngamePhase.dispersing(endsAt: endsAt)));
       default:
       // No target yet, or an event shape this catch-up doesn't expect —
       // nothing to change.
@@ -208,6 +218,7 @@ class IngameBloc extends Cubit<IngameState> {
 
   Future<void> _applyYouDied(YouDied event, {int? generation}) async {
     generation ??= ++_targetGeneration;
+    _warningResyncTimer?.cancel();
     String? killerName;
     if (event.killerNameCiphertext != null) {
       try {
@@ -334,8 +345,11 @@ class IngameBloc extends Cubit<IngameState> {
   }
 
   // No local logic decides when a warning starts or stops — this just
-  // mirrors the server's `warning` event onto the state.
+  // mirrors the server's `warning` event onto the state. Also feeds
+  // get_my_state's active_warning catch-up (#74), same shape, same
+  // handling either way.
   void _onWarning(Warning event) {
+    _warningResyncTimer?.cancel();
     emit(
       state.copyWith(
         warning: event.active
@@ -346,6 +360,22 @@ class IngameBloc extends Cubit<IngameState> {
             : null,
       ),
     );
+    if (!event.active) return;
+
+    // If the deadline passes with no you_died and no fresh warning update
+    // at all, tick_punishments may have silently stopped running for this
+    // game (e.g. a held lock) — re-ask the server directly instead of
+    // trusting a countdown that might just be stuck at 00:00. Grace period
+    // is a full tick cycle (30s) past the deadline plus slack, so this
+    // never fires before the next regular tick's own live update would
+    // have resolved it naturally.
+    final untilDeadline = event.hardDeadline!.difference(DateTime.now());
+    final delay =
+        (untilDeadline.isNegative ? Duration.zero : untilDeadline) +
+        _warningResyncGrace;
+    _warningResyncTimer = Timer(delay, () {
+      if (!isClosed) unawaited(_fetchCurrentState());
+    });
   }
 
   // The client never asks the server when a pulse expires — expiresAt came
@@ -571,6 +601,7 @@ class IngameBloc extends Cubit<IngameState> {
     _compassTimer?.cancel();
     _targetLocationTimer?.cancel();
     _cooldownTimer?.cancel();
+    _warningResyncTimer?.cancel();
     return super.close();
   }
 }

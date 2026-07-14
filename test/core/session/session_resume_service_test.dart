@@ -24,11 +24,11 @@ class _FakeSecureKeyValueStore implements SecureKeyValueStore {
 }
 
 class _FakeGameRepository implements GameRepository {
-  (String, GameEvent?, DateTime?)? myState;
+  MyStateResult? myState;
   Object? myStateFailure;
 
   @override
-  Future<(String, GameEvent?, DateTime?)> getMyState(String gameId) async {
+  Future<MyStateResult> getMyState(String gameId) async {
     if (myStateFailure != null) throw myStateFailure!;
     return myState!;
   }
@@ -150,7 +150,12 @@ void main() {
         playerId: 'player-1',
         keyBytes: await crypto.keyBytes,
       );
-      repository.myState = ('lobby', null, null);
+      repository.myState = (
+        gameStatus: 'lobby',
+        event: null,
+        nextPulseAt: null,
+        activeWarning: null,
+      );
 
       final outcome = await service.resume();
 
@@ -168,13 +173,14 @@ void main() {
         keyBytes: await crypto.keyBytes,
       );
       repository.myState = (
-        'active',
-        GameEvent.targetAssigned(
+        gameStatus: 'active',
+        event: GameEvent.targetAssigned(
           targetId: 'target-1',
           nameCiphertext: 'irrelevant-here',
           selfiePath: 'irrelevant-here',
         ),
-        null,
+        nextPulseAt: null,
+        activeWarning: null,
       );
 
       final outcome = await service.resume();
@@ -194,9 +200,10 @@ void main() {
         );
         final endsAt = DateTime.utc(2026, 1, 1, 12);
         repository.myState = (
-          'dispersing',
-          GameEvent.dispersalStarted(endsAt: endsAt),
-          null,
+          gameStatus: 'dispersing',
+          event: GameEvent.dispersalStarted(endsAt: endsAt),
+          nextPulseAt: null,
+          activeWarning: null,
         );
 
         final outcome = await service.resume();

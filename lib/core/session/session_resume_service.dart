@@ -34,11 +34,11 @@ class SessionResumeService {
         playerId: persisted.playerId,
         crypto: crypto,
       );
-      final (gameStatus, event, _) = await _repository.getMyState(
-        persisted.gameId,
-      );
-      if (gameStatus == 'lobby') return const ResumeToLobby();
-      final endsAt = event is DispersalStarted ? event.endsAt : DateTime.now();
+      final state = await _repository.getMyState(persisted.gameId);
+      if (state.gameStatus == 'lobby') return const ResumeToLobby();
+      final endsAt = state.event is DispersalStarted
+          ? (state.event as DispersalStarted).endsAt
+          : DateTime.now();
       return ResumeToIngame(endsAt);
     } catch (e) {
       // Debug-only: this whole flow runs silently on every cold start, so

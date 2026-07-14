@@ -3,6 +3,15 @@ import 'dart:typed_data';
 import '../../../core/realtime/game_event.dart';
 import 'geofence_info.dart';
 
+/// [GameRepository.getMyState]'s return shape — named so callers and test
+/// fakes don't repeat the field list.
+typedef MyStateResult = ({
+  String gameStatus,
+  GameEvent? event,
+  DateTime? nextPulseAt,
+  GameEvent? activeWarning,
+});
+
 /// Storage + location access for the game feature.
 abstract interface class GameRepository {
   /// Downloads the still-encrypted selfie at [path] (`selfies/{game_id}/{player_id}`,
@@ -47,15 +56,17 @@ abstract interface class GameRepository {
   /// last relevant `player:{id}` broadcast should have told this device
   /// (dispersal end time, current target, or death), shaped identically to
   /// the broadcast payload so it decodes through the same
-  /// [GameEvent.fromBroadcast]. The event is null when the server has
+  /// [GameEvent.fromBroadcast]. [event] is null when the server has
   /// nothing further to report (still in the lobby, or active with a
-  /// target not assigned yet — shouldn't normally happen). gameStatus is
+  /// target not assigned yet — shouldn't normally happen). [gameStatus] is
   /// the routing signal a cold-start resume needs before it even knows
-  /// whether to land on the lobby or the ingame screen. nextPulseAt (#73)
-  /// is the game's next scheduled compass pulse — null until the game goes
-  /// active, independent of which event (if any) this call returns.
-  Future<(String gameStatus, GameEvent? event, DateTime? nextPulseAt)>
-  getMyState(String gameId);
+  /// whether to land on the lobby or the ingame screen. [nextPulseAt]
+  /// (#73) is the game's next scheduled compass pulse — null until the
+  /// game goes active, independent of [event]. [activeWarning] (#74) is
+  /// this player's current rule-break state as a [GameEvent.warning] —
+  /// independent of [event] too, since a rule-break can be in progress
+  /// during either phase; null only for a dead player.
+  Future<MyStateResult> getMyState(String gameId);
 
   /// This game's roster as id → `name_ciphertext` (#24) — dead chat resolves
   /// sender names from it, decrypting with the game key it already has.

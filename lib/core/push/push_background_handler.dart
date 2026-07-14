@@ -60,7 +60,7 @@ Future<String?> _fetchDetail({
     }
     final crypto = await GameCrypto.fromKeyBytes(persisted.keyBytes);
     final repository = SupabaseGameRepository(Supabase.instance.client);
-    final (_, fetched, _) = await repository.getMyState(gameId);
+    final fetched = (await repository.getMyState(gameId)).event;
 
     if (event == 'target_assigned' && fetched is TargetAssigned) {
       return await crypto.decryptString(fetched.nameCiphertext);

@@ -88,14 +88,22 @@ class _FakeGameRepository implements GameRepository {
   GameEvent? myState;
   String myGameStatus = 'active';
   DateTime? myNextPulseAt;
+  GameEvent? myActiveWarning;
   Object? myStateFailure;
-  Completer<(String, GameEvent?, DateTime?)>? myStateCompleter;
+  Completer<MyStateResult>? myStateCompleter;
+  int myStateCallCount = 0;
 
   @override
-  Future<(String, GameEvent?, DateTime?)> getMyState(String gameId) {
+  Future<MyStateResult> getMyState(String gameId) {
+    myStateCallCount++;
     if (myStateCompleter != null) return myStateCompleter!.future;
     if (myStateFailure != null) throw myStateFailure!;
-    return Future.value((myGameStatus, myState, myNextPulseAt));
+    return Future.value((
+      gameStatus: myGameStatus,
+      event: myState,
+      nextPulseAt: myNextPulseAt,
+      activeWarning: myActiveWarning,
+    ));
   }
 
   Map<String, String> roster = {};
@@ -373,8 +381,7 @@ void main() {
     );
 
     test('a live target_assigned beats a slower catch-up fetch', () async {
-      repository.myStateCompleter =
-          Completer<(String, GameEvent?, DateTime?)>();
+      repository.myStateCompleter = Completer<MyStateResult>();
       repository.selfieBytes = await crypto.encryptBytes(
         Uint8List.fromList([1]),
       );
@@ -401,13 +408,14 @@ void main() {
       // The catch-up resolves after the live event already landed — its
       // (now stale) target must not overwrite the live one's.
       repository.myStateCompleter!.complete((
-        'active',
-        GameEvent.targetAssigned(
+        gameStatus: 'active',
+        event: GameEvent.targetAssigned(
           targetId: 'stale',
           nameCiphertext: await crypto.encryptString('Stale'),
           selfiePath: 'game-1/stale',
         ),
-        null,
+        nextPulseAt: null,
+        activeWarning: null,
       ));
       await Future<void>.delayed(Duration.zero);
       await Future<void>.delayed(Duration.zero);
@@ -669,6 +677,70 @@ void main() {
 
       expect(bloc.state.warning, isNull);
     });
+
+    test(
+      'a warning past its deadline with no resolution re-fetches state',
+      () async {
+        IngameBloc(
+          events: events.stream,
+          crypto: crypto,
+          repository: repository,
+          gameId: 'game-1',
+          myPlayerId: 'player-me',
+          deadChatEvents: const Stream<GameEvent>.empty(),
+          initialEndsAt: endsAt,
+          warningResyncGrace: const Duration(milliseconds: 20),
+        );
+        repository.myGameStatus = 'active';
+
+        events.add(
+          GameEvent.warning(
+            active: true,
+            reasons: const ['geofence'],
+            // Already past — the resync timer only waits the grace period
+            // from now, not from the (already-elapsed) deadline.
+            hardDeadline: DateTime.now().subtract(const Duration(minutes: 1)),
+          ),
+        );
+        await Future<void>.delayed(Duration.zero);
+        expect(repository.myStateCallCount, 1); // the constructor's own
+
+        await Future<void>.delayed(const Duration(milliseconds: 40));
+
+        expect(repository.myStateCallCount, 2);
+      },
+    );
+
+    test(
+      'the catch-up fetch applies an active_warning independent of the phase event',
+      () async {
+        repository.myState = GameEvent.dispersalStarted(endsAt: endsAt);
+        final deadline = DateTime.now().add(const Duration(minutes: 3));
+        repository.myActiveWarning = GameEvent.warning(
+          active: true,
+          reasons: const ['stale'],
+          hardDeadline: deadline,
+        );
+
+        final bloc = IngameBloc(
+          events: events.stream,
+          crypto: crypto,
+          repository: repository,
+          gameId: 'game-1',
+          myPlayerId: 'player-me',
+          deadChatEvents: const Stream<GameEvent>.empty(),
+          initialEndsAt: endsAt,
+        );
+        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+
+        expect(bloc.state.phase, IngamePhase.dispersing(endsAt: endsAt));
+        expect(
+          bloc.state.warning,
+          IngameWarning(reasons: const ['stale'], hardDeadline: deadline),
+        );
+      },
+    );
 
     test('geofence_proximity active:true sets nearGeofenceEdge', () async {
       final bloc = IngameBloc(

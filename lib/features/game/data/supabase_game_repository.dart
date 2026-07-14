@@ -76,7 +76,7 @@ class SupabaseGameRepository implements GameRepository {
   }
 
   @override
-  Future<(String, GameEvent?, DateTime?)> getMyState(String gameId) async {
+  Future<MyStateResult> getMyState(String gameId) async {
     final result =
         await _client.rpc('get_my_state', params: {'p_game_id': gameId})
             as Map<String, dynamic>;
@@ -84,13 +84,25 @@ class SupabaseGameRepository implements GameRepository {
     final nextPulseAt = result['next_pulse_at'] != null
         ? DateTime.parse(result['next_pulse_at'] as String)
         : null;
+    final activeWarning = result['active_warning'] != null
+        ? GameEvent.fromBroadcast(
+            'warning',
+            Map<String, dynamic>.from(result['active_warning'] as Map),
+          )
+        : null;
     final eventName = result['event'] as String?;
-    if (eventName == null) return (gameStatus, null, nextPulseAt);
-    final event = GameEvent.fromBroadcast(
-      eventName,
-      Map<String, dynamic>.from(result['payload'] as Map),
+    final event = eventName != null
+        ? GameEvent.fromBroadcast(
+            eventName,
+            Map<String, dynamic>.from(result['payload'] as Map),
+          )
+        : null;
+    return (
+      gameStatus: gameStatus,
+      event: event,
+      nextPulseAt: nextPulseAt,
+      activeWarning: activeWarning,
     );
-    return (gameStatus, event, nextPulseAt);
   }
 
   @override
