@@ -5,6 +5,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:latlong2/latlong.dart';
 
@@ -14,6 +15,7 @@ import '../../../../core/location/compass_math.dart';
 import '../../../../core/location/heading.dart';
 import '../../../../core/location/location_service.dart';
 import '../../../../core/realtime/game_channels.dart';
+import '../../../../core/realtime/game_event.dart';
 import '../../../../core/session/game_session.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/geofence_map.dart';
@@ -40,6 +42,7 @@ class IngamePage extends StatefulWidget {
 class _IngamePageState extends State<IngamePage> {
   late final IngameBloc _bloc;
   late final LocationService _locationService;
+  late final StreamSubscription<GameEvent> _gameFinishedSub;
 
   // Fetched once — the geofence is set at host setup and static for the
   // whole game. Null until it resolves (or forever, on failure): the
@@ -55,7 +58,10 @@ class _IngamePageState extends State<IngamePage> {
     // One subscription to player:{id}, shared by both consumers below —
     // two separate channel joins to the same topic confused the realtime
     // server into dropping broadcasts on it (#15 discovered this live).
+    // game:{game_id} gets the same treatment: LocationService and this
+    // page's own game_finished navigation (#26) both listen to it.
     final playerEvents = channels.player(session.playerId).asBroadcastStream();
+    final gameEvents = channels.game(session.gameId).asBroadcastStream();
     _bloc = IngameBloc(
       events: playerEvents,
       crypto: session.crypto,
@@ -68,9 +74,16 @@ class _IngamePageState extends State<IngamePage> {
     _locationService = LocationService(
       repository: repository,
       gameId: session.gameId,
-      gameEvents: channels.game(session.gameId),
+      gameEvents: gameEvents,
       playerEvents: playerEvents,
     )..start();
+    // The finish screen is reachable from any ingame phase — dispersing,
+    // playing, mid-warning, mid-judging, even already dead (#26).
+    _gameFinishedSub = gameEvents.listen((event) {
+      if (event is GameFinished && mounted) {
+        context.go('/finish', extra: event);
+      }
+    });
     repository
         .getGeofence(session.gameId)
         .then((geofence) {
@@ -81,6 +94,7 @@ class _IngamePageState extends State<IngamePage> {
 
   @override
   void dispose() {
+    _gameFinishedSub.cancel();
     _locationService.stop();
     _bloc.close();
     super.dispose();

@@ -66,4 +66,38 @@ abstract interface class GameRepository {
   /// `send_chat(game_id, ciphertext)` (#24) — dead players only, enforced
   /// server-side. Returns the new message's id.
   Future<String> sendChat({required String gameId, required String ciphertext});
+
+  /// This game's mode — the finish screen (#26) needs it to word the
+  /// winner line; `game_finished`'s payload doesn't carry it (#25).
+  Future<String> getGameMode(String gameId);
+
+  /// The caller's own player id and host flag in [gameId], resolved from
+  /// the client's own auth uid — no extra RPC needed (#26).
+  Future<(String playerId, bool isHost)> myPlayerInfo(String gameId);
+
+  /// `replay_game(game_id, key_ciphertext)` (#25) — host, finished games
+  /// only. Returns the new lobby's game id.
+  Future<String> replayGame({
+    required String gameId,
+    required String keyCiphertext,
+  });
+
+  /// Uploads the already-encrypted selfie to `selfies/{path}` for the
+  /// replay flow (#26). Unlike the normal join flow's `set_selfie`,
+  /// nothing marks it ready here — `rejoinReplay` does that.
+  Future<void> uploadReplaySelfie({
+    required String path,
+    required Uint8List encryptedBytes,
+  });
+
+  /// `rejoin_replay(game_id, name_ciphertext, name_hmac)` (#25) — the
+  /// selfie must already be uploaded to the caller's canonical path first.
+  Future<void> rejoinReplay({
+    required String gameId,
+    required String nameCiphertext,
+    required String nameHmac,
+  });
+
+  /// `leave_finished_game(game_id)` (#25).
+  Future<void> leaveFinishedGame(String gameId);
 }

@@ -126,6 +126,35 @@ class _FakeGameRepository implements GameRepository {
     sentChatCiphertexts.add(ciphertext);
     return nextSendChatId;
   }
+
+  @override
+  Future<String> getGameMode(String gameId) => throw UnimplementedError();
+
+  @override
+  Future<(String, bool)> myPlayerInfo(String gameId) =>
+      throw UnimplementedError();
+
+  @override
+  Future<String> replayGame({
+    required String gameId,
+    required String keyCiphertext,
+  }) => throw UnimplementedError();
+
+  @override
+  Future<void> uploadReplaySelfie({
+    required String path,
+    required Uint8List encryptedBytes,
+  }) => throw UnimplementedError();
+
+  @override
+  Future<void> rejoinReplay({
+    required String gameId,
+    required String nameCiphertext,
+    required String nameHmac,
+  }) => throw UnimplementedError();
+
+  @override
+  Future<void> leaveFinishedGame(String gameId) => throw UnimplementedError();
 }
 
 void main() {

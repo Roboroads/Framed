@@ -1,8 +1,10 @@
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/game/presentation/finish/finish_page.dart';
 import '../../features/game/presentation/ingame/ingame_page.dart';
 import '../../features/home/presentation/home_page.dart';
+import '../realtime/game_event.dart';
 import '../../features/lobby/presentation/host_setup/host_setup_page.dart';
 import '../../features/lobby/presentation/join/join_page.dart';
 import '../../features/lobby/presentation/lobby/lobby_page.dart';
@@ -47,6 +49,11 @@ final appRouter = GoRouter(
       path: '/ingame',
       builder: (context, state) =>
           IngamePage(initialEndsAt: state.extra! as DateTime),
+    ),
+    GoRoute(
+      path: '/finish',
+      builder: (context, state) =>
+          FinishPage(event: state.extra! as GameFinished),
     ),
   ],
 );

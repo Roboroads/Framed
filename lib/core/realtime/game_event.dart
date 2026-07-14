@@ -112,6 +112,16 @@ sealed class GameEvent with _$GameEvent {
     required List<dynamic> killChain,
   }) = GameFinished;
 
+  /// game:{game_id} — the host started a replay with the same players
+  /// (#25, #26). Every member's client (host included) handles this the
+  /// same way: decrypt the new key, refresh identity, land in the new
+  /// lobby.
+  const factory GameEvent.replayStarted({
+    required String newGameId,
+    required String keyCiphertext,
+    required String joinToken,
+  }) = ReplayStarted;
+
   /// game:{game_id}:dead — a dead player sent a chat message (#24). Also
   /// reused (like [GameEvent.fromBroadcast] itself) to shape
   /// GameRepository.fetchChatHistory's REST rows identically to the live
@@ -214,6 +224,12 @@ sealed class GameEvent with _$GameEvent {
             winnerId: payload['winner_id'] as String,
             stats: Map<String, dynamic>.from(payload['stats'] as Map),
             killChain: List<dynamic>.from(payload['kill_chain'] as List),
+          );
+        case 'replay_started':
+          return GameEvent.replayStarted(
+            newGameId: payload['new_game_id'] as String,
+            keyCiphertext: payload['key_ciphertext'] as String,
+            joinToken: payload['join_token'] as String,
           );
         case 'chat_message':
           return GameEvent.chatMessage(

@@ -127,6 +127,24 @@
     "deadChatHint": "Message the dead",
     "deadChatSendButton": "Send"
   },
+  "finish": {
+    "title": "Game over",
+    "youWon": "You won!",
+    "winnerFrames": "$name won with $count frames",
+    "winnerLastManStanding": "$name is the last one standing",
+    "statsTitle": "Stats",
+    "statMostKills": "Most kills",
+    "statMostMoved": "Most moved",
+    "statMostStill": "Least movement",
+    "statCombinedMovement": "$distance m moved as a group",
+    "statDuration": "Game lasted $time",
+    "killChainTitle": "Kill chain",
+    "killChainFramed": "$killer framed $victim",
+    "killChainMia": "$victim went MIA",
+    "replayButton": "Replay with same players",
+    "replayError": "Couldn't start the replay. Try again.",
+    "leaveButton": "Leave game"
+  },
   "scan": {
     "title": "Scan to join",
     "invalidCode": "That's not a valid Framed code — keep scanning."

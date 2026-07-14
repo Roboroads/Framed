@@ -131,4 +131,78 @@ class SupabaseGameRepository implements GameRepository {
         )
         as String;
   }
+
+  @override
+  Future<String> getGameMode(String gameId) async {
+    final row = await _client
+        .from('games')
+        .select('mode')
+        .eq('id', gameId)
+        .single();
+    return row['mode'] as String;
+  }
+
+  @override
+  Future<(String, bool)> myPlayerInfo(String gameId) async {
+    // auth_uid isn't a client-selectable/filterable column (11-policies.sql
+    // grants id/game_id/name_ciphertext/selfie_path/is_host/status/joined_at
+    // only) — framed_my_player is the sanctioned "which row is mine" path,
+    // already exposed to authenticated clients for exactly this.
+    final playerId =
+        await _client.rpc('framed_my_player', params: {'gid': gameId})
+            as String;
+    final row = await _client
+        .from('players')
+        .select('is_host')
+        .eq('id', playerId)
+        .single();
+    return (playerId, row['is_host'] as bool);
+  }
+
+  @override
+  Future<String> replayGame({
+    required String gameId,
+    required String keyCiphertext,
+  }) async {
+    return await _client.rpc(
+          'replay_game',
+          params: {'game_id': gameId, 'key_ciphertext': keyCiphertext},
+        )
+        as String;
+  }
+
+  @override
+  Future<void> uploadReplaySelfie({
+    required String path,
+    required Uint8List encryptedBytes,
+  }) async {
+    await _client.storage
+        .from('selfies')
+        .uploadBinary(
+          path,
+          encryptedBytes,
+          fileOptions: const FileOptions(upsert: true),
+        );
+  }
+
+  @override
+  Future<void> rejoinReplay({
+    required String gameId,
+    required String nameCiphertext,
+    required String nameHmac,
+  }) async {
+    await _client.rpc(
+      'rejoin_replay',
+      params: {
+        'game_id': gameId,
+        'name_ciphertext': nameCiphertext,
+        'name_hmac': nameHmac,
+      },
+    );
+  }
+
+  @override
+  Future<void> leaveFinishedGame(String gameId) async {
+    await _client.rpc('leave_finished_game', params: {'game_id': gameId});
+  }
 }
