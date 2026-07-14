@@ -8,9 +8,9 @@
   },
   "push": {
     "channelName": "Game events",
-    "channelDescription": "Time-sensitive updates about your game — targets, frames, and warnings.",
+    "channelDescription": "Time-sensitive updates about your game: targets, frames, and warnings.",
     "fallbackTitle": "Framed",
-    "fallbackBody": "Something happened in your game — open the app to see.",
+    "fallbackBody": "Something happened in your game. Open the app to see.",
     "targetAssignedTitle": "Dispersal is over",
     "targetAssignedBody": "You have a target.",
     "compassPulseTitle": "Compass update",
@@ -35,25 +35,25 @@
   },
   "locationGate": {
     "explainerTitle": "Location access",
-    "explainerBody": "Framed needs your location in the background, even with the screen locked, to point your target's compass and enforce the play area. Only your last-known location is ever stored — deleted when the game ends.",
+    "explainerBody": "Framed needs your location in the background, even with the screen locked, to point your target's compass and enforce the play area. Only your last-known location is ever stored. It's deleted when the game ends.",
     "continueButton": "Continue",
     "blockedTitle": "Location is off",
-    "blockedBody": "Framed can't track your location. Turn it on in Settings, then come back — you don't need to restart the app.",
+    "blockedBody": "Framed can't track your location. Turn it on in Settings, then come back. You don't need to restart the app.",
     "openSettings": "Open settings"
   },
   "permissionGate": {
     "explainerTitle": "Before you start",
-    "explainerBody": "Framed needs your camera for selfies and frame photos, and your location — even with the screen locked — to run the compass and enforce the play area. You can't host or join a game without both.",
+    "explainerBody": "Framed needs your camera for selfies and frame photos, and your location (even with the screen locked) to run the compass and enforce the play area. You can't host or join a game without both.",
     "continueButton": "Continue",
     "blockedTitle": "Permission needed",
-    "blockedBody": "Framed can't start without camera and location access. Turn them on in Settings, then come back — you don't need to restart the app.",
+    "blockedBody": "Framed can't start without camera and location access. Turn them on in Settings, then come back. You don't need to restart the app.",
     "openSettings": "Open settings"
   },
   "home": {
     "joinGame": "Join game",
     "hostGame": "Host game",
     "goodToKnowButton": "Good to know",
-    "playFairDisclaimer": "This game trusts the group. We don't detect GPS spoofing or modified clients — just play fair.",
+    "playFairDisclaimer": "This game trusts the group. We don't detect GPS spoofing or modified clients. Just play fair.",
     "languageButton": "Language",
     "languagePickerTitle": "Language"
   },
@@ -61,13 +61,13 @@
     "title": "Good to know",
     "fairPlayTitle": "Play fair",
     "privacyTitle": "Your privacy",
-    "privacyBody": "No analytics, no ads, no accounts — nobody's tracking you. Your name, selfie, frame photos, and dead chat are encrypted on your phone before they're ever sent, with a key generated on the host's device and shared only through the join QR code — it never reaches the server. Location is the one exception: the server reads it in plain text because it has to, to enforce the play area, drive the compass, and check who's died, and only ever your last-known position, never a movement trail.",
+    "privacyBody": "No analytics, no ads, no accounts. Nobody's tracking you. Your name, selfie, frame photos, and dead chat are encrypted on your phone before they're ever sent, with a key generated on the host's device and shared only through the join QR code. It never reaches the server. Location is the one exception: the server reads it in plain text because it has to, to enforce the play area, drive the compass, and check who's died, and only ever your last-known position, never a movement trail.",
     "moneyTitle": "How we make money",
-    "moneyBody": "Right now, nothing — there's no monetization. The server this game runs on is self-hosted and paid for out of pocket, for the love of the game.",
+    "moneyBody": "Right now, nothing. There's no monetization. The server this game runs on is self-hosted and paid for out of pocket, for the love of the game.",
     "aiTitle": "About this app",
     "aiBody": "This app is mostly built with AI assistance. The developer behind it has over 16 years of professional software experience and reviewed every line before it shipped.",
     "beginnerTipsTitle": "New to Framed?",
-    "beginnerTipsBody": "Once the game starts you get a dispersal countdown — nobody can be framed until it ends, so actually spread out. After that, everyone gets a compass pulse on the same schedule: an arrow and distance to your target, refreshed at a fixed interval and gone again after a few seconds — if people around you glance at their phones at the same moment, that's the tell. Stay inside the host's play area: leave it too long and your assassin sees your exact location, stay out or go dark long enough and you die automatically. To make a kill, photograph your target in the app — the other players vote on whether it's really them. A majority yes ends their game; a failed vote costs you a cooldown before you can try again."
+    "beginnerTipsBody": "Once the game starts you get a dispersal countdown. Nobody can be framed until it ends, so actually spread out. After that, everyone gets a compass pulse on the same schedule: an arrow and distance to your target, refreshed at a fixed interval and gone again after a few seconds. If people around you glance at their phones at the same moment, that's the tell. Stay inside the host's play area: leave it too long and your assassin sees your exact location, stay out or go dark long enough and you die automatically. To make a kill, photograph your target in the app. The other players vote on whether it's really them. A majority yes ends their game; a failed vote costs you a cooldown before you can try again."
   },
   "hostSetup": {
     "title": "Host a game",
@@ -77,13 +77,13 @@
     "modeLastManStanding": "Last man standing",
     "modeLastManStandingDescription": "The last player alive wins.",
     "geofenceSectionTitle": "Play area",
-    "geofenceInfo": "The circle everyone has to stay inside. The server enforces this — leaving it for too long counts as breaking a rule.",
+    "geofenceInfo": "The circle everyone has to stay inside. The server enforces this: leaving it for too long counts as breaking a rule.",
     "geofenceRadiusLabel": "$radius m radius",
     "timingSectionTitle": "Timing",
     "disperseMinutes": "Dispersal time (minutes)",
     "disperseMinutesInfo": "Countdown after the game starts before targets are assigned. Nobody can frame anyone until it ends.",
     "softPunishmentMinutes": "Soft punishment after (minutes)",
-    "softPunishmentMinutesInfo": "How long you can break a rule — leaving the play area, a stale location — before your assassin sees your exact position on their map.",
+    "softPunishmentMinutesInfo": "How long you can break a rule (leaving the play area, a stale location) before your assassin sees your exact position on their map.",
     "hardPunishmentMinutes": "Hard punishment after (minutes)",
     "hardPunishmentMinutesInfo": "How long before breaking a rule kills you outright. The death screen shows it as \"broke a game rule for too long\".",
     "compassUpdateIntervalMinutes": "Compass pulse interval (minutes)",
@@ -95,14 +95,14 @@
     "frameCooldownMinutes": "Frame cooldown (minutes)",
     "frameCooldownMinutesInfo": "How long an assassin waits after a failed frame vote before they can submit another photo.",
     "createGame": "Create game",
-    "errorBadSettings": "Something in the settings doesn't look right — check the values and try again.",
+    "errorBadSettings": "Something in the settings doesn't look right. Check the values and try again.",
     "errorGeneric": "Couldn't create the game. Check your connection and try again."
   },
   "preJoin": {
     "title": "You're playing too",
     "nameLabel": "Your name",
     "consentNotice": "We collect your name, reference selfie, live location, frame photos, and push notifications for this game only. Everything is deleted when the game ends, or after 24 hours at the latest. Joining means you agree, and that you'll play safe: watch for traffic, don't trespass, no physical contact, don't photograph bystanders up close, and respect any areas the host declares off-limits.",
-    "selfieHint": "Judges compare this to every frame you're in — make sure your face is clearly visible.",
+    "selfieHint": "Judges compare this to every frame you're in. Make sure your face is clearly visible.",
     "takeSelfie": "Take reference selfie",
     "retakeSelfie": "Retake selfie"
   },
@@ -115,7 +115,7 @@
     "notReadyBadge": "Not ready yet",
     "startButton": "Start game",
     "startTooFewPlayers": "Need at least 3 ready players",
-    "waitingForHost": "Waiting for the host to start…",
+    "waitingForHost": "Waiting for the host to start...",
     "changeMode": "Change mode",
     "showQrButton": "Show join QR code",
     "shareLinkButton": "Share join link",
@@ -129,7 +129,7 @@
     "myLocationButton": "My location",
     "myLocationTitle": "My location",
     "errorTargetLoad": "Couldn't load your target. Try reopening the app.",
-    "warningGeofence": "You're outside the play area — go back.",
+    "warningGeofence": "You're outside the play area. Go back.",
     "nearGeofenceEdge": "You're close to the edge of the play area",
     "warningStale": "We're not receiving your location. Check GPS, signal, and battery saver.",
     "warningDeadline": "You die in $time",
@@ -137,7 +137,7 @@
     "compassNoPulseIdle": "Next pulse soon",
     "compassDistanceMeters": "$distance m",
     "compassFallback": "$direction, $distance m",
-    "targetLocationTitle": "Your target left the play area — this is where they are",
+    "targetLocationTitle": "Your target left the play area. This is where they are",
     "judgingTitle": "Is this $name?",
     "judgingNudge": "Skip this and you'll miss your next compass pulse.",
     "judgingLoadError": "Couldn't load this frame.",
@@ -173,7 +173,7 @@
   },
   "scan": {
     "title": "Scan to join",
-    "invalidCode": "That's not a valid Framed code — keep scanning."
+    "invalidCode": "That's not a valid Framed code. Keep scanning."
   },
   "frame": {
     "button": "Frame",
@@ -194,7 +194,7 @@
   },
   "permissionRationale": {
     "ok": "OK",
-    "locationExplanation": "Framed uses your location to point a compass arrow at your target and to enforce the play area the host set — the server needs this to run the game.",
+    "locationExplanation": "Framed uses your location to point a compass arrow at your target and to enforce the play area the host set. The server needs this to run the game.",
     "cameraExplanation": "Framed needs your camera for your reference selfie, and later for the frame photos judges compare it against to confirm a kill."
   },
   "join": {

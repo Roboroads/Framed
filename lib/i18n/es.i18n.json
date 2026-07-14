@@ -10,7 +10,7 @@
     "channelName": "Eventos de la partida",
     "channelDescription": "Actualizaciones urgentes sobre tu partida: objetivos, fotos y avisos.",
     "fallbackTitle": "Framed",
-    "fallbackBody": "Ha pasado algo en tu partida — abre la app para verlo.",
+    "fallbackBody": "Ha pasado algo en tu partida. Abre la app para verlo.",
     "targetAssignedTitle": "La dispersión ha terminado",
     "targetAssignedBody": "Ya tienes un objetivo.",
     "compassPulseTitle": "Actualización de la brújula",
@@ -38,7 +38,7 @@
     "explainerBody": "Framed necesita tu ubicación en segundo plano, incluso con la pantalla bloqueada, para orientar la brújula hacia tu objetivo y hacer cumplir el área de juego. Solo se guarda tu última ubicación conocida, y se borra cuando termina la partida.",
     "continueButton": "Continuar",
     "blockedTitle": "La ubicación está desactivada",
-    "blockedBody": "Framed no puede rastrear tu ubicación. Actívala en Ajustes y vuelve — no hace falta reiniciar la app.",
+    "blockedBody": "Framed no puede rastrear tu ubicación. Actívala en Ajustes y vuelve. No hace falta reiniciar la app.",
     "openSettings": "Abrir ajustes"
   },
   "permissionGate": {
@@ -46,14 +46,14 @@
     "explainerBody": "Framed necesita tu cámara para los selfies y las fotos de eliminación, y tu ubicación (incluso con la pantalla bloqueada) para la brújula y el área de juego. No puedes crear ni unirte a una partida sin ambos permisos.",
     "continueButton": "Continuar",
     "blockedTitle": "Se necesita permiso",
-    "blockedBody": "Framed no puede iniciarse sin acceso a la cámara y a la ubicación. Actívalos en Ajustes y vuelve — no hace falta reiniciar la app.",
+    "blockedBody": "Framed no puede iniciarse sin acceso a la cámara y a la ubicación. Actívalos en Ajustes y vuelve. No hace falta reiniciar la app.",
     "openSettings": "Abrir ajustes"
   },
   "home": {
     "joinGame": "Unirse a una partida",
     "hostGame": "Crear partida",
     "goodToKnowButton": "Cosas que conviene saber",
-    "playFairDisclaimer": "Este juego confía en el grupo. No detectamos GPS falsificado ni clientes modificados — juega limpio.",
+    "playFairDisclaimer": "Este juego confía en el grupo. No detectamos GPS falsificado ni clientes modificados. Juega limpio.",
     "languageButton": "Idioma",
     "languagePickerTitle": "Idioma"
   },
@@ -61,13 +61,13 @@
     "title": "Cosas que conviene saber",
     "fairPlayTitle": "Juega limpio",
     "privacyTitle": "Tu privacidad",
-    "privacyBody": "Sin analítica, sin anuncios, sin cuentas: nadie te rastrea. Tu nombre, tu selfie, tus fotos de eliminación y el chat de los eliminados se cifran en tu teléfono antes de enviarse, con una clave generada en el dispositivo del anfitrión y compartida solo mediante el código QR de unión — nunca llega al servidor. La ubicación es la única excepción: el servidor la lee en texto plano porque lo necesita, para hacer cumplir el área de juego, mover la brújula y comprobar quién ha muerto, y siempre solo tu última posición conocida, nunca un historial de movimientos.",
+    "privacyBody": "Sin analítica, sin anuncios, sin cuentas: nadie te rastrea. Tu nombre, tu selfie, tus fotos de eliminación y el chat de los eliminados se cifran en tu teléfono antes de enviarse, con una clave generada en el dispositivo del anfitrión y compartida solo mediante el código QR de unión. Nunca llega al servidor. La ubicación es la única excepción: el servidor la lee en texto plano porque lo necesita, para hacer cumplir el área de juego, mover la brújula y comprobar quién ha muerto, y siempre solo tu última posición conocida, nunca un historial de movimientos.",
     "moneyTitle": "Cómo ganamos dinero",
-    "moneyBody": "Ahora mismo, nada — no hay ningún modelo de monetización. El servidor donde corre este juego es autoalojado y se paga de nuestro propio bolsillo, por amor al juego.",
+    "moneyBody": "Ahora mismo, nada. No hay ningún modelo de monetización. El servidor donde corre este juego es autoalojado y se paga de nuestro propio bolsillo, por amor al juego.",
     "aiTitle": "Sobre esta app",
     "aiBody": "Esta app está construida en su mayor parte con ayuda de IA. El desarrollador que hay detrás tiene más de 16 años de experiencia profesional en software y ha revisado cada línea antes de publicarla.",
     "beginnerTipsTitle": "¿Nuevo en Framed?",
-    "beginnerTipsBody": "En cuanto empieza la partida tienes una cuenta atrás de dispersión — nadie puede ser eliminado hasta que termine, así que dispérsate de verdad. Después, todos reciben un pulso de brújula al mismo tiempo: una flecha y una distancia hasta tu objetivo, que se actualiza a un intervalo fijo y desaparece a los pocos segundos — si la gente a tu alrededor mira el móvil en ese mismo momento, ahí tienes la pista. Quédate dentro del área de juego del anfitrión: si sales demasiado tiempo, tu asesino verá tu ubicación exacta, y si te quedas fuera o sin conexión demasiado tiempo, mueres automáticamente. Para eliminar a alguien, fotografía a tu objetivo en la app — el resto de jugadores vota si es realmente esa persona. Una mayoría de síes termina su partida; un voto fallido te cuesta un tiempo de espera antes de poder intentarlo de nuevo."
+    "beginnerTipsBody": "En cuanto empieza la partida tienes una cuenta atrás de dispersión. Nadie puede ser eliminado hasta que termine, así que dispérsate de verdad. Después, todos reciben un pulso de brújula al mismo tiempo: una flecha y una distancia hasta tu objetivo, que se actualiza a un intervalo fijo y desaparece a los pocos segundos. Si la gente a tu alrededor mira el móvil en ese mismo momento, ahí tienes la pista. Quédate dentro del área de juego del anfitrión: si sales demasiado tiempo, tu asesino verá tu ubicación exacta, y si te quedas fuera o sin conexión demasiado tiempo, mueres automáticamente. Para eliminar a alguien, fotografía a tu objetivo en la app. El resto de jugadores vota si es realmente esa persona. Una mayoría de síes termina su partida; un voto fallido te cuesta un tiempo de espera antes de poder intentarlo de nuevo."
   },
   "hostSetup": {
     "title": "Crear una partida",
@@ -77,7 +77,7 @@
     "modeLastManStanding": "Último en pie",
     "modeLastManStandingDescription": "Gana el último jugador que quede con vida.",
     "geofenceSectionTitle": "Área de juego",
-    "geofenceInfo": "El círculo dentro del cual todos deben quedarse. El servidor lo hace cumplir — salir de él demasiado tiempo cuenta como incumplir una regla.",
+    "geofenceInfo": "El círculo dentro del cual todos deben quedarse. El servidor lo hace cumplir: salir de él demasiado tiempo cuenta como incumplir una regla.",
     "geofenceRadiusLabel": "$radius m de radio",
     "timingSectionTitle": "Tiempos",
     "disperseMinutes": "Tiempo de dispersión (minutos)",
@@ -95,14 +95,14 @@
     "frameCooldownMinutes": "Tiempo de espera tras eliminación (minutos)",
     "frameCooldownMinutesInfo": "Cuánto espera un asesino tras un voto de eliminación fallido antes de poder enviar otra foto.",
     "createGame": "Crear partida",
-    "errorBadSettings": "Algo en los ajustes no parece correcto — revisa los valores e inténtalo de nuevo.",
+    "errorBadSettings": "Algo en los ajustes no parece correcto. Revisa los valores e inténtalo de nuevo.",
     "errorGeneric": "No se pudo crear la partida. Comprueba tu conexión e inténtalo de nuevo."
   },
   "preJoin": {
     "title": "Tú también juegas",
     "nameLabel": "Tu nombre",
     "consentNotice": "Recogemos tu nombre, tu selfie de referencia, tu ubicación en tiempo real, tus fotos de eliminación y las notificaciones push solo para esta partida. Todo se borra cuando termina la partida, o como máximo a las 24 horas. Unirte significa que aceptas esto, y que jugarás de forma segura: vigila el tráfico, no entres en propiedad privada, evita el contacto físico, no fotografíes a transeúntes de cerca y respeta las zonas que el anfitrión declare prohibidas.",
-    "selfieHint": "Los jueces comparan esto con cada foto en la que apareces — asegúrate de que tu cara se vea con claridad.",
+    "selfieHint": "Los jueces comparan esto con cada foto en la que apareces. Asegúrate de que tu cara se vea con claridad.",
     "takeSelfie": "Hacer selfie de referencia",
     "retakeSelfie": "Repetir selfie"
   },
@@ -115,7 +115,7 @@
     "notReadyBadge": "Aún no está listo",
     "startButton": "Empezar partida",
     "startTooFewPlayers": "Se necesitan al menos 3 jugadores listos",
-    "waitingForHost": "Esperando a que el anfitrión empiece…",
+    "waitingForHost": "Esperando a que el anfitrión empiece...",
     "changeMode": "Cambiar modo",
     "showQrButton": "Mostrar código QR de unión",
     "shareLinkButton": "Compartir enlace de unión",
@@ -129,7 +129,7 @@
     "myLocationButton": "Mi ubicación",
     "myLocationTitle": "Mi ubicación",
     "errorTargetLoad": "No se pudo cargar tu objetivo. Intenta volver a abrir la app.",
-    "warningGeofence": "Estás fuera del área de juego — vuelve.",
+    "warningGeofence": "Estás fuera del área de juego. Vuelve.",
     "nearGeofenceEdge": "Estás cerca del borde del área de juego",
     "warningStale": "No estamos recibiendo tu ubicación. Comprueba el GPS, la señal y el ahorro de batería.",
     "warningDeadline": "Mueres en $time",
@@ -137,7 +137,7 @@
     "compassNoPulseIdle": "Próximo pulso pronto",
     "compassDistanceMeters": "$distance m",
     "compassFallback": "$direction, $distance m",
-    "targetLocationTitle": "Tu objetivo ha salido del área de juego — aquí está",
+    "targetLocationTitle": "Tu objetivo ha salido del área de juego. Aquí está",
     "judgingTitle": "¿Es $name?",
     "judgingNudge": "Si te lo saltas, te perderás tu próximo pulso de brújula.",
     "judgingLoadError": "No se pudo cargar esta foto.",
@@ -173,7 +173,7 @@
   },
   "scan": {
     "title": "Escanea para unirte",
-    "invalidCode": "Ese no es un código de Framed válido — sigue escaneando."
+    "invalidCode": "Ese no es un código de Framed válido. Sigue escaneando."
   },
   "frame": {
     "button": "Eliminar",
@@ -194,7 +194,7 @@
   },
   "permissionRationale": {
     "ok": "Aceptar",
-    "locationExplanation": "Framed usa tu ubicación para orientar una flecha de brújula hacia tu objetivo y para hacer cumplir el área de juego que fijó el anfitrión — el servidor lo necesita para que la partida funcione.",
+    "locationExplanation": "Framed usa tu ubicación para orientar una flecha de brújula hacia tu objetivo y para hacer cumplir el área de juego que fijó el anfitrión. El servidor lo necesita para que la partida funcione.",
     "cameraExplanation": "Framed necesita tu cámara para tu selfie de referencia, y más adelante para las fotos de eliminación con las que los jueces confirman una baja."
   },
   "join": {

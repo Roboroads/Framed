@@ -8,9 +8,9 @@
   },
   "push": {
     "channelName": "Spelgebeurtenissen",
-    "channelDescription": "Tijdgevoelige updates over je spel — doelwitten, frames en waarschuwingen.",
+    "channelDescription": "Tijdgevoelige updates over je spel: doelwitten, frames en waarschuwingen.",
     "fallbackTitle": "Framed",
-    "fallbackBody": "Er is iets gebeurd in je spel — open de app om te zien wat.",
+    "fallbackBody": "Er is iets gebeurd in je spel. Open de app om te zien wat.",
     "targetAssignedTitle": "Verspreiding is voorbij",
     "targetAssignedBody": "Je hebt een doelwit.",
     "compassPulseTitle": "Kompasupdate",
@@ -35,25 +35,25 @@
   },
   "locationGate": {
     "explainerTitle": "Locatietoegang",
-    "explainerBody": "Framed heeft je locatie op de achtergrond nodig, ook met vergrendeld scherm, om het kompas naar je doelwit te richten en het speelgebied te handhaven. Alleen je laatst bekende locatie wordt opgeslagen — verwijderd zodra het spel eindigt.",
+    "explainerBody": "Framed heeft je locatie op de achtergrond nodig, ook met vergrendeld scherm, om het kompas naar je doelwit te richten en het speelgebied te handhaven. Alleen je laatst bekende locatie wordt opgeslagen. Die wordt verwijderd zodra het spel eindigt.",
     "continueButton": "Doorgaan",
     "blockedTitle": "Locatie staat uit",
-    "blockedBody": "Framed kan je locatie niet volgen. Zet het aan in Instellingen en kom dan terug — je hoeft de app niet opnieuw te starten.",
+    "blockedBody": "Framed kan je locatie niet volgen. Zet het aan in Instellingen en kom dan terug. Je hoeft de app niet opnieuw te starten.",
     "openSettings": "Instellingen openen"
   },
   "permissionGate": {
     "explainerTitle": "Voordat je begint",
-    "explainerBody": "Framed heeft je camera nodig voor selfies en frame-foto's, en je locatie — ook met vergrendeld scherm — om het kompas te laten werken en het speelgebied te handhaven. Je kunt niet hosten of meedoen zonder beide.",
+    "explainerBody": "Framed heeft je camera nodig voor selfies en frame-foto's, en je locatie (ook met vergrendeld scherm) om het kompas te laten werken en het speelgebied te handhaven. Je kunt niet hosten of meedoen zonder beide.",
     "continueButton": "Doorgaan",
     "blockedTitle": "Toestemming nodig",
-    "blockedBody": "Framed kan niet starten zonder camera- en locatietoegang. Zet ze aan in Instellingen en kom dan terug — je hoeft de app niet opnieuw te starten.",
+    "blockedBody": "Framed kan niet starten zonder camera- en locatietoegang. Zet ze aan in Instellingen en kom dan terug. Je hoeft de app niet opnieuw te starten.",
     "openSettings": "Instellingen openen"
   },
   "home": {
     "joinGame": "Spel meedoen",
     "hostGame": "Spel hosten",
     "goodToKnowButton": "Goed om te weten",
-    "playFairDisclaimer": "Dit spel vertrouwt op de groep. We detecteren geen GPS-spoofing of aangepaste clients — speel gewoon eerlijk.",
+    "playFairDisclaimer": "Dit spel vertrouwt op de groep. We detecteren geen GPS-spoofing of aangepaste clients. Speel gewoon eerlijk.",
     "languageButton": "Taal",
     "languagePickerTitle": "Taal"
   },
@@ -61,13 +61,13 @@
     "title": "Goed om te weten",
     "fairPlayTitle": "Speel eerlijk",
     "privacyTitle": "Jouw privacy",
-    "privacyBody": "Geen analytics, geen advertenties, geen accounts — niemand volgt je. Je naam, selfie, frame-foto's en chat met de doden worden op je telefoon versleuteld voordat ze worden verstuurd, met een sleutel die op het apparaat van de host wordt gegenereerd en alleen via de join-QR-code wordt gedeeld — die bereikt de server nooit. Locatie is de enige uitzondering: de server leest die in platte tekst omdat het moet, om het speelgebied te handhaven, het kompas aan te sturen en te controleren wie er dood is, en altijd alleen je laatst bekende positie, nooit een bewegingsspoor.",
+    "privacyBody": "Geen analytics, geen advertenties, geen accounts. Niemand volgt je. Je naam, selfie, frame-foto's en chat met de doden worden op je telefoon versleuteld voordat ze worden verstuurd, met een sleutel die op het apparaat van de host wordt gegenereerd en alleen via de join-QR-code wordt gedeeld. Die bereikt de server nooit. Locatie is de enige uitzondering: de server leest die in platte tekst omdat het moet, om het speelgebied te handhaven, het kompas aan te sturen en te controleren wie er dood is, en altijd alleen je laatst bekende positie, nooit een bewegingsspoor.",
     "moneyTitle": "Hoe we geld verdienen",
-    "moneyBody": "Op dit moment niets — er is geen verdienmodel. De server waarop dit spel draait is self-hosted en wordt uit eigen zak betaald, uit liefde voor het spel.",
+    "moneyBody": "Op dit moment niets. Er is geen verdienmodel. De server waarop dit spel draait is self-hosted en wordt uit eigen zak betaald, uit liefde voor het spel.",
     "aiTitle": "Over deze app",
     "aiBody": "Deze app is grotendeels met AI-ondersteuning gebouwd. De ontwikkelaar erachter heeft meer dan 16 jaar professionele software-ervaring en heeft elke regel code beoordeeld voordat die werd uitgebracht.",
     "beginnerTipsTitle": "Nieuw bij Framed?",
-    "beginnerTipsBody": "Zodra het spel begint krijg je een aftelling voor de verspreiding — niemand kan geframed worden voordat die afloopt, dus verspreid je echt. Daarna krijgt iedereen op hetzelfde moment een kompaspuls: een pijl en afstand naar je doelwit, ververst op een vast interval en na een paar seconden weer weg — als mensen om je heen op hetzelfde moment op hun telefoon kijken, is dat het teken. Blijf binnen het speelgebied van de host: verlaat het te lang en je moordenaar ziet je exacte locatie, blijf te lang weg of offline en je gaat automatisch dood. Om iemand uit te schakelen fotografeer je je doelwit in de app — de andere spelers stemmen of het echt diegene is. Een meerderheid ja beëindigt hun spel; een mislukte stemming kost je een afkoelperiode voordat je het opnieuw kunt proberen."
+    "beginnerTipsBody": "Zodra het spel begint krijg je een aftelling voor de verspreiding. Niemand kan geframed worden voordat die afloopt, dus verspreid je echt. Daarna krijgt iedereen op hetzelfde moment een kompaspuls: een pijl en afstand naar je doelwit, ververst op een vast interval en na een paar seconden weer weg. Als mensen om je heen op hetzelfde moment op hun telefoon kijken, is dat het teken. Blijf binnen het speelgebied van de host: verlaat het te lang en je moordenaar ziet je exacte locatie, blijf te lang weg of offline en je gaat automatisch dood. Om iemand uit te schakelen fotografeer je je doelwit in de app. De andere spelers stemmen of het echt diegene is. Een meerderheid ja beëindigt hun spel; een mislukte stemming kost je een afkoelperiode voordat je het opnieuw kunt proberen."
   },
   "hostSetup": {
     "title": "Een spel hosten",
@@ -77,13 +77,13 @@
     "modeLastManStanding": "Laatste overlevende",
     "modeLastManStandingDescription": "De laatste speler die in leven is wint.",
     "geofenceSectionTitle": "Speelgebied",
-    "geofenceInfo": "De cirkel waar iedereen binnen moet blijven. De server handhaaft dit — hem te lang verlaten telt als een regelovertreding.",
+    "geofenceInfo": "De cirkel waar iedereen binnen moet blijven. De server handhaaft dit: hem te lang verlaten telt als een regelovertreding.",
     "geofenceRadiusLabel": "$radius m straal",
     "timingSectionTitle": "Timing",
     "disperseMinutes": "Verspreidingstijd (minuten)",
     "disperseMinutesInfo": "Aftelling na de start van het spel voordat doelwitten worden toegewezen. Niemand kan iemand framen voordat deze afloopt.",
     "softPunishmentMinutes": "Lichte straf na (minuten)",
-    "softPunishmentMinutesInfo": "Hoe lang je een regel mag overtreden — het speelgebied verlaten, een verouderde locatie — voordat je moordenaar je exacte positie op zijn kaart ziet.",
+    "softPunishmentMinutesInfo": "Hoe lang je een regel mag overtreden (het speelgebied verlaten, een verouderde locatie) voordat je moordenaar je exacte positie op zijn kaart ziet.",
     "hardPunishmentMinutes": "Zware straf na (minuten)",
     "hardPunishmentMinutesInfo": "Hoe lang voordat een regelovertreding je rechtstreeks doodt. Het dodenscherm toont dit als \"te lang een spelregel overtreden\".",
     "compassUpdateIntervalMinutes": "Kompaspuls-interval (minuten)",
@@ -95,14 +95,14 @@
     "frameCooldownMinutes": "Frame-afkoelperiode (minuten)",
     "frameCooldownMinutesInfo": "Hoe lang een moordenaar wacht na een mislukte frame-stemming voordat hij weer een foto kan insturen.",
     "createGame": "Spel aanmaken",
-    "errorBadSettings": "Iets in de instellingen klopt niet — controleer de waarden en probeer het opnieuw.",
+    "errorBadSettings": "Iets in de instellingen klopt niet. Controleer de waarden en probeer het opnieuw.",
     "errorGeneric": "Kon het spel niet aanmaken. Controleer je verbinding en probeer het opnieuw."
   },
   "preJoin": {
     "title": "Jij speelt ook mee",
     "nameLabel": "Jouw naam",
     "consentNotice": "We verzamelen je naam, referentieselfie, live locatie, frame-foto's en pushmeldingen alleen voor dit spel. Alles wordt verwijderd zodra het spel eindigt, of uiterlijk na 24 uur. Meedoen betekent dat je akkoord gaat, en dat je veilig speelt: let op verkeer, betreed geen verboden terrein, geen fysiek contact, fotografeer geen omstanders van dichtbij en respecteer gebieden die de host verboden verklaart.",
-    "selfieHint": "Juryleden vergelijken dit met elke frame waar je in zit — zorg dat je gezicht duidelijk zichtbaar is.",
+    "selfieHint": "Juryleden vergelijken dit met elke frame waar je in zit. Zorg dat je gezicht duidelijk zichtbaar is.",
     "takeSelfie": "Referentieselfie maken",
     "retakeSelfie": "Selfie opnieuw maken"
   },
@@ -115,7 +115,7 @@
     "notReadyBadge": "Nog niet klaar",
     "startButton": "Spel starten",
     "startTooFewPlayers": "Minimaal 3 klare spelers nodig",
-    "waitingForHost": "Wachten tot de host start…",
+    "waitingForHost": "Wachten tot de host start...",
     "changeMode": "Modus wijzigen",
     "showQrButton": "Join-QR-code tonen",
     "shareLinkButton": "Join-link delen",
@@ -129,7 +129,7 @@
     "myLocationButton": "Mijn locatie",
     "myLocationTitle": "Mijn locatie",
     "errorTargetLoad": "Kon je doelwit niet laden. Probeer de app opnieuw te openen.",
-    "warningGeofence": "Je bent buiten het speelgebied — ga terug.",
+    "warningGeofence": "Je bent buiten het speelgebied. Ga terug.",
     "nearGeofenceEdge": "Je bent dicht bij de rand van het speelgebied",
     "warningStale": "We ontvangen je locatie niet. Controleer GPS, signaal en batterijbesparing.",
     "warningDeadline": "Je gaat dood over $time",
@@ -137,7 +137,7 @@
     "compassNoPulseIdle": "Volgende puls binnenkort",
     "compassDistanceMeters": "$distance m",
     "compassFallback": "$direction, $distance m",
-    "targetLocationTitle": "Je doelwit heeft het speelgebied verlaten — hier bevindt diegene zich",
+    "targetLocationTitle": "Je doelwit heeft het speelgebied verlaten. Hier bevindt diegene zich",
     "judgingTitle": "Is dit $name?",
     "judgingNudge": "Sla dit over en je mist je volgende kompaspuls.",
     "judgingLoadError": "Kon deze frame niet laden.",
@@ -173,7 +173,7 @@
   },
   "scan": {
     "title": "Scan om mee te doen",
-    "invalidCode": "Dat is geen geldige Framed-code — blijf scannen."
+    "invalidCode": "Dat is geen geldige Framed-code. Blijf scannen."
   },
   "frame": {
     "button": "Frame",
@@ -194,7 +194,7 @@
   },
   "permissionRationale": {
     "ok": "OK",
-    "locationExplanation": "Framed gebruikt je locatie om een kompaspijl naar je doelwit te richten en om het speelgebied van de host te handhaven — de server heeft dit nodig om het spel te laten draaien.",
+    "locationExplanation": "Framed gebruikt je locatie om een kompaspijl naar je doelwit te richten en om het speelgebied van de host te handhaven. De server heeft dit nodig om het spel te laten draaien.",
     "cameraExplanation": "Framed heeft je camera nodig voor je referentieselfie, en later voor de frame-foto's waarmee juryleden een kill bevestigen."
   },
   "join": {
