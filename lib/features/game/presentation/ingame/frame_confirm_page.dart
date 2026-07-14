@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/camera/in_app_camera_page.dart';
 import '../../../../core/util/uuid.dart';
+import '../../../../core/widgets/full_screen_photo_page.dart';
 import '../../../../i18n/strings.g.dart';
 import '../../domain/frame_error.dart';
 import 'ingame_bloc.dart';
@@ -87,9 +88,13 @@ class _FrameConfirmPageState extends State<FrameConfirmPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Image.memory(widget.photoBytes, fit: BoxFit.cover),
+              child: GestureDetector(
+                onTap: () =>
+                    FullScreenPhotoPage.open(context, widget.photoBytes),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.memory(widget.photoBytes, fit: BoxFit.cover),
+                ),
               ),
             ),
             const SizedBox(height: 16),

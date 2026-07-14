@@ -18,6 +18,7 @@ import '../../../../core/realtime/game_channels.dart';
 import '../../../../core/realtime/game_event.dart';
 import '../../../../core/session/game_session.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/full_screen_photo_page.dart';
 import '../../../../core/widgets/geofence_map.dart';
 import '../../../../core/widgets/geofence_map_viewer_page.dart';
 import '../../../../i18n/strings.g.dart';
@@ -244,13 +245,17 @@ class _DeadScreenState extends State<_DeadScreen> {
               if (widget.photoBytes != null)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: AspectRatio(
-                      aspectRatio: 3 / 4,
-                      child: Image.memory(
-                        widget.photoBytes!,
-                        fit: BoxFit.cover,
+                  child: GestureDetector(
+                    onTap: () =>
+                        FullScreenPhotoPage.open(context, widget.photoBytes!),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: AspectRatio(
+                        aspectRatio: 3 / 4,
+                        child: Image.memory(
+                          widget.photoBytes!,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                   ),
@@ -617,21 +622,33 @@ class _JudgingOverlay extends StatelessWidget {
                         child: Row(
                           children: [
                             Expanded(
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: Image.memory(
+                              child: GestureDetector(
+                                onTap: () => FullScreenPhotoPage.open(
+                                  context,
                                   loaded.photoBytes,
-                                  fit: BoxFit.cover,
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Image.memory(
+                                    loaded.photoBytes,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               ),
                             ),
                             const SizedBox(width: 8),
                             Expanded(
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: Image.memory(
+                              child: GestureDetector(
+                                onTap: () => FullScreenPhotoPage.open(
+                                  context,
                                   loaded.targetSelfieBytes,
-                                  fit: BoxFit.cover,
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Image.memory(
+                                    loaded.targetSelfieBytes,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               ),
                             ),
@@ -751,12 +768,15 @@ class _TargetCard extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Image.memory(
-              target.selfieBytes,
-              height: 320,
-              fit: BoxFit.cover,
+          GestureDetector(
+            onTap: () => FullScreenPhotoPage.open(context, target.selfieBytes),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.memory(
+                target.selfieBytes,
+                height: 320,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           const SizedBox(height: 16),

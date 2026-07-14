@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 import '../../../../core/camera/in_app_camera_page.dart';
+import '../../../../core/widgets/full_screen_photo_page.dart';
 import '../../../../i18n/strings.g.dart';
 
 /// Name + reference selfie, shared by the host flow (#8) and the join flow
@@ -85,9 +86,13 @@ class _PreJoinFormState extends State<PreJoinForm> {
               // box stretched the image sideways. Match the shape instead.
               child: AspectRatio(
                 aspectRatio: 3 / 4,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.memory(widget.selfieBytes!, fit: BoxFit.cover),
+                child: GestureDetector(
+                  onTap: () =>
+                      FullScreenPhotoPage.open(context, widget.selfieBytes!),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.memory(widget.selfieBytes!, fit: BoxFit.cover),
+                  ),
                 ),
               ),
             ),
