@@ -93,8 +93,11 @@ begin
     perform public.tick_pulses(g);
     perform public.tick_vote_timeouts(g);
     perform public.tick_win_check(g);
-    -- later steps: tick_cleanup(g)
   end loop;
+
+  -- Not per-game: tick_cleanup (#29) needs finished games too, which the
+  -- loop above deliberately excludes (`where status <> 'finished'`).
+  perform public.tick_cleanup();
 end $$;
 
 select cron.schedule('game-tick', '30 seconds', 'select game_tick()');

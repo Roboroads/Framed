@@ -46,3 +46,26 @@ clean with zero setup:
 
 No Firebase project or APNs credentials exist for this app yet — real key
 provisioning and live push delivery are tracked separately (#31).
+
+## Cleanup and retention (issue #29)
+
+Every game is deleted — rows, photos, locations, chat — once it's over:
+a finished game wipes once every player has left (`leave_finished_game`);
+any game, whatever its status, wipes 24h after `created_at` regardless
+(`wipe_game`, `tick_cleanup`, `volumes/db/init/25-cleanup.sql`). A replay's
+old game wipes the same way once its players move on — the new game
+already has its own copied rows and its own 24h clock by then.
+
+The only thing that survives, forever, feeds this repo's privacy policy
+(#30):
+
+```sql
+create table aggregate_stats (
+  finished_on date not null,
+  player_count integer not null,
+  duration_minutes integer not null,
+  autocleaned boolean not null
+);
+```
+
+No ids, no names, no locations — one anonymous row per game, ever.
