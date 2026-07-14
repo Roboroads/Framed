@@ -10,8 +10,10 @@ import '../../features/lobby/presentation/join/join_page.dart';
 import '../../features/lobby/presentation/lobby/lobby_page.dart';
 import '../../features/lobby/presentation/scan/scan_page.dart';
 import '../crypto/qr_payload.dart';
+import '../di/injector.dart';
 import '../location/background_location_gate.dart';
 import '../permissions/permission_gate.dart';
+import '../session/game_session.dart';
 
 /// The app's declarative route table (issue #49).
 ///
@@ -64,9 +66,24 @@ final appRouter = GoRouter(
 // see this directly. Rewrite it to the internal /join path once, here,
 // rather than changing a wire format QR codes and shared links already
 // use.
+//
+// Android redelivers the same intent (singleTop launch mode) on a second
+// tap of the link, or any other stale VIEW redelivery — see #72. Without a
+// session check this yanked a player already in the lobby (or further:
+// ingame, judging, death, finish) back onto a fresh JoinPage, and a
+// resubmit silently swapped their session out from under the still-live
+// LobbyBloc/IngameBloc bound to the old one. GameSession.isActive is true
+// from create_game/join_game success until the game ends or is left, so a
+// join intent arriving while it's true is always redundant — a device
+// can't meaningfully be in two games at once. Redirecting to '/' rather
+// than just returning null: an unmatched location (this URI's path is
+// empty, not a registered route) would otherwise replace the current
+// screen with go_router's error page. '/' re-runs HomePage's session
+// resume, which lands back on the correct live screen instead.
 String? _redirectJoinLink(BuildContext context, GoRouterState state) {
   final uri = state.uri;
   if (uri.scheme != 'framed' || uri.host != 'join') return null;
+  if (getIt<GameSession>().isActive) return '/';
   return Uri(path: '/join', queryParameters: uri.queryParameters).toString();
 }
 
