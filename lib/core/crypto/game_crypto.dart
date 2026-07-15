@@ -3,6 +3,8 @@ import 'dart:typed_data';
 
 import 'package:cryptography/cryptography.dart';
 
+import '../text/name_sanitizer.dart';
+
 /// The one class every encrypted byte in the game flows through.
 ///
 /// Scheme (see IDEA.md "End-to-end encryption"): one AES-256-GCM key per
@@ -65,11 +67,14 @@ class GameCrypto {
   Future<String> decryptString(String blob) async =>
       utf8.decode(await decrypt(blob));
 
-  /// hex HMAC-SHA256 of the trimmed, lowercased name — the server's basis
-  /// for rejecting duplicate names it cannot read (unique on
-  /// (game_id, name_hmac)).
+  /// hex HMAC-SHA256 of the sanitized, lowercased name — the server's
+  /// basis for rejecting duplicate names it cannot read (unique on
+  /// (game_id, name_hmac)). [sanitizeDisplayName] (#79) is called here too
+  /// as a backstop, not just at the pre-join call sites — this is the
+  /// actual dedup enforcement point, so it shouldn't depend on every
+  /// caller remembering to sanitize first.
   Future<String> nameHmac(String name) async {
-    final normalized = utf8.encode(name.trim().toLowerCase());
+    final normalized = utf8.encode(sanitizeDisplayName(name).toLowerCase());
     final mac = await _hmac.calculateMac(normalized, secretKey: _secretKey);
     return mac.bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
   }

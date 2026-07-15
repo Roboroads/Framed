@@ -42,16 +42,44 @@ language plpgsql security definer set search_path = '' as $$
 declare
   g public.games%rowtype;
   me public.players%rowtype;
+  first_lock_id uuid;
+  second_lock_id uuid;
   held boolean;
   new_id uuid;
 begin
   select * into g from public.games where id = submit_frame.game_id;
   if not found then raise exception using message = 'not_found'; end if;
 
+  -- Unlocked peek, just to learn which two rows need locking below — not
+  -- the data acted on (the re-read after locking is, see below).
   select * into me from public.players p
-    where p.game_id = submit_frame.game_id and p.auth_uid = auth.uid()
-    for update;
+    where p.game_id = submit_frame.game_id and p.auth_uid = auth.uid();
   if not found then raise exception using message = 'not_member'; end if;
+
+  -- Lock this player's row and their target's row together, in a fixed id
+  -- order rather than "me then target" (#78). Without this, a target
+  -- player's own concurrent submit_frame can run its held-check (below)
+  -- before this transaction's insert becomes visible to it, letting an
+  -- illegitimate frame dodge the dead-can't-kill rule — locking both rows
+  -- up front forces whichever transaction gets there first to commit
+  -- before the other's held-check runs. The fixed order (least id first,
+  -- always, regardless of assassin/target role) is what avoids a
+  -- circular-wait deadlock if everyone in the hunting circle submits at
+  -- the same instant; locking "me" first every time would recreate
+  -- exactly that cycle across concurrent calls.
+  if me.target_id is not null then
+    first_lock_id := least(me.id, me.target_id);
+    second_lock_id := greatest(me.id, me.target_id);
+    perform 1 from public.players where id = first_lock_id for update;
+    perform 1 from public.players where id = second_lock_id for update;
+  else
+    perform 1 from public.players where id = me.id for update;
+  end if;
+
+  -- Re-read now both locked: target_id (or anything else) may have
+  -- changed between the unlocked peek above and now.
+  select * into me from public.players where id = me.id;
+
   if me.status <> 'alive' or g.status <> 'active' then
     raise exception using message = 'wrong_status';
   end if;

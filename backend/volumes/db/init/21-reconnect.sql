@@ -45,6 +45,8 @@ declare
   t public.players%rowtype;
   killer_name text;
   active_warning jsonb;
+  stats jsonb;
+  kill_chain jsonb;
 begin
   select * into g from public.games where id = p_game_id;
   if not found then raise exception using message = 'not_found'; end if;
@@ -66,6 +68,42 @@ begin
     when me.status = 'alive' then jsonb_build_object('active', false)
     else null
   end;
+
+  -- Checked before the dead branch below (#89): once the game is over,
+  -- everyone lands on the finish screen regardless of their own status —
+  -- there's no live game left for a death screen to make sense against.
+  -- Same payload shape finish_game emits (23-finish.sql) so the client
+  -- decodes it with the identical GameEvent.fromBroadcast case, recomputed
+  -- fresh rather than replayed since a resume may be long after the fact.
+  if g.status = 'finished' then
+    select jsonb_build_object(
+        'players', coalesce(jsonb_agg(jsonb_build_object(
+          'player_id', p.id,
+          'kills', p.kills,
+          'distance_moved_m', p.distance_moved_m,
+          'still_seconds', p.still_seconds,
+          'survived_seconds', extract(epoch from
+            coalesce(p.died_at, g.finished_at, now())
+            - coalesce(g.active_at, p.joined_at))::int
+        )), '[]'::jsonb),
+        'total_distance_moved_m', coalesce(sum(p.distance_moved_m), 0),
+        'duration_seconds', extract(epoch from
+          coalesce(g.finished_at, now()) - coalesce(g.active_at, g.started_at))::int
+      ) into stats
+      from public.players p where p.game_id = g.id;
+
+    select coalesce(jsonb_agg(jsonb_build_object(
+        'victim_id', p.id, 'killer_id', p.killed_by,
+        'cause', p.death_cause, 'died_at', p.died_at
+      ) order by p.died_at), '[]'::jsonb) into kill_chain
+      from public.players p where p.game_id = g.id and p.status = 'dead';
+
+    return jsonb_build_object(
+      'game_status', g.status, 'next_pulse_at', g.next_pulse_at,
+      'active_warning', active_warning,
+      'event', 'game_finished', 'payload', jsonb_build_object(
+        'winner_id', g.winner_player_id, 'stats', stats, 'kill_chain', kill_chain));
+  end if;
 
   if me.status = 'dead' then
     if me.killed_by is not null then

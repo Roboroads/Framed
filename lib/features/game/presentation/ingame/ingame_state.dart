@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../../core/realtime/game_event.dart';
 import '../../domain/judging_frame.dart';
 import '../../domain/target.dart';
 
@@ -72,8 +73,13 @@ sealed class IngameTargetLocation with _$IngameTargetLocation {
 sealed class IngameFrameStatus with _$IngameFrameStatus {
   const factory IngameFrameStatus.ready() = FrameReady;
   const factory IngameFrameStatus.waitingForVerdict() = FrameWaitingForVerdict;
-  const factory IngameFrameStatus.cooldown({required DateTime until}) =
-      FrameCooldown;
+  // reason (#86) is the server's frame_verdict.reason verbatim ('rejected'
+  // or 'timeout') — null only for a resume/catch-up path that doesn't
+  // carry it, not a real third outcome.
+  const factory IngameFrameStatus.cooldown({
+    required DateTime until,
+    String? reason,
+  }) = FrameCooldown;
 }
 
 /// One entry in the judging queue (#22). Holds the raw event fields so a
@@ -138,5 +144,12 @@ sealed class IngameState with _$IngameState {
     // snapshot, not live-updated, same as the roster fetch dead chat
     // already does for sender names.
     @Default([]) List<String> otherDeadPlayerNames,
+    // Set only by the get_my_state catch-up (#89) discovering the game
+    // already finished — the live broadcast path (game:{game_id}) still
+    // navigates directly from IngamePage, bypassing bloc state entirely.
+    // This is the backstop for a channel that went stale before that
+    // broadcast ever arrived (same class of gap get_my_state exists to
+    // close for every other phase).
+    GameFinished? pendingFinish,
   }) = _IngameState;
 }

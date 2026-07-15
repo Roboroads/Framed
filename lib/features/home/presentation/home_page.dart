@@ -34,6 +34,8 @@ class _HomePageState extends State<HomePage> {
         context.go('/lobby');
       case ResumeToIngame(:final initialEndsAt):
         context.go('/location-gate', extra: initialEndsAt);
+      case ResumeToFinish(:final event):
+        context.go('/finish', extra: event);
       case ResumeNone():
       // Nothing to resume — the normal home screen is already showing.
     }

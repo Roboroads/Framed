@@ -17,6 +17,11 @@ begin
   if not public.framed_can_chat(p_game_id) then
     raise exception using message = 'cannot_chat';
   end if;
+  -- Same 2048 ceiling as name_ciphertext (13-lobby.sql) — comfortably
+  -- covers the client's own maxLength on plaintext (#80).
+  if coalesce(p_ciphertext, '') = '' or length(p_ciphertext) > 2048 then
+    raise exception using message = 'message_too_long';
+  end if;
 
   insert into public.chat_messages (game_id, sender_id, ciphertext)
   values (p_game_id, me.id, p_ciphertext)

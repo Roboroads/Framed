@@ -143,6 +143,7 @@
     "leaveConfirmTitle": "Leave the game?",
     "leaveConfirmBody": "Leaving counts as dying: whoever's hunting you inherits your target, exactly like any other death. If this drops the game below 3 players, it ends immediately and whoever has the most confirmed frames right now wins.",
     "leaveConfirmButton": "Leave",
+    "leaveNetworkWarning": "Couldn't confirm this with the server, it may not have registered. Check your connection.",
     "errorTargetLoad": "Couldn't load your target. Try reopening the app.",
     "warningGeofence": "You're outside the play area. Go back.",
     "nearGeofenceEdge": "You're close to the edge of the play area",
@@ -212,6 +213,8 @@
     "button": "Frame",
     "waiting": "Waiting for verdict",
     "cooldown": "Cooldown $time",
+    "cooldownReasonRejected": "Judges said no.",
+    "cooldownReasonTimeout": "Nobody judged it in time.",
     "confirmTitle": "Confirm frame",
     "retake": "Retake",
     "submit": "Submit",
@@ -222,6 +225,7 @@
   },
   "camera": {
     "permissionDeniedBody": "Framed needs camera access for this. Grant it, then try again.",
+    "permissionBlockedBody": "Camera access is turned off in Settings. Turn it on, then come back — you don't need to restart the app.",
     "errorGeneric": "Couldn't start the camera. Try again.",
     "retry": "Try again"
   },

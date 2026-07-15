@@ -703,6 +703,36 @@ void main() {
     );
 
     test(
+      'the catch-up fetch sets pendingFinish when the game already ended (#89)',
+      () async {
+        repository.myGameStatus = 'finished';
+        final finishedEvent = GameEvent.gameFinished(
+          winnerId: 'player-other',
+          stats: const {'players': <dynamic>[]},
+          killChain: const [],
+        );
+        repository.myState = finishedEvent;
+
+        final bloc = IngameBloc(
+          events: events.stream,
+          crypto: crypto,
+          repository: repository,
+          localAlarms: localAlarms,
+          session: session,
+          wakeLockService: wakeLockService,
+          gameId: 'game-1',
+          myPlayerId: 'player-me',
+          deadChatEvents: const Stream<GameEvent>.empty(),
+          initialEndsAt: endsAt,
+        );
+        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+
+        expect(bloc.state.pendingFinish, finishedEvent);
+      },
+    );
+
+    test(
       'the catch-up fetch updates the dispersal endsAt on a cold-start resume',
       () async {
         final serverEndsAt = endsAt.add(const Duration(minutes: 3));
@@ -1364,6 +1394,43 @@ void main() {
       },
     );
 
+    test(
+      'frame_verdict passed:false carries the reason through (#86)',
+      () async {
+        final bloc = IngameBloc(
+          events: events.stream,
+          crypto: crypto,
+          repository: repository,
+          localAlarms: localAlarms,
+          session: session,
+          wakeLockService: wakeLockService,
+          gameId: 'game-1',
+          myPlayerId: 'player-me',
+          deadChatEvents: const Stream<GameEvent>.empty(),
+          initialEndsAt: endsAt,
+        );
+        await bloc.submitFrame(
+          photoBytes: Uint8List.fromList([1, 2, 3]),
+          frameUuid: 'uuid-1',
+        );
+        final until = DateTime.now().add(const Duration(minutes: 2));
+
+        events.add(
+          GameEvent.frameVerdict(
+            passed: false,
+            cooldownUntil: until,
+            reason: 'rejected',
+          ),
+        );
+        await Future<void>.delayed(Duration.zero);
+
+        expect(
+          bloc.state.frameStatus,
+          IngameFrameStatus.cooldown(until: until, reason: 'rejected'),
+        );
+      },
+    );
+
     test('frame_to_judge loads and joins the queue', () async {
       final bloc = IngameBloc(
         events: events.stream,
@@ -1696,13 +1763,15 @@ void main() {
         initialEndsAt: endsAt,
       );
 
-      await bloc.leave();
+      final succeeded = await bloc.leave();
 
       expect(repository.leaveActiveCalled, isTrue);
       expect(session.isActive, isFalse);
+      expect(succeeded, isTrue);
     });
 
-    test('leave() clears the session even when the RPC call fails', () async {
+    test('leave() clears the session and returns false when the RPC call '
+        'fails (#88)', () async {
       repository.leaveActiveFailure = Exception('offline');
       await session.begin(
         gameId: 'game-1',
@@ -1722,9 +1791,10 @@ void main() {
         initialEndsAt: endsAt,
       );
 
-      await bloc.leave();
+      final succeeded = await bloc.leave();
 
       expect(session.isActive, isFalse);
+      expect(succeeded, isFalse);
     });
 
     test('enables the wake lock on construction, keepAwake starts true', () {

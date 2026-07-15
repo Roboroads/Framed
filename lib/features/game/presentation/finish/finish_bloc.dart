@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/chat/chat_limits.dart';
 import '../../../../core/crypto/game_crypto.dart';
 import '../../../../core/realtime/game_event.dart';
 import '../../../../core/session/game_session.dart';
@@ -179,8 +180,11 @@ class FinishBloc extends Cubit<FinishState> {
   // echoes back over game:{game_id}:dead. _appendChatMessage's id dedupe
   // discards that echo when it arrives.
   Future<void> sendChatMessage(String text) async {
-    final trimmed = text.trim();
+    var trimmed = text.trim();
     if (trimmed.isEmpty) return;
+    if (trimmed.length > maxChatMessageLength) {
+      trimmed = trimmed.substring(0, maxChatMessageLength);
+    }
     final myPlayerId = _myPlayerId;
     if (myPlayerId == null) return; // _init hasn't resolved yet
     try {

@@ -7,6 +7,7 @@ import '../../../../core/crypto/game_crypto.dart';
 import '../../../../core/device/platform_name.dart';
 import '../../../../core/push/push_service.dart';
 import '../../../../core/session/game_session.dart';
+import '../../../../core/text/name_sanitizer.dart';
 import '../../domain/game_settings.dart';
 import '../../domain/lobby_error.dart';
 import '../../domain/lobby_repository.dart';
@@ -40,8 +41,9 @@ class HostSetupCubit extends Cubit<HostSetupState> {
 
     try {
       final crypto = await GameCrypto.generate();
-      final nameCiphertext = await crypto.encryptString(state.name.trim());
-      final nameHmac = await crypto.nameHmac(state.name);
+      final sanitizedName = sanitizeDisplayName(state.name);
+      final nameCiphertext = await crypto.encryptString(sanitizedName);
+      final nameHmac = await crypto.nameHmac(sanitizedName);
 
       // Everything but the GPS-derived center takes GameSettings' own
       // defaults — mode/radius/timing are edited later, in the lobby (#62).

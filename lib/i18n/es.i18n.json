@@ -143,6 +143,7 @@
     "leaveConfirmTitle": "¿Salir de la partida?",
     "leaveConfirmBody": "Salir cuenta como morir: quien te esté cazando hereda tu objetivo, igual que en cualquier otra muerte. Si esto deja la partida por debajo de 3 jugadores, termina de inmediato y gana quien tenga más eliminaciones confirmadas en ese momento.",
     "leaveConfirmButton": "Salir",
+    "leaveNetworkWarning": "No se pudo confirmar esto con el servidor, puede que no se haya registrado. Revisa tu conexión.",
     "errorTargetLoad": "No se pudo cargar tu objetivo. Intenta volver a abrir la app.",
     "warningGeofence": "Estás fuera del área de juego. Vuelve.",
     "nearGeofenceEdge": "Estás cerca del borde del área de juego",
@@ -212,6 +213,8 @@
     "button": "Eliminar",
     "waiting": "Esperando veredicto",
     "cooldown": "Espera $time",
+    "cooldownReasonRejected": "Los jueces dijeron que no.",
+    "cooldownReasonTimeout": "Nadie lo juzgó a tiempo.",
     "confirmTitle": "Confirmar foto",
     "retake": "Repetir",
     "submit": "Enviar",
@@ -222,6 +225,7 @@
   },
   "camera": {
     "permissionDeniedBody": "Framed necesita acceso a la cámara para esto. Concédelo e inténtalo de nuevo.",
+    "permissionBlockedBody": "El acceso a la cámara está desactivado en Ajustes. Actívalo y vuelve; no hace falta reiniciar la app.",
     "errorGeneric": "No se pudo iniciar la cámara. Inténtalo de nuevo.",
     "retry": "Reintentar"
   },

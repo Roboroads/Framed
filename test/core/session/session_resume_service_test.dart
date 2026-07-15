@@ -221,6 +221,35 @@ void main() {
     );
 
     test(
+      'game already finished -> ResumeToFinish, session stays active (#89)',
+      () async {
+        final crypto = await GameCrypto.generate();
+        await store.save(
+          gameId: 'game-1',
+          playerId: 'player-1',
+          keyBytes: await crypto.keyBytes,
+        );
+        final finishedEvent = GameEvent.gameFinished(
+          winnerId: 'player-1',
+          stats: const {'players': <dynamic>[]},
+          killChain: const [],
+        );
+        repository.myState = (
+          gameStatus: 'finished',
+          event: finishedEvent,
+          nextPulseAt: null,
+          activeWarning: null,
+        );
+
+        final outcome = await service.resume();
+
+        expect(outcome, isA<ResumeToFinish>());
+        expect((outcome as ResumeToFinish).event, finishedEvent);
+        expect(session.isActive, isTrue);
+      },
+    );
+
+    test(
       'the game is gone (not_found/not_member) -> ResumeNone, session cleared',
       () async {
         final crypto = await GameCrypto.generate();

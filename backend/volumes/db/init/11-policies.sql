@@ -45,13 +45,27 @@ language sql stable security definer set search_path = '' as $$
     )
 $$;
 
+-- Storage: is the caller the assassin on this frame (#81)? Used to scope
+-- framed_frames_update to the frame's own owner instead of just game
+-- membership — every player holds the same game key, so membership alone
+-- would let anyone overwrite anyone else's in-flight frame photo.
+create or replace function framed_owns_frame(fid uuid) returns boolean
+language sql stable security definer set search_path = '' as $$
+  select exists (
+    select 1 from public.frames f
+    where f.id = fid and f.assassin_id = public.framed_my_player(f.game_id)
+  )
+$$;
+
 -- Supabase default ACLs grant execute on new public functions to anon and
 -- authenticated directly — revoke those, not just public
 revoke execute on function
-  framed_uuid(text), framed_my_player(uuid), framed_i_am_dead(uuid), framed_can_chat(uuid)
+  framed_uuid(text), framed_my_player(uuid), framed_i_am_dead(uuid), framed_can_chat(uuid),
+  framed_owns_frame(uuid)
   from public, anon;
 grant execute on function
-  framed_uuid(text), framed_my_player(uuid), framed_i_am_dead(uuid), framed_can_chat(uuid)
+  framed_uuid(text), framed_my_player(uuid), framed_i_am_dead(uuid), framed_can_chat(uuid),
+  framed_owns_frame(uuid)
   to authenticated;
 
 -- Baseline: the app roles get nothing, then exactly what the design allows.
@@ -147,19 +161,23 @@ create policy framed_frames_insert on storage.objects
 
 -- frames: same-path re-upload (#21) — a client retrying submit_frame after
 -- a dropped connection upserts to the same path rather than picking a new
--- one, so this needs update too, not just insert.
+-- one, so this needs update too, not just insert. Unlike insert, the frame
+-- row exists by update time, so this scopes to the frame's own assassin
+-- (#81) rather than just game membership — every player holds the same
+-- game key, so membership alone would let anyone overwrite anyone else's
+-- in-flight frame photo.
 drop policy if exists framed_frames_update on storage.objects;
 create policy framed_frames_update on storage.objects
   for update to authenticated
   using (
     bucket_id = 'frames'
     and array_length(string_to_array(name, '/'), 1) = 2
-    and framed_my_player(framed_uuid((string_to_array(name, '/'))[1])) is not null
+    and framed_owns_frame(framed_uuid((string_to_array(name, '/'))[2]))
   )
   with check (
     bucket_id = 'frames'
     and array_length(string_to_array(name, '/'), 1) = 2
-    and framed_my_player(framed_uuid((string_to_array(name, '/'))[1])) is not null
+    and framed_owns_frame(framed_uuid((string_to_array(name, '/'))[2]))
   );
 
 -- read (signed URLs): members of the game only

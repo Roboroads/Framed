@@ -6,6 +6,7 @@ import '../../../../core/crypto/game_crypto.dart';
 import '../../../../core/device/platform_name.dart';
 import '../../../../core/push/push_service.dart';
 import '../../../../core/session/game_session.dart';
+import '../../../../core/text/name_sanitizer.dart';
 import '../../domain/lobby_error.dart';
 import '../../domain/lobby_repository.dart';
 import 'join_state.dart';
@@ -53,8 +54,9 @@ class JoinCubit extends Cubit<JoinState> {
         gameId = _gameId!;
         playerId = _playerId!;
       } else {
-        final nameCiphertext = await crypto.encryptString(state.name.trim());
-        final nameHmac = await crypto.nameHmac(state.name);
+        final sanitizedName = sanitizeDisplayName(state.name);
+        final nameCiphertext = await crypto.encryptString(sanitizedName);
+        final nameHmac = await crypto.nameHmac(sanitizedName);
         (gameId, playerId) = await _repository.joinGame(
           joinToken: joinToken,
           nameCiphertext: nameCiphertext,

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/camera/in_app_camera_page.dart';
+import '../../../../core/text/name_sanitizer.dart';
 import '../../../../core/widgets/full_screen_photo_page.dart';
 import '../../../../i18n/strings.g.dart';
 
@@ -70,6 +71,7 @@ class _PreJoinFormState extends State<PreJoinForm> {
             labelText: t.preJoin.nameLabel,
             errorText: widget.nameError,
           ),
+          maxLength: maxDisplayNameLength,
           onChanged: widget.onNameChanged,
         ),
         const SizedBox(height: 16),

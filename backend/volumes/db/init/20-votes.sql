@@ -50,8 +50,14 @@ end $$;
 -- resolve_frame: shared by cast_vote's early-majority path and the
 -- timeout tick below. "where status = 'pending'" makes the update itself
 -- the resolution lock — a frame already resolved by the other path is a
--- silent no-op here.
-create or replace function resolve_frame(p_frame_id uuid, p_passed boolean) returns void
+-- silent no-op here. p_reason (#86) is only meaningful when !p_passed —
+-- 'rejected' for an actual majority no, 'timeout' when the vote deadline
+-- passed without one (tie or nobody judged in time) — so the assassin's
+-- cooldown screen can say why instead of just sitting there unexplained.
+drop function if exists resolve_frame(uuid, boolean);
+create or replace function resolve_frame(
+  p_frame_id uuid, p_passed boolean, p_reason text default null
+) returns void
 language plpgsql security definer set search_path = '' as $$
 declare
   f public.frames%rowtype;
@@ -79,7 +85,8 @@ begin
     cooldown_until := now() + (g.frame_cooldown_minutes || ' minutes')::interval;
     update public.players set frame_cooldown_until = cooldown_until where id = f.assassin_id;
     perform public.emit('player:' || f.assassin_id, 'frame_verdict',
-      jsonb_build_object('passed', false, 'cooldown_until', cooldown_until));
+      jsonb_build_object(
+        'passed', false, 'cooldown_until', cooldown_until, 'reason', p_reason));
     perform public.enqueue_push(f.assassin_id, 'frame_verdict');
     -- the target survives: whatever held frame was waiting on their own
     -- verdict is now free to be judged
@@ -130,7 +137,7 @@ begin
   if yes_count > f.judge_count / 2.0 then
     perform public.resolve_frame(f.id, true);
   elsif no_count >= f.judge_count / 2.0 then
-    perform public.resolve_frame(f.id, false);
+    perform public.resolve_frame(f.id, false, 'rejected');
   end if;
 end $$;
 
@@ -153,12 +160,12 @@ begin
     select count(*) filter (where vote), count(*) filter (where not vote)
       into yes_count, no_count
       from public.frame_votes where frame_id = f.id;
-    perform public.resolve_frame(f.id, yes_count > no_count);
+    perform public.resolve_frame(f.id, yes_count > no_count, 'timeout');
   end loop;
 end $$;
 
 revoke execute on function
-  cancel_frame(uuid), release_held_frame(uuid), resolve_frame(uuid, boolean),
+  cancel_frame(uuid), release_held_frame(uuid), resolve_frame(uuid, boolean, text),
   tick_vote_timeouts(public.games)
   from public, anon, authenticated;
 revoke execute on function cast_vote(uuid, boolean) from public, anon;

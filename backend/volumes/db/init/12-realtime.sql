@@ -20,7 +20,7 @@
 --     target_assigned {target_id, name_ciphertext, selfie_path}
 --     compass_pulse   {bearing_deg, distance_m, expires_at, next_pulse_at}
 --     frame_to_judge  {frame_id, photo_path, target_name_ciphertext, target_selfie_path}
---     frame_verdict   {passed, cooldown_until}
+--     frame_verdict   {passed, cooldown_until, reason}
 --     you_died        {cause, killer_name_ciphertext, photo_path, survived_seconds}
 --     warning         {active, reasons[], hard_deadline}
 --     geofence_proximity {active}

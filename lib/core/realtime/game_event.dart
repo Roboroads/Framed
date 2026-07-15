@@ -103,10 +103,14 @@ sealed class GameEvent with _$GameEvent {
       FrameCancelled;
 
   /// player:{assassin_id} — the verdict on your one open frame (#20).
-  /// [cooldownUntil] is only present when [passed] is false.
+  /// [cooldownUntil] and [reason] are only present when [passed] is false
+  /// — [reason] is 'rejected' (an actual majority no) or 'timeout' (the
+  /// vote deadline passed without one), so the cooldown screen can say why
+  /// instead of sitting there unexplained (#86).
   const factory GameEvent.frameVerdict({
     required bool passed,
     DateTime? cooldownUntil,
+    String? reason,
   }) = FrameVerdict;
 
   /// game:{game_id} — the game is over.
@@ -223,6 +227,7 @@ sealed class GameEvent with _$GameEvent {
             cooldownUntil: payload['cooldown_until'] != null
                 ? DateTime.parse(payload['cooldown_until'] as String)
                 : null,
+            reason: payload['reason'] as String?,
           );
         case 'game_finished':
           return GameEvent.gameFinished(

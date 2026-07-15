@@ -53,6 +53,10 @@ still waiting on a human read-through, one per line, grouped by locale.
 - [ ] finish.chatHint
 - [ ] finish.chatSendButton
 - [ ] ingame.deadAlsoOut
+- [ ] camera.permissionBlockedBody
+- [ ] frame.cooldownReasonRejected
+- [ ] frame.cooldownReasonTimeout
+- [ ] ingame.leaveNetworkWarning
 
 ## fr
 
@@ -83,6 +87,10 @@ still waiting on a human read-through, one per line, grouped by locale.
 - [ ] finish.chatHint
 - [ ] finish.chatSendButton
 - [ ] ingame.deadAlsoOut
+- [ ] camera.permissionBlockedBody
+- [ ] frame.cooldownReasonRejected
+- [ ] frame.cooldownReasonTimeout
+- [ ] ingame.leaveNetworkWarning
 
 ## nl
 
@@ -113,6 +121,10 @@ still waiting on a human read-through, one per line, grouped by locale.
 - [ ] finish.chatHint
 - [ ] finish.chatSendButton
 - [ ] ingame.deadAlsoOut
+- [ ] camera.permissionBlockedBody
+- [ ] frame.cooldownReasonRejected
+- [ ] frame.cooldownReasonTimeout
+- [ ] ingame.leaveNetworkWarning
 
 Everything not listed above predates this file and shipped without this
 tracking — not a claim that it's been verified, just that its status

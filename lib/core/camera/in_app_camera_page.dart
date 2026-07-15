@@ -37,6 +37,11 @@ class _InAppCameraPageState extends State<InAppCameraPage>
   CameraController? _controller;
   _Status _status = _Status.initializing;
 
+  // Set alongside _Status.permissionDenied (#85): "don't ask again" means
+  // _initialize()'s own retry can never succeed, only Settings can — same
+  // distinction PermissionGate and BackgroundLocationGate already make.
+  bool _permanentlyDenied = false;
+
   // Bumped on every dispose/backgrounding so a slow in-flight _initialize()
   // can tell it's been superseded and must not resurrect a stale controller.
   int _initGeneration = 0;
@@ -81,7 +86,13 @@ class _InAppCameraPageState extends State<InAppCameraPage>
           );
           if (!mounted || generation != _initGeneration) return;
           if (!proceed) {
-            setState(() => _status = _Status.permissionDenied);
+            final permanentlyDenied =
+                (await Permission.camera.status).isPermanentlyDenied;
+            if (!mounted || generation != _initGeneration) return;
+            setState(() {
+              _status = _Status.permissionDenied;
+              _permanentlyDenied = permanentlyDenied;
+            });
             return;
           }
         }
@@ -103,6 +114,9 @@ class _InAppCameraPageState extends State<InAppCameraPage>
                 e.code == 'CameraAccessDeniedWithoutPrompt'
             ? _Status.permissionDenied
             : _Status.error;
+        // CameraAccessDeniedWithoutPrompt is the platform's own "don't ask
+        // again" signal — only Settings can recover from it.
+        _permanentlyDenied = e.code == 'CameraAccessDeniedWithoutPrompt';
       });
     } on TimeoutException {
       // Don't await: a controller stuck mid-initialize can hang dispose()
@@ -156,10 +170,17 @@ class _InAppCameraPageState extends State<InAppCameraPage>
         _Status.initializing => const Center(
           child: CircularProgressIndicator(color: Colors.white),
         ),
-        _Status.permissionDenied => _RetryMessage(
-          message: t.camera.permissionDeniedBody,
-          onRetry: _initialize,
-        ),
+        _Status.permissionDenied =>
+          _permanentlyDenied
+              ? _RetryMessage(
+                  message: t.camera.permissionBlockedBody,
+                  onRetry: openAppSettings,
+                  retryLabel: t.permissionGate.openSettings,
+                )
+              : _RetryMessage(
+                  message: t.camera.permissionDeniedBody,
+                  onRetry: _initialize,
+                ),
         _Status.error => _RetryMessage(
           message: t.camera.errorGeneric,
           onRetry: _initialize,
@@ -195,10 +216,15 @@ class _InAppCameraPageState extends State<InAppCameraPage>
 }
 
 class _RetryMessage extends StatelessWidget {
-  const _RetryMessage({required this.message, required this.onRetry});
+  const _RetryMessage({
+    required this.message,
+    required this.onRetry,
+    this.retryLabel,
+  });
 
   final String message;
   final VoidCallback onRetry;
+  final String? retryLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -220,7 +246,10 @@ class _RetryMessage extends StatelessWidget {
               style: const TextStyle(color: Colors.white),
             ),
             const SizedBox(height: 16),
-            FilledButton(onPressed: onRetry, child: Text(t.camera.retry)),
+            FilledButton(
+              onPressed: onRetry,
+              child: Text(retryLabel ?? t.camera.retry),
+            ),
           ],
         ),
       ),

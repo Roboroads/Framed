@@ -36,6 +36,13 @@ class SessionResumeService {
       );
       final state = await _repository.getMyState(persisted.gameId);
       if (state.gameStatus == 'lobby') return const ResumeToLobby();
+      // #89: every other status used to fall through to ResumeToIngame,
+      // including 'finished' — get_my_state always reports a GameFinished
+      // event for that status, so this is the only case that can reach
+      // here without one being a genuine (if unexpected) event shape.
+      if (state.gameStatus == 'finished') {
+        if (state.event case GameFinished event) return ResumeToFinish(event);
+      }
       final endsAt = state.event is DispersalStarted
           ? (state.event as DispersalStarted).endsAt
           : DateTime.now();

@@ -67,6 +67,21 @@ void main() {
       expect(await crypto.nameHmac('  Bob '), await crypto.nameHmac('bob'));
     });
 
+    test('nameHmac matches through a zero-width character and NFKC-equivalent '
+        'width (#79)', () async {
+      final crypto = await GameCrypto.generate();
+      final zwsp = String.fromCharCode(0x200B);
+
+      expect(
+        await crypto.nameHmac('Rob${zwsp}ooo'),
+        await crypto.nameHmac('Robooo'),
+      );
+      expect(
+        await crypto.nameHmac('ＡＢＣ'), // fullwidth ABC
+        await crypto.nameHmac('abc'),
+      );
+    });
+
     test('nameHmac differs under a different key', () async {
       final a = await GameCrypto.generate();
       final b = await GameCrypto.generate();

@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../../../core/camera/in_app_camera_page.dart';
+import '../../../../core/chat/chat_limits.dart';
 import '../../../../core/di/injector.dart';
 import '../../../../core/location/compass_math.dart';
 import '../../../../core/location/heading.dart';
@@ -136,85 +137,108 @@ class _IngameView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: BlocBuilder<IngameBloc, IngameState>(
-          builder: (context, state) => PopScope(
-            // Unmissable per IDEA.md "Screens" (warning modal) — the back
-            // gesture can't dismiss it, only the server clearing the rule
-            // break can.
-            canPop: state.warning == null,
-            child: Stack(
-              children: [
-                switch (state.phase) {
-                  IngameDispersing(:final endsAt) => _DisperseCountdown(
-                    endsAt: endsAt,
-                  ),
-                  IngamePlaying(:final target) => _TargetCard(
-                    target: target,
-                    compass: state.compass,
-                    nextPulseAt: state.nextPulseAt,
-                    hasWarning: state.warning != null,
-                    targetLocation: state.targetLocation,
-                    geofence: geofence,
-                    frameStatus: state.frameStatus,
-                  ),
-                  IngameTargetLoadFailed() => Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Text(
-                        t.ingame.errorTargetLoad,
-                        textAlign: TextAlign.center,
+        child: BlocListener<IngameBloc, IngameState>(
+          // Backstop for the get_my_state catch-up finding the game
+          // already finished (#89) — same isActive guard and destination
+          // as IngamePage's own game:{game_id} broadcast listener, for a
+          // channel that went stale before that broadcast ever arrived.
+          listenWhen: (previous, current) =>
+              previous.pendingFinish == null && current.pendingFinish != null,
+          listener: (context, state) {
+            if (getIt<GameSession>().isActive) {
+              context.go('/finish', extra: state.pendingFinish);
+            }
+          },
+          child: BlocBuilder<IngameBloc, IngameState>(
+            builder: (context, state) => PopScope(
+              // Unmissable per IDEA.md "Screens" (warning modal) — the back
+              // gesture can't dismiss it, only the server clearing the rule
+              // break can. Once dead, back can pop freely — the death
+              // screen's own Leave button already handles that safely, no
+              // live-game consequence left to confirm. Otherwise (#82),
+              // route through the same confirmation the corner Leave
+              // button uses instead of silently backgrounding/exiting —
+              // that used to leave a player "alive" server-side, untracked,
+              // with no indication anything happened.
+              canPop: state.warning == null && state.phase is IngameDead,
+              onPopInvokedWithResult: (didPop, result) async {
+                if (didPop || state.warning != null) return;
+                await _confirmAndLeaveIngame(context);
+              },
+              child: Stack(
+                children: [
+                  switch (state.phase) {
+                    IngameDispersing(:final endsAt) => _DisperseCountdown(
+                      endsAt: endsAt,
+                    ),
+                    IngamePlaying(:final target) => _TargetCard(
+                      target: target,
+                      compass: state.compass,
+                      nextPulseAt: state.nextPulseAt,
+                      hasWarning: state.warning != null,
+                      targetLocation: state.targetLocation,
+                      geofence: geofence,
+                      frameStatus: state.frameStatus,
+                    ),
+                    IngameTargetLoadFailed() => Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Text(
+                          t.ingame.errorTargetLoad,
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ),
-                  ),
-                  IngameDead(
-                    :final cause,
-                    :final killerName,
-                    :final survivedSeconds,
-                    :final photoBytes,
-                  ) =>
-                    _DeadScreen(
-                      cause: cause,
-                      killerName: killerName,
-                      survivedSeconds: survivedSeconds,
-                      photoBytes: photoBytes,
-                      chat: state.deadChat,
-                      otherDeadPlayerNames: state.otherDeadPlayerNames,
+                    IngameDead(
+                      :final cause,
+                      :final killerName,
+                      :final survivedSeconds,
+                      :final photoBytes,
+                    ) =>
+                      _DeadScreen(
+                        cause: cause,
+                        killerName: killerName,
+                        survivedSeconds: survivedSeconds,
+                        photoBytes: photoBytes,
+                        chat: state.deadChat,
+                        otherDeadPlayerNames: state.otherDeadPlayerNames,
+                      ),
+                  },
+                  if (state.warning case final warning?)
+                    _WarningOverlay(warning: warning),
+                  // Only ever shown while state.warning is null — the proximity
+                  // nudge clears itself the moment a player actually leaves
+                  // (is_near_geofence_edge requires "not outside" server-side),
+                  // so the two never compete for the same screen space.
+                  if (state.nearGeofenceEdge && state.warning == null)
+                    const _ProximityBanner(),
+                  if (state.judgingQueue.isNotEmpty)
+                    _JudgingOverlay(entry: state.judgingQueue.first),
+                  // Available in both dispersing and playing — the geofence
+                  // rule already applies during dispersal (tick_punishments
+                  // runs for both statuses), not just once a target's
+                  // assigned. Hidden once dead: nothing left to navigate by.
+                  if (geofence != null && state.phase is! IngameDead)
+                    _MyLocationButton(
+                      geofence: geofence!,
+                      selfPositionStream: selfPositionStream,
                     ),
-                },
-                if (state.warning case final warning?)
-                  _WarningOverlay(warning: warning),
-                // Only ever shown while state.warning is null — the proximity
-                // nudge clears itself the moment a player actually leaves
-                // (is_near_geofence_edge requires "not outside" server-side),
-                // so the two never compete for the same screen space.
-                if (state.nearGeofenceEdge && state.warning == null)
-                  const _ProximityBanner(),
-                if (state.judgingQueue.isNotEmpty)
-                  _JudgingOverlay(entry: state.judgingQueue.first),
-                // Available in both dispersing and playing — the geofence
-                // rule already applies during dispersal (tick_punishments
-                // runs for both statuses), not just once a target's
-                // assigned. Hidden once dead: nothing left to navigate by.
-                if (geofence != null && state.phase is! IngameDead)
-                  _MyLocationButton(
-                    geofence: geofence!,
-                    selfPositionStream: selfPositionStream,
-                  ),
-                if (state.myName case final myName?
-                    when state.phase is! IngameDead)
-                  _SelfNameLabel(name: myName),
-                // The death screen has its own dedicated leave button in
-                // its content flow (#77) — this corner button covers the
-                // two phases before that, dispersing and playing (#78:
-                // "no mid-game quit" no longer blocks the living, it just
-                // makes leaving cost you the game).
-                if (state.phase is! IngameDead) const _LeaveButton(),
-                // Nothing left to stay awake for once dead (#78) — no more
-                // compass pulses or warnings, and a pending frame_to_judge
-                // still wakes the device via its own push either way.
-                if (state.phase is! IngameDead)
-                  _WakeLockButton(keepAwake: state.keepAwake),
-              ],
+                  if (state.myName case final myName?
+                      when state.phase is! IngameDead)
+                    _SelfNameLabel(name: myName),
+                  // The death screen has its own dedicated leave button in
+                  // its content flow (#77) — this corner button covers the
+                  // two phases before that, dispersing and playing (#78:
+                  // "no mid-game quit" no longer blocks the living, it just
+                  // makes leaving cost you the game).
+                  if (state.phase is! IngameDead) const _LeaveButton(),
+                  // Nothing left to stay awake for once dead (#78) — no more
+                  // compass pulses or warnings, and a pending frame_to_judge
+                  // still wakes the device via its own push either way.
+                  if (state.phase is! IngameDead)
+                    _WakeLockButton(keepAwake: state.keepAwake),
+                ],
+              ),
             ),
           ),
         ),
@@ -275,8 +299,18 @@ class _DeadScreenState extends State<_DeadScreen> {
       destructive: true,
     );
     if (!confirmed || !context.mounted) return;
-    await context.read<IngameBloc>().leave();
-    if (context.mounted) context.go('/');
+    final succeeded = await context.read<IngameBloc>().leave();
+    if (!context.mounted) return;
+    // #88: the dialog above promises an immediate consequence (frame
+    // judging stops, possibly ending the game) — surface it when the
+    // server never actually confirmed that, rather than navigating home
+    // as if it had.
+    if (!succeeded) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(t.ingame.leaveNetworkWarning)));
+    }
+    context.go('/');
   }
 
   @override
@@ -398,6 +432,7 @@ class _DeadScreenState extends State<_DeadScreen> {
                     decoration: InputDecoration(
                       hintText: t.ingame.deadChatHint,
                     ),
+                    maxLength: maxChatMessageLength,
                     textInputAction: TextInputAction.send,
                     onSubmitted: (_) => _send(),
                   ),
@@ -628,26 +663,37 @@ class _SelfNameLabel extends StatelessWidget {
   }
 }
 
-/// Leave while still alive (#78) — confirmed, since it costs you the game:
+/// Leave while still alive (#77) — confirmed, since it costs you the game:
 /// the server kills you (cause 'left') and relinks the circle exactly like
-/// any other death. Bottom-left corner: the only one of the four still
-/// free (_SelfNameLabel top-left, _MyLocationButton top-right, the wake
-/// lock toggle bottom-right).
+/// any other death. Shared by the corner button and the back gesture
+/// (#82) — same dialog either way.
+Future<void> _confirmAndLeaveIngame(BuildContext context) async {
+  final confirmed = await showConfirmationDialog(
+    context: context,
+    title: t.ingame.leaveConfirmTitle,
+    message: t.ingame.leaveConfirmBody,
+    confirmLabel: t.ingame.leaveConfirmButton,
+    destructive: true,
+  );
+  if (!confirmed || !context.mounted) return;
+  final succeeded = await context.read<IngameBloc>().leave();
+  if (!context.mounted) return;
+  // #88: the dialog above promises an immediate consequence (a relink,
+  // possibly ending the game) — surface it when the server never actually
+  // confirmed that, rather than navigating home as if it had.
+  if (!succeeded) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(t.ingame.leaveNetworkWarning)));
+  }
+  context.go('/');
+}
+
+/// Bottom-left corner: the only one of the four still free (_SelfNameLabel
+/// top-left, _MyLocationButton top-right, the wake lock toggle
+/// bottom-right).
 class _LeaveButton extends StatelessWidget {
   const _LeaveButton();
-
-  Future<void> _confirmAndLeave(BuildContext context) async {
-    final confirmed = await showConfirmationDialog(
-      context: context,
-      title: t.ingame.leaveConfirmTitle,
-      message: t.ingame.leaveConfirmBody,
-      confirmLabel: t.ingame.leaveConfirmButton,
-      destructive: true,
-    );
-    if (!confirmed || !context.mounted) return;
-    await context.read<IngameBloc>().leave();
-    if (context.mounted) context.go('/');
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -660,7 +706,7 @@ class _LeaveButton extends StatelessWidget {
           child: FloatingActionButton.small(
             heroTag: 'leave',
             tooltip: t.ingame.leaveButton,
-            onPressed: () => _confirmAndLeave(context),
+            onPressed: () => _confirmAndLeaveIngame(context),
             child: const Icon(Icons.logout),
           ),
         ),
@@ -1023,13 +1069,31 @@ class _FrameButton extends StatelessWidget {
         icon: const Icon(Icons.hourglass_empty),
         label: Text(t.frame.waiting),
       ),
-      FrameCooldown(:final until) => _CountdownText(
-        deadline: until,
-        builder: (context, time) => FilledButton.icon(
-          onPressed: null,
-          icon: const Icon(Icons.timer_outlined),
-          label: Text(t.frame.cooldown(time: time)),
-        ),
+      FrameCooldown(:final until, :final reason) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (switch (reason) {
+                'rejected' => t.frame.cooldownReasonRejected,
+                'timeout' => t.frame.cooldownReasonTimeout,
+                _ => null,
+              }
+              case final reasonText?) ...[
+            Text(
+              reasonText,
+              style: Theme.of(context).textTheme.bodySmall,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 4),
+          ],
+          _CountdownText(
+            deadline: until,
+            builder: (context, time) => FilledButton.icon(
+              onPressed: null,
+              icon: const Icon(Icons.timer_outlined),
+              label: Text(t.frame.cooldown(time: time)),
+            ),
+          ),
+        ],
       ),
     };
   }

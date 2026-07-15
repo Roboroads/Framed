@@ -1,3 +1,5 @@
+import '../realtime/game_event.dart';
+
 /// What a cold-start resume attempt found (#54). Plain sealed classes, not
 /// freezed — this is consumed once by the home screen and discarded, no
 /// equality/copyWith needed.
@@ -23,4 +25,15 @@ class ResumeToIngame extends ResumeOutcome {
   const ResumeToIngame(this.initialEndsAt);
 
   final DateTime initialEndsAt;
+}
+
+/// A game that already finished by the time this device resumed (#89) —
+/// cold start, or reopening after force-close. Without this case, resume()
+/// used to fall through to [ResumeToIngame] for every status but 'lobby',
+/// landing the player on a dispersing screen frozen at 00:00 forever, since
+/// nothing about a finished game matches a DispersalStarted catch-up event.
+class ResumeToFinish extends ResumeOutcome {
+  const ResumeToFinish(this.event);
+
+  final GameFinished event;
 }

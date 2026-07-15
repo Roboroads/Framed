@@ -143,6 +143,7 @@
     "leaveConfirmTitle": "Quitter la partie ?",
     "leaveConfirmBody": "Partir compte comme mourir : la personne qui vous traque hérite de votre cible, exactement comme pour toute autre mort. Si cela fait passer la partie sous 3 joueurs, elle se termine immédiatement et celui ou celle qui a le plus de piégeages confirmés à ce moment-là gagne.",
     "leaveConfirmButton": "Quitter",
+    "leaveNetworkWarning": "Impossible de confirmer cela avec le serveur, cela n'a peut-être pas été enregistré. Vérifiez votre connexion.",
     "errorTargetLoad": "Impossible de charger votre cible. Essayez de rouvrir l'appli.",
     "warningGeofence": "Vous êtes hors de la zone de jeu. Revenez.",
     "nearGeofenceEdge": "Vous êtes proche du bord de la zone de jeu",
@@ -212,6 +213,8 @@
     "button": "Piéger",
     "waiting": "En attente du verdict",
     "cooldown": "Délai $time",
+    "cooldownReasonRejected": "Les juges ont dit non.",
+    "cooldownReasonTimeout": "Personne ne l'a jugée à temps.",
     "confirmTitle": "Confirmer la photo",
     "retake": "Reprendre",
     "submit": "Envoyer",
@@ -222,6 +225,7 @@
   },
   "camera": {
     "permissionDeniedBody": "Framed a besoin de l'accès à l'appareil photo pour cela. Autorisez-le puis réessayez.",
+    "permissionBlockedBody": "L'accès à l'appareil photo est désactivé dans les réglages. Activez-le, puis revenez. Inutile de redémarrer l'appli.",
     "errorGeneric": "Impossible de démarrer l'appareil photo. Réessayez.",
     "retry": "Réessayer"
   },

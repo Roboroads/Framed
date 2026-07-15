@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/chat/chat_limits.dart';
 import '../../../../core/crypto/game_crypto.dart';
 import '../../../../core/location/wake_lock_service.dart';
 import '../../../../core/push/local_alarms.dart';
@@ -181,6 +182,11 @@ class IngameBloc extends Cubit<IngameState> {
         await _applyYouDied(event, generation: generation);
       case DispersalStarted(:final endsAt):
         emit(state.copyWith(phase: IngamePhase.dispersing(endsAt: endsAt)));
+      case GameFinished event:
+        // #89: the game ended without this page ever seeing the live
+        // game:{game_id} broadcast — set the backstop for IngamePage's own
+        // listener to navigate away with, same as that broadcast would.
+        emit(state.copyWith(pendingFinish: event));
       default:
       // No target yet, or an event shape this catch-up doesn't expect —
       // nothing to change.
@@ -359,8 +365,11 @@ class IngameBloc extends Cubit<IngameState> {
   // echoes back over game:{game_id}:dead. _appendChatMessage's id dedupe
   // discards that echo when it arrives.
   Future<void> sendChatMessage(String text) async {
-    final trimmed = text.trim();
+    var trimmed = text.trim();
     if (trimmed.isEmpty) return;
+    if (trimmed.length > maxChatMessageLength) {
+      trimmed = trimmed.substring(0, maxChatMessageLength);
+    }
     try {
       final ciphertext = await _crypto.encryptString(trimmed);
       final id = await _repository.sendChat(
@@ -387,16 +396,23 @@ class IngameBloc extends Cubit<IngameState> {
     }
   }
 
-  // Death screen leave button (#77) — `leave_active_game` rejects a
-  // still-alive caller server-side; the UI only ever offers this button
-  // once IngameState.phase is IngameDead, so that never happens in
-  // practice. Same best-effort shape as LobbyBloc/FinishBloc.leave(): the
-  // player still wants out even if the network call failed.
-  Future<void> leave() async {
+  // Leave button, alive or dead (#77) — `leave_active_game` kills an
+  // alive caller server-side (cause 'left') exactly like any other death,
+  // and just marks left_at for one already dead. Same best-effort shape
+  // as LobbyBloc/FinishBloc.leave(): the player still wants out even if
+  // the network call failed. Unlike those two, the confirmation dialog
+  // here promises an immediate, deterministic consequence ("this ends the
+  // game if it drops the player count below 3"), so callers (#88) surface
+  // the returned success flag instead of assuming it always held.
+  Future<bool> leave() async {
+    var succeeded = true;
     try {
       await _repository.leaveActiveGame(_gameId);
-    } catch (_) {}
+    } catch (_) {
+      succeeded = false;
+    }
     await _session.end();
+    return succeeded;
   }
 
   // Quick on/off (#78) — no persistence across sessions by design, every
@@ -536,7 +552,14 @@ class IngameBloc extends Cubit<IngameState> {
       emit(state.copyWith(frameStatus: const IngameFrameStatus.ready()));
       return;
     }
-    emit(state.copyWith(frameStatus: IngameFrameStatus.cooldown(until: until)));
+    emit(
+      state.copyWith(
+        frameStatus: IngameFrameStatus.cooldown(
+          until: until,
+          reason: event.reason,
+        ),
+      ),
+    );
     final remaining = until.difference(DateTime.now());
     if (remaining.isNegative) {
       emit(state.copyWith(frameStatus: const IngameFrameStatus.ready()));

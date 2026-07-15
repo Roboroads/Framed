@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/chat/chat_limits.dart';
 import '../../../../core/di/injector.dart';
 import '../../../../core/realtime/game_channels.dart';
 import '../../../../core/realtime/game_event.dart';
@@ -341,6 +342,7 @@ class _FinishChatPanelState extends State<_FinishChatPanel> {
               child: TextField(
                 controller: _composer,
                 decoration: InputDecoration(hintText: t.finish.chatHint),
+                maxLength: maxChatMessageLength,
                 textInputAction: TextInputAction.send,
                 onSubmitted: (_) => _send(context),
               ),

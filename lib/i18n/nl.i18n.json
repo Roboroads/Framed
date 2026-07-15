@@ -143,6 +143,7 @@
     "leaveConfirmTitle": "Spel verlaten?",
     "leaveConfirmBody": "Verlaten telt als doodgaan: wie jou aan het opsporen is, erft je doelwit, net als bij elke andere dood. Als het spel hierdoor onder 3 spelers komt, eindigt het meteen en wint wie op dat moment de meeste bevestigde frames heeft.",
     "leaveConfirmButton": "Verlaten",
+    "leaveNetworkWarning": "Kon dit niet bevestigen bij de server, het is mogelijk niet geregistreerd. Controleer je verbinding.",
     "errorTargetLoad": "Kon je doelwit niet laden. Probeer de app opnieuw te openen.",
     "warningGeofence": "Je bent buiten het speelgebied. Ga terug.",
     "nearGeofenceEdge": "Je bent dicht bij de rand van het speelgebied",
@@ -212,6 +213,8 @@
     "button": "Frame",
     "waiting": "Wachten op uitspraak",
     "cooldown": "Afkoelperiode $time",
+    "cooldownReasonRejected": "Rechters zeiden nee.",
+    "cooldownReasonTimeout": "Niemand heeft het op tijd beoordeeld.",
     "confirmTitle": "Frame bevestigen",
     "retake": "Opnieuw",
     "submit": "Versturen",
@@ -222,6 +225,7 @@
   },
   "camera": {
     "permissionDeniedBody": "Framed heeft hiervoor cameratoegang nodig. Geef toestemming en probeer het opnieuw.",
+    "permissionBlockedBody": "Cameratoegang staat uit in Instellingen. Zet het aan en kom terug; je hoeft de app niet opnieuw te starten.",
     "errorGeneric": "Kon de camera niet starten. Probeer het opnieuw.",
     "retry": "Opnieuw proberen"
   },
