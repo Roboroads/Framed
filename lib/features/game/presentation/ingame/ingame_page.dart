@@ -171,6 +171,7 @@ class _IngameView extends StatelessWidget {
                       survivedSeconds: survivedSeconds,
                       photoBytes: photoBytes,
                       chat: state.deadChat,
+                      otherDeadPlayerNames: state.otherDeadPlayerNames,
                     ),
                 },
                 if (state.warning case final warning?)
@@ -225,6 +226,7 @@ class _DeadScreen extends StatefulWidget {
     required this.survivedSeconds,
     required this.photoBytes,
     required this.chat,
+    required this.otherDeadPlayerNames,
   });
 
   final String cause;
@@ -232,6 +234,7 @@ class _DeadScreen extends StatefulWidget {
   final int survivedSeconds;
   final Uint8List? photoBytes;
   final List<IngameChatMessage> chat;
+  final List<String> otherDeadPlayerNames;
 
   @override
   State<_DeadScreen> createState() => _DeadScreenState();
@@ -326,6 +329,16 @@ class _DeadScreenState extends State<_DeadScreen> {
                 ),
                 textAlign: TextAlign.center,
               ),
+              if (widget.otherDeadPlayerNames.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Text(
+                  t.ingame.deadAlsoOut(
+                    names: widget.otherDeadPlayerNames.join(', '),
+                  ),
+                  style: Theme.of(context).textTheme.bodySmall,
+                  textAlign: TextAlign.center,
+                ),
+              ],
               const SizedBox(height: 16),
               Text(
                 t.ingame.deadLeaveWarning,

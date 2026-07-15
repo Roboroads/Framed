@@ -246,6 +246,15 @@ class _FakeGameRepository implements GameRepository {
     if (leaveActiveFailure != null) throw leaveActiveFailure!;
   }
 
+  Map<String, String> deadPlayers = {};
+  Object? deadPlayersFailure;
+
+  @override
+  Future<Map<String, String>> getDeadPlayers(String gameId) async {
+    if (deadPlayersFailure != null) throw deadPlayersFailure!;
+    return deadPlayers;
+  }
+
   @override
   Future<void> updatePushToken({
     required String gameId,
@@ -573,6 +582,36 @@ void main() {
       expect(bloc.state.keepAwake, isFalse);
       expect(wakeLockService.disableCallCount, 1);
     });
+
+    test(
+      'you_died loads other dead players, decrypted, self excluded',
+      () async {
+        repository.deadPlayers = {
+          'player-me': await crypto.encryptString('Me'),
+          'player-other-1': await crypto.encryptString('Alice'),
+          'player-other-2': await crypto.encryptString('Bob'),
+        };
+        final bloc = IngameBloc(
+          events: events.stream,
+          crypto: crypto,
+          repository: repository,
+          localAlarms: localAlarms,
+          session: session,
+          wakeLockService: wakeLockService,
+          gameId: 'game-1',
+          myPlayerId: 'player-me',
+          deadChatEvents: const Stream<GameEvent>.empty(),
+          initialEndsAt: endsAt,
+        );
+
+        events.add(const GameEvent.youDied(cause: 'mia', survivedSeconds: 60));
+        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+
+        expect(bloc.state.otherDeadPlayerNames, ['Alice', 'Bob']);
+      },
+    );
 
     test('you_died with a photo downloads and decrypts it', () async {
       final bloc = IngameBloc(

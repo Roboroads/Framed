@@ -35,3 +35,25 @@ end $$;
 
 revoke execute on function send_chat(uuid, text) from public, anon;
 grant execute on function send_chat(uuid, text) to authenticated;
+
+-- get_dead_players(game_id) -> every dead player's id + encrypted name
+-- (#80), same access rule as chat (framed_can_chat): dead any time, or
+-- anyone once the game's finished. The death screen uses this for "who
+-- else is out" context — a one-time snapshot on load, not live-updated,
+-- same as how the roster is fetched for chat sender names elsewhere.
+create or replace function get_dead_players(p_game_id uuid)
+returns table(player_id uuid, name_ciphertext text)
+language plpgsql stable security definer set search_path = '' as $$
+begin
+  if not public.framed_can_chat(p_game_id) then
+    raise exception using message = 'cannot_view';
+  end if;
+
+  return query
+    select p.id, p.name_ciphertext from public.players p
+    where p.game_id = p_game_id and p.status = 'dead'
+    order by p.died_at;
+end $$;
+
+revoke execute on function get_dead_players(uuid) from public, anon;
+grant execute on function get_dead_players(uuid) to authenticated;

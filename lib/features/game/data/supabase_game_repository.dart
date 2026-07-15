@@ -222,6 +222,18 @@ class SupabaseGameRepository implements GameRepository {
   }
 
   @override
+  Future<Map<String, String>> getDeadPlayers(String gameId) async {
+    final rows = await _client.rpc(
+      'get_dead_players',
+      params: {'p_game_id': gameId},
+    );
+    return {
+      for (final row in rows as List)
+        row['player_id'] as String: row['name_ciphertext'] as String,
+    };
+  }
+
+  @override
   Future<void> leaveActiveGame(String gameId) async {
     await _client.rpc('leave_active_game', params: {'game_id': gameId});
   }

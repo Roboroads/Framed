@@ -168,6 +168,7 @@
     "deadCauseLeft": "Je hebt het spel verlaten.",
     "deadKilledBy": "Gedood door $name",
     "deadSurvivedFor": "Overleefde $time",
+    "deadAlsoOut": "Ook eruit: $names",
     "deadChatEmpty": "Nog niemand heeft iets gezegd.",
     "deadChatHint": "Bericht aan de doden",
     "deadChatSendButton": "Versturen",

@@ -133,5 +133,10 @@ sealed class IngameState with _$IngameState {
     // Screen-stays-on toggle (#78). Defaults on: a locked/dimmed screen is
     // how a compass pulse or warning gets missed while playing outside.
     @Default(true) bool keepAwake,
+    // Everyone else currently dead (#80), oldest death first, resolved
+    // once when this player's own death phase starts — a one-time
+    // snapshot, not live-updated, same as the roster fetch dead chat
+    // already does for sender names.
+    @Default([]) List<String> otherDeadPlayerNames,
   }) = _IngameState;
 }

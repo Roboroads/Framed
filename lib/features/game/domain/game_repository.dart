@@ -115,6 +115,11 @@ abstract interface class GameRepository {
   /// `leave_finished_game(game_id)` (#25).
   Future<void> leaveFinishedGame(String gameId);
 
+  /// `get_dead_players(game_id)` (#80) — id -> `name_ciphertext` for every
+  /// dead player, oldest death first. Same access rule as chat: dead any
+  /// time, or anyone once the game's finished.
+  Future<Map<String, String>> getDeadPlayers(String gameId);
+
   /// `leave_active_game(game_id)` (#77) — the death screen's leave button.
   /// Dead only; the server rejects a still-alive caller. Unlike
   /// [leaveFinishedGame] this can end the game outright for everyone else,

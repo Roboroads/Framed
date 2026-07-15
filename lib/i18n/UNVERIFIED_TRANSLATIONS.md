@@ -52,6 +52,7 @@ still waiting on a human read-through, one per line, grouped by locale.
 - [ ] finish.chatEmpty
 - [ ] finish.chatHint
 - [ ] finish.chatSendButton
+- [ ] ingame.deadAlsoOut
 
 ## fr
 
@@ -81,6 +82,7 @@ still waiting on a human read-through, one per line, grouped by locale.
 - [ ] finish.chatEmpty
 - [ ] finish.chatHint
 - [ ] finish.chatSendButton
+- [ ] ingame.deadAlsoOut
 
 ## nl
 
@@ -110,6 +112,7 @@ still waiting on a human read-through, one per line, grouped by locale.
 - [ ] finish.chatEmpty
 - [ ] finish.chatHint
 - [ ] finish.chatSendButton
+- [ ] ingame.deadAlsoOut
 
 Everything not listed above predates this file and shipped without this
 tracking — not a claim that it's been verified, just that its status

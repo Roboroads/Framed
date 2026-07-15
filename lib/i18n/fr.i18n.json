@@ -168,6 +168,7 @@
     "deadCauseLeft": "Vous avez quitté la partie.",
     "deadKilledBy": "Éliminé par $name",
     "deadSurvivedFor": "A survécu $time",
+    "deadAlsoOut": "Également hors jeu : $names",
     "deadChatEmpty": "Personne n'a encore rien dit.",
     "deadChatHint": "Message aux éliminés",
     "deadChatSendButton": "Envoyer",

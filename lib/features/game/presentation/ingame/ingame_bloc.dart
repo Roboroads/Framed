@@ -274,6 +274,27 @@ class IngameBloc extends Cubit<IngameState> {
     // other push while the game's still active.
     unawaited(_wakeLockService.disable());
     unawaited(_startDeadChat());
+    unawaited(_loadOtherDeadPlayers());
+  }
+
+  // Best-effort (#80), same reasoning as _startDeadChat: a failure just
+  // means the list stays empty, nothing else on the death screen depends
+  // on it.
+  Future<void> _loadOtherDeadPlayers() async {
+    try {
+      final deadPlayers = await _repository.getDeadPlayers(_gameId);
+      final names = <String>[];
+      for (final entry in deadPlayers.entries) {
+        if (entry.key == _myPlayerId) continue;
+        try {
+          names.add(await _crypto.decryptString(entry.value));
+        } catch (_) {
+          // That one player's name is skipped rather than shown raw —
+          // unlike chat senders, there's no id fallback slot in this list.
+        }
+      }
+      if (!isClosed) emit(state.copyWith(otherDeadPlayerNames: names));
+    } catch (_) {}
   }
 
   // Dead chat (#24): joins game:{game_id}:dead (only possible now that this

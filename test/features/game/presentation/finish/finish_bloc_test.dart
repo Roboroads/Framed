@@ -106,6 +106,10 @@ class _FakeGameRepository implements GameRepository {
   Future<void> leaveActiveGame(String gameId) => throw UnimplementedError();
 
   @override
+  Future<Map<String, String>> getDeadPlayers(String gameId) =>
+      throw UnimplementedError();
+
+  @override
   Future<void> updatePushToken({
     required String gameId,
     required String token,
