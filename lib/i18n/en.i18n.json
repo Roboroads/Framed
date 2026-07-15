@@ -197,7 +197,11 @@
     "leaveButton": "Leave game",
     "leaveConfirmTitle": "Leave the game?",
     "leaveConfirmBody": "You won't be able to rejoin this game.",
-    "leaveConfirmButton": "Leave"
+    "leaveConfirmButton": "Leave",
+    "chatTitle": "Chat",
+    "chatEmpty": "No one's said anything yet.",
+    "chatHint": "Message everyone",
+    "chatSendButton": "Send"
   },
   "scan": {
     "title": "Scan to join",

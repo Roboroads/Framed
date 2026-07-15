@@ -26,7 +26,8 @@
 --     geofence_proximity {active}
 --     target_location {lat, lng}
 --
---   game:{game_id}:dead   — dead players of that game
+--   game:{game_id}:dead   — dead players any time, or any member once the
+--                           game has finished (#79)
 --     chat_message    {sender_id, ciphertext, created_at}
 
 -- Is this player id me? (security definer: bypasses players RLS, like the
@@ -59,9 +60,9 @@ create policy framed_topics on realtime.messages
   using (
     extension = 'broadcast'
     and (
-      -- game:{game_id}:dead — dead members only
+      -- game:{game_id}:dead — dead members, or anyone once finished (#79)
       (realtime.topic() like 'game:%:dead'
-        and framed_i_am_dead(framed_uuid(split_part(realtime.topic(), ':', 2))))
+        and framed_can_chat(framed_uuid(split_part(realtime.topic(), ':', 2))))
       -- game:{game_id} — members
       or (realtime.topic() like 'game:%' and realtime.topic() not like 'game:%:%'
         and framed_my_player(framed_uuid(split_part(realtime.topic(), ':', 2))) is not null)

@@ -46,6 +46,12 @@ class _FakeGameRepository implements GameRepository {
   String? leaveFinishedGameId;
   Object? leaveFinishedFailure;
 
+  List<ChatMessageEvent> chatHistory = [];
+  Object? chatHistoryFailure;
+  Object? sendChatFailure;
+  String nextSendChatId = 'msg-1';
+  final sentChatCiphertexts = <String>[];
+
   @override
   Future<Map<String, String>> getRoster(String gameId) async => roster;
 
@@ -139,14 +145,20 @@ class _FakeGameRepository implements GameRepository {
   Future<MyStateResult> getMyState(String gameId) => throw UnimplementedError();
 
   @override
-  Future<List<ChatMessageEvent>> fetchChatHistory(String gameId) =>
-      throw UnimplementedError();
+  Future<List<ChatMessageEvent>> fetchChatHistory(String gameId) async {
+    if (chatHistoryFailure != null) throw chatHistoryFailure!;
+    return chatHistory;
+  }
 
   @override
   Future<String> sendChat({
     required String gameId,
     required String ciphertext,
-  }) => throw UnimplementedError();
+  }) async {
+    if (sendChatFailure != null) throw sendChatFailure!;
+    sentChatCiphertexts.add(ciphertext);
+    return nextSendChatId;
+  }
 }
 
 void main() {
@@ -155,15 +167,20 @@ void main() {
     late _FakeGameRepository repository;
     late GameSession session;
     late StreamController<GameEvent> gameEvents;
+    late StreamController<GameEvent> deadChatEvents;
 
     setUp(() async {
       oldCrypto = await GameCrypto.generate();
       repository = _FakeGameRepository();
       session = GameSession(SessionStore(_FakeSecureKeyValueStore()));
       gameEvents = StreamController<GameEvent>();
+      deadChatEvents = StreamController<GameEvent>();
     });
 
-    tearDown(() => gameEvents.close());
+    tearDown(() {
+      gameEvents.close();
+      deadChatEvents.close();
+    });
 
     GameFinished event({required String winnerId}) => GameFinished(
       winnerId: winnerId,
@@ -210,6 +227,7 @@ void main() {
         final bloc = FinishBloc(
           initialEvent: event(winnerId: 'p1'),
           gameEvents: gameEvents.stream,
+          deadChatEvents: deadChatEvents.stream,
           crypto: oldCrypto,
           repository: repository,
           session: session,
@@ -247,6 +265,7 @@ void main() {
         final bloc = FinishBloc(
           initialEvent: event(winnerId: 'p1'),
           gameEvents: gameEvents.stream,
+          deadChatEvents: deadChatEvents.stream,
           crypto: oldCrypto,
           repository: repository,
           session: session,
@@ -292,6 +311,7 @@ void main() {
       final bloc = FinishBloc(
         initialEvent: miaEvent,
         gameEvents: gameEvents.stream,
+        deadChatEvents: deadChatEvents.stream,
         crypto: oldCrypto,
         repository: repository,
         session: session,
@@ -313,6 +333,7 @@ void main() {
         final nonHostBloc = FinishBloc(
           initialEvent: event(winnerId: 'p1'),
           gameEvents: gameEvents.stream,
+          deadChatEvents: deadChatEvents.stream,
           crypto: oldCrypto,
           repository: repository,
           session: session,
@@ -328,9 +349,12 @@ void main() {
         repository.replayGameNewId = 'new-game-1';
         final hostGameEvents = StreamController<GameEvent>();
         addTearDown(hostGameEvents.close);
+        final hostDeadChatEvents = StreamController<GameEvent>();
+        addTearDown(hostDeadChatEvents.close);
         final hostBloc = FinishBloc(
           initialEvent: event(winnerId: 'p1'),
           gameEvents: hostGameEvents.stream,
+          deadChatEvents: hostDeadChatEvents.stream,
           crypto: oldCrypto,
           repository: repository,
           session: session,
@@ -365,6 +389,7 @@ void main() {
       final bloc = FinishBloc(
         initialEvent: event(winnerId: 'p1'),
         gameEvents: gameEvents.stream,
+        deadChatEvents: deadChatEvents.stream,
         crypto: oldCrypto,
         repository: repository,
         session: session,
@@ -421,6 +446,7 @@ void main() {
       final bloc = FinishBloc(
         initialEvent: event(winnerId: 'p1'),
         gameEvents: gameEvents.stream,
+        deadChatEvents: deadChatEvents.stream,
         crypto: oldCrypto,
         repository: repository,
         session: session,
@@ -453,6 +479,7 @@ void main() {
       final bloc = FinishBloc(
         initialEvent: event(winnerId: 'p2'),
         gameEvents: gameEvents.stream,
+        deadChatEvents: deadChatEvents.stream,
         crypto: oldCrypto,
         repository: repository,
         session: session,
@@ -466,6 +493,77 @@ void main() {
       expect(repository.leaveFinishedCalled, isTrue);
       expect(repository.leaveFinishedGameId, 'game-1');
       expect(session.isActive, isFalse);
+    });
+
+    test('chat: history loads decrypted, live merges in order, '
+        'the optimistic echo of a sent message dedupes', () async {
+      repository.roster = {
+        'p1': await oldCrypto.encryptString('Alice'),
+        'p2': await oldCrypto.encryptString('Bob'),
+      };
+      repository.myPlayerInfoByGame['game-1'] = ('p1', false);
+      repository.chatHistory = [
+        ChatMessageEvent(
+          messageId: 'hist-1',
+          senderId: 'p2',
+          ciphertext: await oldCrypto.encryptString('hello from history'),
+          createdAt: DateTime.utc(2026, 1, 1, 11),
+        ),
+      ];
+
+      final bloc = FinishBloc(
+        initialEvent: event(winnerId: 'p1'),
+        gameEvents: gameEvents.stream,
+        deadChatEvents: deadChatEvents.stream,
+        crypto: oldCrypto,
+        repository: repository,
+        session: session,
+        gameId: 'game-1',
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.chat, hasLength(1));
+      expect(bloc.state.chat.first.text, 'hello from history');
+      expect(bloc.state.chat.first.senderName, 'Bob');
+
+      repository.nextSendChatId = 'msg-optimistic';
+      await bloc.sendChatMessage('hi there');
+
+      expect(bloc.state.chat, hasLength(2));
+      expect(bloc.state.chat.last.text, 'hi there');
+      expect(bloc.state.chat.last.senderName, 'Alice');
+
+      // The optimistic echo of the same message arriving over the live
+      // channel dedupes against its own id instead of double-appending.
+      deadChatEvents.add(
+        ChatMessageEvent(
+          messageId: 'msg-optimistic',
+          senderId: 'p1',
+          ciphertext: await oldCrypto.encryptString('hi there'),
+          createdAt: DateTime.now(),
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.chat, hasLength(2));
+
+      // A genuinely new message from someone else still appends.
+      deadChatEvents.add(
+        ChatMessageEvent(
+          messageId: 'live-1',
+          senderId: 'p2',
+          ciphertext: await oldCrypto.encryptString('meet at the fountain'),
+          createdAt: DateTime.now(),
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.chat, hasLength(3));
+      expect(bloc.state.chat.last.text, 'meet at the fountain');
     });
   });
 }

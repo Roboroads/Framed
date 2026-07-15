@@ -32,6 +32,20 @@ sealed class FinishKillChainEntry with _$FinishKillChainEntry {
 /// `replay_started` arriving) through landing in the new lobby.
 enum FinishReplayStatus { idle, working, error }
 
+/// One decrypted chat message (#79) — same shape and channel as the
+/// ingame death screen's chat, just open to everyone here since the game's
+/// already over. [senderName] is already resolved from the roster.
+@freezed
+sealed class FinishChatMessage with _$FinishChatMessage {
+  const factory FinishChatMessage({
+    required String id,
+    required String senderId,
+    required String senderName,
+    required String text,
+    required DateTime createdAt,
+  }) = _FinishChatMessage;
+}
+
 @freezed
 sealed class FinishState with _$FinishState {
   const factory FinishState({
@@ -51,5 +65,7 @@ sealed class FinishState with _$FinishState {
     // Set once this device has fully swapped into the new game (crypto,
     // session, identity refreshed) — the page navigates to /lobby on it.
     String? replayReadyGameId,
+    // Oldest first (#79), history + live merged.
+    @Default([]) List<FinishChatMessage> chat,
   }) = _FinishState;
 }

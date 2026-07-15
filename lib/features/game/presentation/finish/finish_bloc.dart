@@ -17,6 +17,10 @@ class FinishBloc extends Cubit<FinishState> {
   FinishBloc({
     required GameFinished initialEvent,
     required Stream<GameEvent> gameEvents,
+    // game:{game_id}:dead (#79) — open to everyone once the game's
+    // finished, not just players who died (framed_can_chat,
+    // 11-policies.sql), so the whole group can coordinate a meetup.
+    required Stream<GameEvent> deadChatEvents,
     required GameCrypto crypto,
     required GameRepository repository,
     required GameSession session,
@@ -27,6 +31,7 @@ class FinishBloc extends Cubit<FinishState> {
        _gameId = gameId,
        super(const FinishState()) {
     _subscription = gameEvents.listen(_onEvent);
+    _chatSubscription = deadChatEvents.listen(_onChatEvent);
     unawaited(_init(initialEvent));
   }
 
@@ -35,10 +40,17 @@ class FinishBloc extends Cubit<FinishState> {
   final GameSession _session;
   final String _gameId;
   late final StreamSubscription<GameEvent> _subscription;
+  late final StreamSubscription<GameEvent> _chatSubscription;
 
   // Resolved during _init — needed to tell "own row" apart from the rest
-  // during the replay handshake (own name/selfie source path).
+  // during the replay handshake (own name/selfie source path), and to
+  // label this device's own outgoing chat messages.
   String? _myPlayerId;
+
+  // id -> decrypted display name (#79), same resolve-once pattern as
+  // IngameBloc's dead chat — built from the same roster fetch _init
+  // already does for stats/kill-chain, so no second round trip.
+  final Map<String, String> _resolvedNames = {};
 
   Future<void> _init(GameFinished event) async {
     try {
@@ -51,6 +63,7 @@ class FinishBloc extends Cubit<FinishState> {
           // That sender's name falls back to their raw id below.
         }
       }
+      _resolvedNames.addAll(names);
 
       final mode = await _repository.getGameMode(_gameId);
       final (myPlayerId, isHost) = await _repository.myPlayerInfo(_gameId);
@@ -98,6 +111,20 @@ class FinishBloc extends Cubit<FinishState> {
       if (isClosed) return;
       emit(state.copyWith(loading: false));
     }
+    unawaited(_loadChatHistory());
+  }
+
+  // Best-effort (#79) — same reasoning as IngameBloc._startDeadChat: the
+  // live subscription (already listening since the constructor) still
+  // works even if history fails to load, chat just starts empty.
+  Future<void> _loadChatHistory() async {
+    try {
+      final history = await _repository.fetchChatHistory(_gameId);
+      final messages = [
+        for (final row in history) await _decryptChatMessage(row),
+      ];
+      if (!isClosed) emit(state.copyWith(chat: messages));
+    } catch (_) {}
   }
 
   FinishKillChainEntry _killChainEntry(
@@ -115,6 +142,71 @@ class FinishBloc extends Cubit<FinishState> {
 
   void _onEvent(GameEvent event) {
     if (event is ReplayStarted) unawaited(_onReplayStarted(event));
+  }
+
+  void _onChatEvent(GameEvent event) {
+    if (event is! ChatMessageEvent) return;
+    unawaited(_appendChatMessage(event));
+  }
+
+  Future<void> _appendChatMessage(ChatMessageEvent event) async {
+    if (state.chat.any((m) => m.id == event.messageId)) return;
+    final message = await _decryptChatMessage(event);
+    if (isClosed) return;
+    // Re-check after the await — the optimistic echo in sendChatMessage
+    // (or another concurrent append) may have landed while this decrypted.
+    if (state.chat.any((m) => m.id == message.id)) return;
+    emit(state.copyWith(chat: [...state.chat, message]));
+  }
+
+  Future<FinishChatMessage> _decryptChatMessage(ChatMessageEvent event) async {
+    String text;
+    try {
+      text = await _crypto.decryptString(event.ciphertext);
+    } catch (_) {
+      text = '';
+    }
+    return FinishChatMessage(
+      id: event.messageId,
+      senderId: event.senderId,
+      senderName: _resolvedNames[event.senderId] ?? event.senderId,
+      text: text,
+      createdAt: event.createdAt,
+    );
+  }
+
+  // Optimistic append: the message is on screen before its own broadcast
+  // echoes back over game:{game_id}:dead. _appendChatMessage's id dedupe
+  // discards that echo when it arrives.
+  Future<void> sendChatMessage(String text) async {
+    final trimmed = text.trim();
+    if (trimmed.isEmpty) return;
+    final myPlayerId = _myPlayerId;
+    if (myPlayerId == null) return; // _init hasn't resolved yet
+    try {
+      final ciphertext = await _crypto.encryptString(trimmed);
+      final id = await _repository.sendChat(
+        gameId: _gameId,
+        ciphertext: ciphertext,
+      );
+      if (isClosed || state.chat.any((m) => m.id == id)) return;
+      emit(
+        state.copyWith(
+          chat: [
+            ...state.chat,
+            FinishChatMessage(
+              id: id,
+              senderId: myPlayerId,
+              senderName: _resolvedNames[myPlayerId] ?? myPlayerId,
+              text: trimmed,
+              createdAt: DateTime.now(),
+            ),
+          ],
+        ),
+      );
+    } catch (_) {
+      // Nothing to reconcile — the composer just keeps the user's draft.
+    }
   }
 
   // Host-initiated: a fresh key, encrypted under the old one so the server
@@ -209,6 +301,7 @@ class FinishBloc extends Cubit<FinishState> {
   @override
   Future<void> close() {
     _subscription.cancel();
+    _chatSubscription.cancel();
     return super.close();
   }
 }

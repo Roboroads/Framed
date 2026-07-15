@@ -35,6 +35,7 @@ class _FinishPageState extends State<FinishPage> {
     _bloc = FinishBloc(
       initialEvent: widget.event,
       gameEvents: getIt<GameChannels>().game(session.gameId),
+      deadChatEvents: getIt<GameChannels>().deadChat(session.gameId),
       crypto: session.crypto,
       repository: getIt<GameRepository>(),
       session: session,
@@ -154,6 +155,16 @@ class _FinishView extends StatelessWidget {
                           }),
                         ),
                       const SizedBox(height: 24),
+                      Text(
+                        t.finish.chatTitle,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        height: 240,
+                        child: _FinishChatPanel(chat: state.chat),
+                      ),
+                      const SizedBox(height: 24),
                     ],
                   ),
                 ),
@@ -266,6 +277,122 @@ class _StatLine extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Text('$label: ${names.join(', ')}'),
+    );
+  }
+}
+
+/// Post-game meetup chat (#79) — the same channel and history the death
+/// screen's dead chat already used, just open to everyone here since the
+/// game's over for good. Fixed-height panel with its own scroll, embedded
+/// as one item in the finish screen's outer stats/kill-chain list.
+class _FinishChatPanel extends StatefulWidget {
+  const _FinishChatPanel({required this.chat});
+
+  final List<FinishChatMessage> chat;
+
+  @override
+  State<_FinishChatPanel> createState() => _FinishChatPanelState();
+}
+
+class _FinishChatPanelState extends State<_FinishChatPanel> {
+  final _composer = TextEditingController();
+
+  @override
+  void dispose() {
+    _composer.dispose();
+    super.dispose();
+  }
+
+  void _send(BuildContext context) {
+    final text = _composer.text;
+    if (text.trim().isEmpty) return;
+    context.read<FinishBloc>().sendChatMessage(text);
+    _composer.clear();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final myPlayerId = getIt<GameSession>().playerId;
+    return Column(
+      children: [
+        Expanded(
+          child: widget.chat.isEmpty
+              ? Center(
+                  child: Text(
+                    t.finish.chatEmpty,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                )
+              : ListView.builder(
+                  reverse: true,
+                  itemCount: widget.chat.length,
+                  itemBuilder: (context, i) {
+                    final message = widget.chat[widget.chat.length - 1 - i];
+                    return _FinishChatBubble(
+                      message: message,
+                      isMine: message.senderId == myPlayerId,
+                    );
+                  },
+                ),
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _composer,
+                decoration: InputDecoration(hintText: t.finish.chatHint),
+                textInputAction: TextInputAction.send,
+                onSubmitted: (_) => _send(context),
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.send),
+              onPressed: () => _send(context),
+              tooltip: t.finish.chatSendButton,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _FinishChatBubble extends StatelessWidget {
+  const _FinishChatBubble({required this.message, required this.isMine});
+
+  final FinishChatMessage message;
+  final bool isMine;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Align(
+      alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.75,
+        ),
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: isMine
+              ? scheme.primaryContainer
+              : scheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (!isMine)
+              Text(
+                message.senderName,
+                style: Theme.of(context).textTheme.labelSmall,
+              ),
+            Text(message.text),
+          ],
+        ),
+      ),
     );
   }
 }

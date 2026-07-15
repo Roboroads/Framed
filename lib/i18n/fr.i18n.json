@@ -197,7 +197,11 @@
     "leaveButton": "Quitter la partie",
     "leaveConfirmTitle": "Quitter la partie ?",
     "leaveConfirmBody": "Vous ne pourrez pas rejoindre cette partie à nouveau.",
-    "leaveConfirmButton": "Quitter"
+    "leaveConfirmButton": "Quitter",
+    "chatTitle": "Discussion",
+    "chatEmpty": "Personne n'a encore rien dit.",
+    "chatHint": "Message à tout le monde",
+    "chatSendButton": "Envoyer"
   },
   "scan": {
     "title": "Scannez pour rejoindre",

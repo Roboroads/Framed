@@ -31,10 +31,28 @@ language sql stable security definer set search_path = '' as $$
     false)
 $$;
 
+-- Dead chat access (#79): dead any time, or any member at all once the
+-- game has finished — so the whole group can coordinate a meetup, not
+-- just whoever happened to die. Alive-and-still-playing members stay
+-- excluded: this is for after (or once you're out), not a side-channel
+-- during an active hunt.
+create or replace function framed_can_chat(gid uuid) returns boolean
+language sql stable security definer set search_path = '' as $$
+  select public.framed_i_am_dead(gid)
+    or (
+      public.framed_my_player(gid) is not null
+      and exists (select 1 from public.games where id = gid and status = 'finished')
+    )
+$$;
+
 -- Supabase default ACLs grant execute on new public functions to anon and
 -- authenticated directly — revoke those, not just public
-revoke execute on function framed_uuid(text), framed_my_player(uuid), framed_i_am_dead(uuid) from public, anon;
-grant execute on function framed_uuid(text), framed_my_player(uuid), framed_i_am_dead(uuid) to authenticated;
+revoke execute on function
+  framed_uuid(text), framed_my_player(uuid), framed_i_am_dead(uuid), framed_can_chat(uuid)
+  from public, anon;
+grant execute on function
+  framed_uuid(text), framed_my_player(uuid), framed_i_am_dead(uuid), framed_can_chat(uuid)
+  to authenticated;
 
 -- Baseline: the app roles get nothing, then exactly what the design allows.
 -- service_role keeps full access (it bypasses RLS by role attribute anyway).
@@ -73,16 +91,17 @@ create policy players_own_update on players
 -- Judges learn about frames from events; votes go through cast_vote.
 -- (Nothing granted above, RLS enabled in 10-schema.sql — default deny.)
 
--- chat_messages: dead players of the game only, sender must be yourself
+-- chat_messages: dead players, or anyone once the game's finished (#79);
+-- sender must be yourself either way
 grant select, insert on chat_messages to authenticated;
 drop policy if exists chat_dead_select on chat_messages;
 create policy chat_dead_select on chat_messages
   for select to authenticated
-  using (framed_i_am_dead(game_id));
+  using (framed_can_chat(game_id));
 drop policy if exists chat_dead_insert on chat_messages;
 create policy chat_dead_insert on chat_messages
   for insert to authenticated
-  with check (framed_i_am_dead(game_id) and sender_id = framed_my_player(game_id));
+  with check (framed_can_chat(game_id) and sender_id = framed_my_player(game_id));
 
 -- Storage: two private buckets. Every blob is AES-GCM ciphertext; these
 -- policies are defense in depth, need-to-know routing happens at the event

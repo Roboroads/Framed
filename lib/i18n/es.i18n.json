@@ -197,7 +197,11 @@
     "leaveButton": "Salir de la partida",
     "leaveConfirmTitle": "¿Salir de la partida?",
     "leaveConfirmBody": "No podrás volver a unirte a esta partida.",
-    "leaveConfirmButton": "Salir"
+    "leaveConfirmButton": "Salir",
+    "chatTitle": "Chat",
+    "chatEmpty": "Todavía nadie ha dicho nada.",
+    "chatHint": "Mensaje para todos",
+    "chatSendButton": "Enviar"
   },
   "scan": {
     "title": "Escanea para unirte",

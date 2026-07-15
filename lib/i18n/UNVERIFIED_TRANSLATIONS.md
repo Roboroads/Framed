@@ -48,6 +48,10 @@ still waiting on a human read-through, one per line, grouped by locale.
 - [ ] ingame.deadTitleLeft
 - [ ] ingame.deadCauseLeft
 - [ ] finish.killChainLeft
+- [ ] finish.chatTitle
+- [ ] finish.chatEmpty
+- [ ] finish.chatHint
+- [ ] finish.chatSendButton
 
 ## fr
 
@@ -73,6 +77,10 @@ still waiting on a human read-through, one per line, grouped by locale.
 - [ ] ingame.deadTitleLeft
 - [ ] ingame.deadCauseLeft
 - [ ] finish.killChainLeft
+- [ ] finish.chatTitle
+- [ ] finish.chatEmpty
+- [ ] finish.chatHint
+- [ ] finish.chatSendButton
 
 ## nl
 
@@ -98,6 +106,10 @@ still waiting on a human read-through, one per line, grouped by locale.
 - [ ] ingame.deadTitleLeft
 - [ ] ingame.deadCauseLeft
 - [ ] finish.killChainLeft
+- [ ] finish.chatTitle
+- [ ] finish.chatEmpty
+- [ ] finish.chatHint
+- [ ] finish.chatSendButton
 
 Everything not listed above predates this file and shipped without this
 tracking — not a claim that it's been verified, just that its status

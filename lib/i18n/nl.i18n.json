@@ -197,7 +197,11 @@
     "leaveButton": "Spel verlaten",
     "leaveConfirmTitle": "Spel verlaten?",
     "leaveConfirmBody": "Je kunt niet opnieuw meedoen aan dit spel.",
-    "leaveConfirmButton": "Verlaten"
+    "leaveConfirmButton": "Verlaten",
+    "chatTitle": "Chat",
+    "chatEmpty": "Nog niemand heeft iets gezegd.",
+    "chatHint": "Bericht aan iedereen",
+    "chatSendButton": "Versturen"
   },
   "scan": {
     "title": "Scan om mee te doen",
