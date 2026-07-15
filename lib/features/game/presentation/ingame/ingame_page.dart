@@ -85,9 +85,16 @@ class _IngamePageState extends State<IngamePage> {
       playerEvents: playerEvents,
     )..start();
     // The finish screen is reachable from any ingame phase — dispersing,
-    // playing, mid-warning, mid-judging, even already dead (#26).
+    // playing, mid-warning, mid-judging, even already dead (#26). The
+    // isActive check guards a real race (#78): leaving while alive can
+    // itself end the game (tick_min_players_check), and this device is
+    // still subscribed to game:{game_id} until dispose() below runs — a
+    // game_finished broadcast that lands in that window, after leave()
+    // has already cleared the session but before this page unmounts,
+    // would otherwise try to build FinishPage against a null session and
+    // crash on the null-check getters in GameSession.
     _gameFinishedSub = gameEvents.listen((event) {
-      if (event is GameFinished && mounted) {
+      if (event is GameFinished && mounted && getIt<GameSession>().isActive) {
         context.go('/finish', extra: event);
       }
     });
