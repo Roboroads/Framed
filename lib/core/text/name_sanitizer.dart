@@ -1,8 +1,12 @@
+import 'package:characters/characters.dart';
 import 'package:unorm_dart/unorm_dart.dart' as unorm;
 
 /// Cap on a player's stored/displayed name (#79) -- the 2048-char ceiling
 /// on `name_ciphertext` server-side (13-lobby.sql) is a ciphertext-size
-/// sanity check, not a "this is a reasonable name" cap.
+/// sanity check, not a "this is a reasonable name" cap. Counts
+/// user-perceived characters (grapheme clusters, #103), not UTF-16 code
+/// units -- a `String.substring` cut can land inside a surrogate pair
+/// (most emoji) or split a base character from its combining mark.
 const maxDisplayNameLength = 40;
 
 /// Unicode code points with no legitimate use in a display name, only
@@ -39,8 +43,8 @@ String sanitizeDisplayName(String raw) {
   var name = raw.trim().replaceAll(_spoofingChars, '');
   name = unorm.nfkc(name);
   name = name.trim();
-  if (name.length > maxDisplayNameLength) {
-    name = name.substring(0, maxDisplayNameLength).trim();
+  if (name.characters.length > maxDisplayNameLength) {
+    name = name.characters.take(maxDisplayNameLength).toString().trim();
   }
   return name;
 }

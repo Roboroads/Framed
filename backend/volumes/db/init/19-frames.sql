@@ -107,11 +107,10 @@ begin
                   where target_id = me.id and status = 'pending');
 
   insert into public.frames
-    (game_id, assassin_id, target_id, photo_path, status, pending_since, resolves_at, judge_count)
+    (game_id, assassin_id, target_id, photo_path, status, resolves_at, judge_count)
   values (
     me.game_id, me.id, me.target_id, submit_frame.photo_path,
     case when held then 'held' else 'pending' end::public.frame_status,
-    case when held then null else now() end,
     case when held then null else now() + (g.vote_timeout_minutes || ' minutes')::interval end,
     -- left_at-filtered (#77): the assassin and target are always still in
     -- the eligible pool themselves (leaving is dead-only, and a frame's

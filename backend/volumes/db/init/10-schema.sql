@@ -108,8 +108,7 @@ create table if not exists frames (
   photo_path text not null,
   status frame_status not null,
   created_at timestamptz not null default now(),
-  pending_since timestamptz,
-  resolves_at timestamptz -- pending_since + vote_timeout_minutes
+  resolves_at timestamptz -- set when entering 'pending': now() + vote_timeout_minutes
 );
 
 -- One open frame per assassin, enforced by the database

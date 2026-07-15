@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/chat/chat_limits.dart';
+import '../../../../core/chat/chat_message.dart';
 import '../../../../core/crypto/game_crypto.dart';
 import '../../../../core/realtime/game_event.dart';
 import '../../../../core/session/game_session.dart';
@@ -81,7 +82,6 @@ class FinishBloc extends Cubit<FinishState> {
             kills: p['kills'] as int,
             distanceMovedM: (p['distance_moved_m'] as num).toDouble(),
             stillSeconds: p['still_seconds'] as int,
-            survivedSeconds: p['survived_seconds'] as int,
           ),
       ];
 
@@ -137,7 +137,6 @@ class FinishBloc extends Cubit<FinishState> {
       victimName: names[k['victim_id']] ?? k['victim_id'] as String,
       killerName: killerId == null ? null : names[killerId] ?? killerId,
       cause: k['cause'] as String,
-      diedAt: DateTime.parse(k['died_at'] as String),
     );
   }
 
@@ -160,14 +159,14 @@ class FinishBloc extends Cubit<FinishState> {
     emit(state.copyWith(chat: [...state.chat, message]));
   }
 
-  Future<FinishChatMessage> _decryptChatMessage(ChatMessageEvent event) async {
+  Future<ChatMessage> _decryptChatMessage(ChatMessageEvent event) async {
     String text;
     try {
       text = await _crypto.decryptString(event.ciphertext);
     } catch (_) {
       text = '';
     }
-    return FinishChatMessage(
+    return ChatMessage(
       id: event.messageId,
       senderId: event.senderId,
       senderName: _resolvedNames[event.senderId] ?? event.senderId,
@@ -198,7 +197,7 @@ class FinishBloc extends Cubit<FinishState> {
         state.copyWith(
           chat: [
             ...state.chat,
-            FinishChatMessage(
+            ChatMessage(
               id: id,
               senderId: myPlayerId,
               senderName: _resolvedNames[myPlayerId] ?? myPlayerId,

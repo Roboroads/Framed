@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../../core/chat/chat_message.dart';
 import '../../../../core/realtime/game_event.dart';
 import '../../domain/judging_frame.dart';
 import '../../domain/target.dart';
@@ -97,19 +98,6 @@ sealed class IngameJudgingEntry with _$IngameJudgingEntry {
   }) = _IngameJudgingEntry;
 }
 
-/// One decrypted dead-chat message (#24), history or live, ready to render
-/// — [senderName] is already resolved from the roster.
-@freezed
-sealed class IngameChatMessage with _$IngameChatMessage {
-  const factory IngameChatMessage({
-    required String id,
-    required String senderId,
-    required String senderName,
-    required String text,
-    required DateTime createdAt,
-  }) = _IngameChatMessage;
-}
-
 @freezed
 sealed class IngameState with _$IngameState {
   const factory IngameState({
@@ -135,7 +123,7 @@ sealed class IngameState with _$IngameState {
     @Default([]) List<IngameJudgingEntry> judgingQueue,
     // Oldest first (#24), history + live merged. Only populated once this
     // player is dead — see IngameBloc._startDeadChat.
-    @Default([]) List<IngameChatMessage> deadChat,
+    @Default([]) List<ChatMessage> deadChat,
     // Screen-stays-on toggle (#78). Defaults on: a locked/dimmed screen is
     // how a compass pulse or warning gets missed while playing outside.
     @Default(true) bool keepAwake,

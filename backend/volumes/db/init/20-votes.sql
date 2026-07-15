@@ -41,7 +41,7 @@ begin
 
   select * into g from public.games where id = held.game_id;
   update public.frames set
-    status = 'pending', pending_since = now(),
+    status = 'pending',
     resolves_at = now() + (g.vote_timeout_minutes || ' minutes')::interval
   where id = held.id;
   perform public.notify_judges(held.id);

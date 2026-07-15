@@ -13,10 +13,9 @@ abstract interface class SecureKeyValueStore {
 }
 
 class FlutterSecureKeyValueStore implements SecureKeyValueStore {
-  const FlutterSecureKeyValueStore([FlutterSecureStorage? storage])
-    : _storage = storage ?? const FlutterSecureStorage();
+  const FlutterSecureKeyValueStore();
 
-  final FlutterSecureStorage _storage;
+  final _storage = const FlutterSecureStorage();
 
   @override
   Future<String?> read(String key) => _storage.read(key: key);

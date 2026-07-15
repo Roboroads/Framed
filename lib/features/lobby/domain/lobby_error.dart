@@ -6,13 +6,7 @@ import 'package:postgrest/postgrest.dart';
 /// [PostgrestException.message].
 enum LobbyError {
   badSettings('bad_settings'),
-  notHost('not_host'),
-  wrongStatus('wrong_status'),
-  invalidToken('invalid_token'),
   nameTaken('name_taken'),
-  alreadyJoined('already_joined'),
-  notMember('not_member'),
-  notFound('not_found'),
   tooFewPlayers('too_few_players'),
   unknown('');
 

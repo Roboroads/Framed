@@ -213,19 +213,27 @@ class LobbyBloc extends Cubit<LobbyState> {
   }
 
   // Game settings screen (#62) — same one-field-per-call shape as
-  // changeMode, one per editable field. The center still isn't a
-  // free-placement picker (#43 — no drag-to-move on the map); the one way
-  // to move it is changeGeofenceCenter below, an explicit re-center on the
-  // host's current GPS fix (#71).
+  // changeMode, one call per editable field, key at the call site (#93:
+  // was seven near-identical methods, one per field name; the keys are
+  // already stringly-typed inside the settings map either way, so the
+  // only thing actually lost by collapsing them is autocomplete). The
+  // geofence center still isn't a free-placement picker (#43 — no
+  // drag-to-move on the map); the one way to move it is
+  // changeGeofenceCenter below, an explicit re-center on the host's
+  // current GPS fix (#71).
   //
-  // Every one of these must await internally, same reason as changeMode:
-  // the callers (Slider.onChanged, IconButton.onPressed) all discard the
-  // returned future, and supabase_flutter's rpc() builder is lazy — it
-  // never actually sends unless something awaits it. A first cut of these
-  // as tail-call expression bodies (`=> _repository.updateSettings(...)`)
+  // Must await internally, same reason as changeMode: the callers
+  // (Slider.onChanged, IconButton.onPressed) all discard the returned
+  // future, and supabase_flutter's rpc() builder is lazy — it never
+  // actually sends unless something awaits it. A first cut of these as
+  // tail-call expression bodies (`=> _repository.updateSettings(...)`)
   // reached this method, returned a future nobody awaited, and silently
   // never sent the request — caught live: the mode change (which already
   // awaited) landed in the database, the radius/timing changes didn't.
+  Future<void> changeSetting(String key, Object value) async {
+    await _repository.updateSettings(gameId: gameId, settings: {key: value});
+  }
+
   Future<void> changeGeofenceRadius(int radiusM) async {
     await _repository.updateSettings(
       gameId: gameId,
@@ -240,55 +248,6 @@ class LobbyBloc extends Cubit<LobbyState> {
         'geofence_lat': center.latitude,
         'geofence_lng': center.longitude,
       },
-    );
-  }
-
-  Future<void> changeDisperseMinutes(int v) async {
-    await _repository.updateSettings(
-      gameId: gameId,
-      settings: {'disperse_minutes': v},
-    );
-  }
-
-  Future<void> changeSoftPunishmentMinutes(int v) async {
-    await _repository.updateSettings(
-      gameId: gameId,
-      settings: {'soft_punishment_minutes': v},
-    );
-  }
-
-  Future<void> changeHardPunishmentMinutes(int v) async {
-    await _repository.updateSettings(
-      gameId: gameId,
-      settings: {'hard_punishment_minutes': v},
-    );
-  }
-
-  Future<void> changeCompassUpdateIntervalMinutes(int v) async {
-    await _repository.updateSettings(
-      gameId: gameId,
-      settings: {'compass_update_interval_minutes': v},
-    );
-  }
-
-  Future<void> changeCompassViewSeconds(int v) async {
-    await _repository.updateSettings(
-      gameId: gameId,
-      settings: {'compass_view_seconds': v},
-    );
-  }
-
-  Future<void> changeVoteTimeoutMinutes(int v) async {
-    await _repository.updateSettings(
-      gameId: gameId,
-      settings: {'vote_timeout_minutes': v},
-    );
-  }
-
-  Future<void> changeFrameCooldownMinutes(int v) async {
-    await _repository.updateSettings(
-      gameId: gameId,
-      settings: {'frame_cooldown_minutes': v},
     );
   }
 

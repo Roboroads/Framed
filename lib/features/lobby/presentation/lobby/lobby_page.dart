@@ -11,6 +11,7 @@ import '../../../../core/crypto/qr_payload.dart';
 import '../../../../core/di/injector.dart';
 import '../../../../core/realtime/game_channels.dart';
 import '../../../../core/session/game_session.dart';
+import '../../../../core/widgets/closable_dialog.dart';
 import '../../../../core/widgets/confirmation_dialog.dart';
 import '../../../../core/widgets/geofence_map.dart';
 import '../../../../core/widgets/geofence_map_viewer_page.dart';
@@ -104,23 +105,20 @@ class _LobbyView extends StatelessWidget {
   // Shared by the back gesture and the AppBar button (#77) — leaving used
   // to be silent and accidental (a bare back-gesture PopScope with no
   // confirmation, no visible button).
-  Future<void> _confirmAndLeave(BuildContext context) async {
-    final confirmed = await showConfirmationDialog(
-      context: context,
-      title: t.lobby.leaveConfirmTitle,
-      message: t.lobby.leaveConfirmBody,
-      confirmLabel: t.lobby.leaveConfirmButton,
-      destructive: true,
-    );
-    if (!confirmed || !context.mounted) return;
-    try {
-      await context.read<LobbyBloc>().leave();
-    } catch (_) {
-      // Best-effort: the player still wants out even if the network call
-      // failed. The game/lobby cleans up stale players anyway.
-    }
-    if (context.mounted) context.go('/');
-  }
+  Future<void> _confirmAndLeave(BuildContext context) => confirmAndLeave(
+    context: context,
+    title: t.lobby.leaveConfirmTitle,
+    message: t.lobby.leaveConfirmBody,
+    confirmLabel: t.lobby.leaveConfirmButton,
+    onConfirmed: (context) async {
+      try {
+        await context.read<LobbyBloc>().leave();
+      } catch (_) {
+        // Best-effort: the player still wants out even if the network
+        // call failed. The game/lobby cleans up stale players anyway.
+      }
+    },
+  );
 }
 
 class _LobbyBody extends StatefulWidget {
@@ -231,26 +229,8 @@ class _LobbyBodyState extends State<_LobbyBody> {
   void _showQrDialog(BuildContext context, String joinToken) {
     showDialog<void>(
       context: context,
-      builder: (context) => Dialog(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ],
-              ),
-              _JoinQr(joinToken: joinToken),
-            ],
-          ),
-        ),
-      ),
+      builder: (context) =>
+          ClosableDialog(child: _JoinQr(joinToken: joinToken)),
     );
   }
 }

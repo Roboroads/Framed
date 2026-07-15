@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../../../core/widgets/closable_dialog.dart';
 import '../../../../core/widgets/geofence_map.dart';
 import '../../../../core/widgets/geofence_map_viewer_page.dart';
 import '../../../../i18n/strings.g.dart';
@@ -105,49 +106,53 @@ class LobbySettingsPage extends StatelessWidget {
                 info: t.hostSetup.disperseMinutesInfo,
                 value: state.disperseMinutes,
                 unit: t.hostSetup.unitMinutesShort,
-                onChanged: bloc.changeDisperseMinutes,
+                onChanged: (v) => bloc.changeSetting('disperse_minutes', v),
               ),
               _Stepper(
                 label: t.hostSetup.softPunishmentMinutes,
                 info: t.hostSetup.softPunishmentMinutesInfo,
                 value: state.softPunishmentMinutes,
                 unit: t.hostSetup.unitMinutesShort,
-                onChanged: bloc.changeSoftPunishmentMinutes,
+                onChanged: (v) =>
+                    bloc.changeSetting('soft_punishment_minutes', v),
               ),
               _Stepper(
                 label: t.hostSetup.hardPunishmentMinutes,
                 info: t.hostSetup.hardPunishmentMinutesInfo,
                 value: state.hardPunishmentMinutes,
                 unit: t.hostSetup.unitMinutesShort,
-                onChanged: bloc.changeHardPunishmentMinutes,
+                onChanged: (v) =>
+                    bloc.changeSetting('hard_punishment_minutes', v),
               ),
               _Stepper(
                 label: t.hostSetup.compassUpdateIntervalMinutes,
                 info: t.hostSetup.compassUpdateIntervalMinutesInfo,
                 value: state.compassUpdateIntervalMinutes,
                 unit: t.hostSetup.unitMinutesShort,
-                onChanged: bloc.changeCompassUpdateIntervalMinutes,
+                onChanged: (v) =>
+                    bloc.changeSetting('compass_update_interval_minutes', v),
               ),
               _Stepper(
                 label: t.hostSetup.compassViewSeconds,
                 info: t.hostSetup.compassViewSecondsInfo,
                 value: state.compassViewSeconds,
                 unit: t.hostSetup.unitSecondsShort,
-                onChanged: bloc.changeCompassViewSeconds,
+                onChanged: (v) => bloc.changeSetting('compass_view_seconds', v),
               ),
               _Stepper(
                 label: t.hostSetup.voteTimeoutMinutes,
                 info: t.hostSetup.voteTimeoutMinutesInfo,
                 value: state.voteTimeoutMinutes,
                 unit: t.hostSetup.unitMinutesShort,
-                onChanged: bloc.changeVoteTimeoutMinutes,
+                onChanged: (v) => bloc.changeSetting('vote_timeout_minutes', v),
               ),
               _Stepper(
                 label: t.hostSetup.frameCooldownMinutes,
                 info: t.hostSetup.frameCooldownMinutesInfo,
                 value: state.frameCooldownMinutes,
                 unit: t.hostSetup.unitMinutesShort,
-                onChanged: bloc.changeFrameCooldownMinutes,
+                onChanged: (v) =>
+                    bloc.changeSetting('frame_cooldown_minutes', v),
               ),
             ],
           );
@@ -265,26 +270,7 @@ class _InfoIcon extends StatelessWidget {
       customBorder: const CircleBorder(),
       onTap: () => showDialog<void>(
         context: context,
-        builder: (context) => Dialog(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.of(context).pop(),
-                    ),
-                  ],
-                ),
-                Text(message),
-              ],
-            ),
-          ),
-        ),
+        builder: (context) => ClosableDialog(child: Text(message)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(4),

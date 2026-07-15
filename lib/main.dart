@@ -55,8 +55,11 @@ Future<void> _bootstrap() async {
     try {
       FirebaseMessaging.onBackgroundMessage(pushBackgroundHandler);
     } catch (_) {}
+    // Foreground push messages are deliberately left unhandled: realtime
+    // already delivers the same event to whatever screen is open, so a
+    // system notification on top would just duplicate it (#28's
+    // acceptance criteria).
     final pushService = getIt<PushService>();
-    pushService.ignoreForegroundMessages();
     pushService.listenForRefresh((token) {
       final session = getIt<GameSession>();
       if (session.isActive) {

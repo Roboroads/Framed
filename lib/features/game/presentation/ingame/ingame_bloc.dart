@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/chat/chat_limits.dart';
+import '../../../../core/chat/chat_message.dart';
 import '../../../../core/crypto/game_crypto.dart';
 import '../../../../core/location/wake_lock_service.dart';
 import '../../../../core/push/local_alarms.dart';
@@ -345,14 +346,14 @@ class IngameBloc extends Cubit<IngameState> {
     emit(state.copyWith(deadChat: [...state.deadChat, message]));
   }
 
-  Future<IngameChatMessage> _decryptChatMessage(ChatMessageEvent event) async {
+  Future<ChatMessage> _decryptChatMessage(ChatMessageEvent event) async {
     String text;
     try {
       text = await _crypto.decryptString(event.ciphertext);
     } catch (_) {
       text = '';
     }
-    return IngameChatMessage(
+    return ChatMessage(
       id: event.messageId,
       senderId: event.senderId,
       senderName: _resolvedNames[event.senderId] ?? event.senderId,
@@ -381,7 +382,7 @@ class IngameBloc extends Cubit<IngameState> {
         state.copyWith(
           deadChat: [
             ...state.deadChat,
-            IngameChatMessage(
+            ChatMessage(
               id: id,
               senderId: _myPlayerId,
               senderName: _resolvedNames[_myPlayerId] ?? _myPlayerId,

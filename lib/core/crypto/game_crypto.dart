@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:cryptography/cryptography.dart';
 
 import '../text/name_sanitizer.dart';
+import '../util/hex.dart';
 
 /// The one class every encrypted byte in the game flows through.
 ///
@@ -76,6 +77,6 @@ class GameCrypto {
   Future<String> nameHmac(String name) async {
     final normalized = utf8.encode(sanitizeDisplayName(name).toLowerCase());
     final mac = await _hmac.calculateMac(normalized, secretKey: _secretKey);
-    return mac.bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+    return hex(mac.bytes);
   }
 }

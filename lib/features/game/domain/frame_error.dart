@@ -8,8 +8,6 @@ enum FrameError {
   wrongStatus('wrong_status'),
   onCooldown('on_cooldown'),
   frameAlreadyPending('frame_already_pending'),
-  notFound('not_found'),
-  notMember('not_member'),
   unknown('');
 
   const FrameError(this.code);

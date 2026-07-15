@@ -9,11 +9,13 @@ import 'package:go_router/go_router.dart';
 
 import 'package:latlong2/latlong.dart';
 
+import 'package:flutter_compass/flutter_compass.dart';
+
 import '../../../../core/camera/in_app_camera_page.dart';
-import '../../../../core/chat/chat_limits.dart';
+import '../../../../core/chat/chat_message.dart';
+import '../../../../core/chat/chat_panel.dart';
 import '../../../../core/di/injector.dart';
 import '../../../../core/location/compass_math.dart';
-import '../../../../core/location/heading.dart';
 import '../../../../core/location/location_service.dart';
 import '../../../../core/location/wake_lock_service.dart';
 import '../../../../core/push/local_alarms.dart';
@@ -21,6 +23,7 @@ import '../../../../core/realtime/game_channels.dart';
 import '../../../../core/realtime/game_event.dart';
 import '../../../../core/session/game_session.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/util/duration_format.dart';
 import '../../../../core/widgets/confirmation_dialog.dart';
 import '../../../../core/widgets/full_screen_photo_page.dart';
 import '../../../../core/widgets/geofence_map.dart';
@@ -163,7 +166,12 @@ class _IngameView extends StatelessWidget {
               canPop: state.warning == null && state.phase is IngameDead,
               onPopInvokedWithResult: (didPop, result) async {
                 if (didPop || state.warning != null) return;
-                await _confirmAndLeaveIngame(context);
+                await _confirmAndLeaveIngame(
+                  context,
+                  title: t.ingame.leaveConfirmTitle,
+                  message: t.ingame.leaveConfirmBody,
+                  confirmLabel: t.ingame.leaveConfirmButton,
+                );
               },
               child: Stack(
                 children: [
@@ -250,7 +258,7 @@ class _IngameView extends StatelessWidget {
 /// How you died, how long you survived, the photo that framed you, who your
 /// assassin was (#23), and the dead chat everyone out of the game shares
 /// (#24, IDEA.md "Screens" — death screen).
-class _DeadScreen extends StatefulWidget {
+class _DeadScreen extends StatelessWidget {
   const _DeadScreen({
     required this.cause,
     required this.killerName,
@@ -264,54 +272,8 @@ class _DeadScreen extends StatefulWidget {
   final String? killerName;
   final int survivedSeconds;
   final Uint8List? photoBytes;
-  final List<IngameChatMessage> chat;
+  final List<ChatMessage> chat;
   final List<String> otherDeadPlayerNames;
-
-  @override
-  State<_DeadScreen> createState() => _DeadScreenState();
-}
-
-class _DeadScreenState extends State<_DeadScreen> {
-  final _composer = TextEditingController();
-
-  @override
-  void dispose() {
-    _composer.dispose();
-    super.dispose();
-  }
-
-  void _send() {
-    final text = _composer.text;
-    if (text.trim().isEmpty) return;
-    context.read<IngameBloc>().sendChatMessage(text);
-    _composer.clear();
-  }
-
-  // No leave option existed on this screen before #77 — only force-closing
-  // the app. Dead-only: IDEA.md "Game rules"' no-mid-game-quit still binds
-  // the living, this screen only ever renders once already dead.
-  Future<void> _confirmAndLeave(BuildContext context) async {
-    final confirmed = await showConfirmationDialog(
-      context: context,
-      title: t.ingame.deadLeaveConfirmTitle,
-      message: t.ingame.deadLeaveConfirmBody,
-      confirmLabel: t.ingame.deadLeaveConfirmButton,
-      destructive: true,
-    );
-    if (!confirmed || !context.mounted) return;
-    final succeeded = await context.read<IngameBloc>().leave();
-    if (!context.mounted) return;
-    // #88: the dialog above promises an immediate consequence (frame
-    // judging stops, possibly ending the game) — surface it when the
-    // server never actually confirmed that, rather than navigating home
-    // as if it had.
-    if (!succeeded) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(t.ingame.leaveNetworkWarning)));
-    }
-    context.go('/');
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -323,26 +285,20 @@ class _DeadScreenState extends State<_DeadScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (widget.photoBytes != null)
+              if (photoBytes != null)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: GestureDetector(
-                    onTap: () =>
-                        FullScreenPhotoPage.open(context, widget.photoBytes!),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: AspectRatio(
-                        aspectRatio: 3 / 4,
-                        child: Image.memory(
-                          widget.photoBytes!,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+                  child: AspectRatio(
+                    aspectRatio: 3 / 4,
+                    child: _TappablePhoto(
+                      bytes: photoBytes!,
+                      radius: 16,
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
               Text(
-                switch (widget.cause) {
+                switch (cause) {
                   'mia' => t.ingame.deadTitleMia,
                   // Only reachable via a crash-resume racing the leave RPC
                   // itself (#78) — a normal leave ends the session and
@@ -354,28 +310,24 @@ class _DeadScreenState extends State<_DeadScreen> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
-              if (widget.cause == 'mia')
+              if (cause == 'mia')
                 Text(t.ingame.deadCauseMia, textAlign: TextAlign.center)
-              else if (widget.cause == 'left')
+              else if (cause == 'left')
                 Text(t.ingame.deadCauseLeft, textAlign: TextAlign.center)
-              else if (widget.killerName != null)
+              else if (killerName != null)
                 Text(
-                  t.ingame.deadKilledBy(name: widget.killerName!),
+                  t.ingame.deadKilledBy(name: killerName!),
                   textAlign: TextAlign.center,
                 ),
               const SizedBox(height: 8),
               Text(
-                t.ingame.deadSurvivedFor(
-                  time: _formatSurvived(widget.survivedSeconds),
-                ),
+                t.ingame.deadSurvivedFor(time: formatDuration(survivedSeconds)),
                 textAlign: TextAlign.center,
               ),
-              if (widget.otherDeadPlayerNames.isNotEmpty) ...[
+              if (otherDeadPlayerNames.isNotEmpty) ...[
                 const SizedBox(height: 8),
                 Text(
-                  t.ingame.deadAlsoOut(
-                    names: widget.otherDeadPlayerNames.join(', '),
-                  ),
+                  t.ingame.deadAlsoOut(names: otherDeadPlayerNames.join(', ')),
                   style: Theme.of(context).textTheme.bodySmall,
                   textAlign: TextAlign.center,
                 ),
@@ -387,8 +339,17 @@ class _DeadScreenState extends State<_DeadScreen> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
+              // No leave option existed on this screen before #77 — only
+              // force-closing the app. Dead-only: IDEA.md "Game rules"'
+              // no-mid-game-quit still binds the living, this screen only
+              // ever renders once already dead.
               OutlinedButton.icon(
-                onPressed: () => _confirmAndLeave(context),
+                onPressed: () => _confirmAndLeaveIngame(
+                  context,
+                  title: t.ingame.deadLeaveConfirmTitle,
+                  message: t.ingame.deadLeaveConfirmBody,
+                  confirmLabel: t.ingame.deadLeaveConfirmButton,
+                ),
                 icon: const Icon(Icons.logout),
                 label: Text(t.ingame.deadLeaveButton),
               ),
@@ -397,104 +358,24 @@ class _DeadScreenState extends State<_DeadScreen> {
         ),
         const Divider(height: 1),
         Expanded(
-          child: widget.chat.isEmpty
-              ? Center(
-                  child: Text(
-                    t.ingame.deadChatEmpty,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                )
-              : ListView.builder(
-                  reverse: true,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  itemCount: widget.chat.length,
-                  itemBuilder: (context, i) {
-                    final message = widget.chat[widget.chat.length - 1 - i];
-                    return _ChatBubble(
-                      message: message,
-                      isMine: message.senderId == myPlayerId,
-                    );
-                  },
-                ),
-        ),
-        SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _composer,
-                    decoration: InputDecoration(
-                      hintText: t.ingame.deadChatHint,
-                    ),
-                    maxLength: maxChatMessageLength,
-                    textInputAction: TextInputAction.send,
-                    onSubmitted: (_) => _send(),
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.send),
-                  onPressed: _send,
-                  tooltip: t.ingame.deadChatSendButton,
-                ),
-              ],
+          child: SafeArea(
+            top: false,
+            child: ChatPanel(
+              chat: chat,
+              myPlayerId: myPlayerId,
+              onSend: (text) =>
+                  context.read<IngameBloc>().sendChatMessage(text),
+              emptyText: t.ingame.deadChatEmpty,
+              hintText: t.ingame.deadChatHint,
+              sendTooltip: t.ingame.deadChatSendButton,
+              listPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 8,
+              ),
             ),
           ),
         ),
       ],
-    );
-  }
-
-  String _formatSurvived(int seconds) {
-    final duration = Duration(seconds: seconds);
-    final hours = duration.inHours;
-    final minutes = duration.inMinutes.remainder(60);
-    if (hours > 0) return '${hours}h ${minutes}m';
-    return '${minutes}m';
-  }
-}
-
-class _ChatBubble extends StatelessWidget {
-  const _ChatBubble({required this.message, required this.isMine});
-
-  final IngameChatMessage message;
-  final bool isMine;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Align(
-      alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.75,
-        ),
-        margin: const EdgeInsets.symmetric(vertical: 4),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: isMine
-              ? scheme.primaryContainer
-              : scheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (!isMine)
-              Text(
-                message.senderName,
-                style: Theme.of(context).textTheme.labelSmall,
-              ),
-            Text(message.text),
-          ],
-        ),
-      ),
     );
   }
 }
@@ -663,31 +544,34 @@ class _SelfNameLabel extends StatelessWidget {
   }
 }
 
-/// Leave while still alive (#77) — confirmed, since it costs you the game:
-/// the server kills you (cause 'left') and relinks the circle exactly like
-/// any other death. Shared by the corner button and the back gesture
-/// (#82) — same dialog either way.
-Future<void> _confirmAndLeaveIngame(BuildContext context) async {
-  final confirmed = await showConfirmationDialog(
-    context: context,
-    title: t.ingame.leaveConfirmTitle,
-    message: t.ingame.leaveConfirmBody,
-    confirmLabel: t.ingame.leaveConfirmButton,
-    destructive: true,
-  );
-  if (!confirmed || !context.mounted) return;
-  final succeeded = await context.read<IngameBloc>().leave();
-  if (!context.mounted) return;
-  // #88: the dialog above promises an immediate consequence (a relink,
-  // possibly ending the game) — surface it when the server never actually
-  // confirmed that, rather than navigating home as if it had.
-  if (!succeeded) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(t.ingame.leaveNetworkWarning)));
-  }
-  context.go('/');
-}
+/// Leave via [IngameBloc], confirmed first (#77, #92) — the server kills
+/// you (cause 'left') and relinks the circle exactly like any other death
+/// when still alive, or just ends the session once already dead. Shared
+/// by the corner button, the back gesture (#82), and the death screen's
+/// own leave button — same shape every time, just different copy.
+Future<void> _confirmAndLeaveIngame(
+  BuildContext context, {
+  required String title,
+  required String message,
+  required String confirmLabel,
+}) => confirmAndLeave(
+  context: context,
+  title: title,
+  message: message,
+  confirmLabel: confirmLabel,
+  onConfirmed: (context) async {
+    final succeeded = await context.read<IngameBloc>().leave();
+    // #88: the dialog above promises an immediate consequence (frame
+    // judging stops / a relink, possibly ending the game) — surface it
+    // when the server never actually confirmed that, rather than
+    // navigating home as if it had.
+    if (!succeeded && context.mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(t.ingame.leaveNetworkWarning)));
+    }
+  },
+);
 
 /// Bottom-left corner: the only one of the four still free (_SelfNameLabel
 /// top-left, _MyLocationButton top-right, the wake lock toggle
@@ -706,7 +590,12 @@ class _LeaveButton extends StatelessWidget {
           child: FloatingActionButton.small(
             heroTag: 'leave',
             tooltip: t.ingame.leaveButton,
-            onPressed: () => _confirmAndLeaveIngame(context),
+            onPressed: () => _confirmAndLeaveIngame(
+              context,
+              title: t.ingame.leaveConfirmTitle,
+              message: t.ingame.leaveConfirmBody,
+              confirmLabel: t.ingame.leaveConfirmButton,
+            ),
             child: const Icon(Icons.logout),
           ),
         ),
@@ -843,34 +732,18 @@ class _JudgingOverlay extends StatelessWidget {
                         child: Row(
                           children: [
                             Expanded(
-                              child: GestureDetector(
-                                onTap: () => FullScreenPhotoPage.open(
-                                  context,
-                                  loaded.photoBytes,
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: Image.memory(
-                                    loaded.photoBytes,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
+                              child: _TappablePhoto(
+                                bytes: loaded.photoBytes,
+                                radius: 12,
+                                fit: BoxFit.cover,
                               ),
                             ),
                             const SizedBox(width: 8),
                             Expanded(
-                              child: GestureDetector(
-                                onTap: () => FullScreenPhotoPage.open(
-                                  context,
-                                  loaded.targetSelfieBytes,
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: Image.memory(
-                                    loaded.targetSelfieBytes,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
+                              child: _TappablePhoto(
+                                bytes: loaded.targetSelfieBytes,
+                                radius: 12,
+                                fit: BoxFit.cover,
                               ),
                             ),
                           ],
@@ -991,19 +864,15 @@ class _TargetCard extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
-          GestureDetector(
-            onTap: () => FullScreenPhotoPage.open(context, target.selfieBytes),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              // BoxFit.cover at a fixed height cropped portrait selfies down
-              // to a near-square sliver — contain (still capped, still
-              // centered) shows the whole photo instead.
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxHeight: 320),
-                  child: Image.memory(target.selfieBytes, fit: BoxFit.contain),
-                ),
-              ),
+          // BoxFit.cover at a fixed height cropped portrait selfies down to
+          // a near-square sliver — contain (still capped) shows the whole
+          // photo instead.
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: 320),
+            child: _TappablePhoto(
+              bytes: target.selfieBytes,
+              radius: 16,
+              fit: BoxFit.contain,
             ),
           ),
           const SizedBox(height: 16),
@@ -1157,8 +1026,17 @@ class _CompassArrow extends StatefulWidget {
 
 class _CompassArrowState extends State<_CompassArrow> {
   final _rotation = RotationTracker();
-  final _heading = Heading();
   late final Timer _ticker;
+
+  // Device heading in degrees (0-360, 0 = north, #98). Devices with no
+  // usable sensor simply never emit — the StreamBuilder below falls back
+  // to text after a timeout.
+  final Stream<double> _headingStream =
+      FlutterCompass.events
+          ?.map((e) => e.heading)
+          .where((h) => h != null)
+          .cast<double>() ??
+      const Stream.empty();
 
   @override
   void initState() {
@@ -1189,7 +1067,7 @@ class _CompassArrowState extends State<_CompassArrow> {
     final distance = roundDistanceMeters(widget.compass.distanceM);
 
     return StreamBuilder<double>(
-      stream: _heading.stream,
+      stream: _headingStream,
       builder: (context, snapshot) {
         final heading = snapshot.data;
         return Column(
@@ -1275,6 +1153,34 @@ class _TargetLocationPanel extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// A rounded, tappable photo that opens full-screen on tap (#94) — the
+/// death screen's frame photo, both judging-overlay photos, and the
+/// target card's selfie all shared this exact shape (differing only in
+/// corner radius and [BoxFit]). Sizing (aspect ratio, max height) is the
+/// caller's concern, wrapped around this widget rather than baked in.
+class _TappablePhoto extends StatelessWidget {
+  const _TappablePhoto({
+    required this.bytes,
+    required this.radius,
+    required this.fit,
+  });
+
+  final Uint8List bytes;
+  final double radius;
+  final BoxFit fit;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => FullScreenPhotoPage.open(context, bytes),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(radius),
+        child: Image.memory(bytes, fit: fit),
+      ),
     );
   }
 }

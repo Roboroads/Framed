@@ -33,19 +33,4 @@ class PushService {
       // No Firebase project configured — nothing to listen to.
     }
   }
-
-  /// Foreground messages are a deliberate no-op: realtime already
-  /// delivered this to whatever screen is open, so showing a system
-  /// notification too would duplicate it (#28's acceptance criteria).
-  void ignoreForegroundMessages() {
-    try {
-      FirebaseMessaging.onMessage.listen((_) {});
-    } catch (_) {
-      // No Firebase project configured — nothing to listen to.
-    }
-  }
-
-  Future<void> dispose() async {
-    await _refreshSub?.cancel();
-  }
 }
