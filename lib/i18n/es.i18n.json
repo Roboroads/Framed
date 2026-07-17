@@ -109,7 +109,9 @@
     "privacyPolicyLink": "Política de privacidad",
     "selfieHint": "Los jueces comparan esto con cada foto en la que apareces. Asegúrate de que tu cara se vea con claridad.",
     "takeSelfie": "Hacer selfie de referencia",
-    "retakeSelfie": "Repetir selfie"
+    "retakeSelfie": "Repetir selfie",
+    "nameSectionTitle": "Tu nombre",
+    "faceSectionTitle": "Tu cara"
   },
   "lobby": {
     "title": "Sala de espera",
@@ -214,7 +216,9 @@
   },
   "scan": {
     "title": "Escanea para unirte",
-    "invalidCode": "Ese no es un código de Framed válido. Sigue escaneando."
+    "invalidCode": "Ese no es un código de Framed válido. Sigue escaneando.",
+    "instruction": "Apunta al código del anfitrión",
+    "locked": "Listo"
   },
   "frame": {
     "button": "Eliminar",

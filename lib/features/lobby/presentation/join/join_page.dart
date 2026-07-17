@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/di/injector.dart';
 import '../../../../core/push/push_service.dart';
 import '../../../../core/session/game_session.dart';
+import '../../../../core/widgets/pinned_action_bar.dart';
 import '../../../../i18n/strings.g.dart';
 import '../../domain/lobby_error.dart';
 import '../../domain/lobby_repository.dart';
@@ -64,28 +65,36 @@ class _JoinView extends StatelessWidget {
         },
         builder: (context, state) {
           final cubit = context.read<JoinCubit>();
-          return ListView(
-            padding: const EdgeInsets.all(Space.lg),
+          return Column(
             children: [
-              PreJoinForm(
-                name: state.name,
-                onNameChanged: cubit.nameChanged,
-                selfieBytes: state.selfieBytes,
-                onSelfieChanged: cubit.selfieChanged,
-                nameError: state.error == LobbyError.nameTaken
-                    ? t.join.errorNameTaken
-                    : null,
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(
+                    Space.xl,
+                    Space.lg,
+                    Space.xl,
+                    Space.xl,
+                  ),
+                  children: [
+                    PreJoinForm(
+                      name: state.name,
+                      onNameChanged: cubit.nameChanged,
+                      selfieBytes: state.selfieBytes,
+                      onSelfieChanged: cubit.selfieChanged,
+                      nameError: state.error == LobbyError.nameTaken
+                          ? t.join.errorNameTaken
+                          : null,
+                    ),
+                  ],
+                ),
               ),
-              Gap.xl,
-              FilledButton(
-                onPressed: state.canSubmit ? cubit.submit : null,
-                child: state.status == JoinStatus.submitting
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(t.join.joinButton),
+              PinnedActionBar(
+                child: FilledButton(
+                  onPressed: state.canSubmit ? cubit.submit : null,
+                  child: state.status == JoinStatus.submitting
+                      ? const ButtonSpinner()
+                      : Text(t.join.joinButton),
+                ),
               ),
             ],
           );

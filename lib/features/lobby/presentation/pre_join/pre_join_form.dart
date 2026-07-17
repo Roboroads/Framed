@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/camera/in_app_camera_page.dart';
 import '../../../../core/text/name_sanitizer.dart';
 import '../../../../core/widgets/full_screen_photo_page.dart';
+import '../../../../core/widgets/section_header.dart';
 import '../../../../i18n/strings.g.dart';
 import '../../../../core/theme/spacing.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -64,9 +65,11 @@ class _PreJoinFormState extends State<PreJoinForm> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        SectionHeader(t.preJoin.nameSectionTitle),
         TextField(
           controller: _nameController,
           decoration: InputDecoration(
@@ -76,31 +79,36 @@ class _PreJoinFormState extends State<PreJoinForm> {
           maxLength: maxDisplayNameLength,
           onChanged: widget.onNameChanged,
         ),
-        Gap.lg,
-        Text(
-          t.preJoin.consentNotice,
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
+
+        // The notice sits here, above the selfie step and below nothing that
+        // collects anything, because IDEA.md ("Privacy & GDPR") requires it
+        // to be read before the selfie is taken — not tucked under the
+        // button that takes it. Its wording is tracked against the privacy
+        // policy in docs/release-checklist.md; don't reword it casually.
+        Text(t.preJoin.consentNotice, style: theme.textTheme.bodySmall),
+        Gap.xs,
         Align(
           alignment: Alignment.centerLeft,
           child: InkWell(
             onTap: () => launchUrl(Uri.parse(_privacyPolicyUrl)),
-            child: Text(
-              t.preJoin.privacyPolicyLink,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.primary,
-                decoration: TextDecoration.underline,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: Space.xs),
+              child: Text(
+                t.preJoin.privacyPolicyLink,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.primary,
+                  decoration: TextDecoration.underline,
+                ),
               ),
             ),
           ),
         ),
-        Gap.lg,
-        Text(
-          t.preJoin.selfieHint,
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-        Gap.sm,
-        if (widget.selfieBytes != null)
+        Gap.xl,
+
+        SectionHeader(t.preJoin.faceSectionTitle),
+        Text(t.preJoin.selfieHint, style: theme.textTheme.bodySmall),
+        Gap.md,
+        if (widget.selfieBytes != null) ...[
           Center(
             child: SizedBox(
               height: 200,
@@ -119,7 +127,8 @@ class _PreJoinFormState extends State<PreJoinForm> {
               ),
             ),
           ),
-        Gap.sm,
+          Gap.md,
+        ],
         OutlinedButton.icon(
           onPressed: _takeSelfie,
           icon: const Icon(Icons.camera_alt_outlined),

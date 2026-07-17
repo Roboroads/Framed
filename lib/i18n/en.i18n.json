@@ -109,7 +109,9 @@
     "privacyPolicyLink": "Privacy policy",
     "selfieHint": "Judges compare this to every frame you're in. Make sure your face is clearly visible.",
     "takeSelfie": "Take reference selfie",
-    "retakeSelfie": "Retake selfie"
+    "retakeSelfie": "Retake selfie",
+    "nameSectionTitle": "Your name",
+    "faceSectionTitle": "Your face"
   },
   "lobby": {
     "title": "Lobby",
@@ -214,7 +216,9 @@
   },
   "scan": {
     "title": "Scan to join",
-    "invalidCode": "That's not a valid Framed code. Keep scanning."
+    "invalidCode": "That's not a valid Framed code. Keep scanning.",
+    "instruction": "Point at the host's code",
+    "locked": "Got it"
   },
   "frame": {
     "button": "Frame",

@@ -13,6 +13,7 @@ import '../../../../core/realtime/game_channels.dart';
 import '../../../../core/session/game_session.dart';
 import '../../../../core/widgets/confirmation_dialog.dart';
 import '../../../../core/widgets/geofence_map.dart';
+import '../../../../core/widgets/pinned_action_bar.dart';
 import '../../../../core/widgets/section_header.dart';
 import '../../../../core/widgets/geofence_map_viewer_page.dart';
 import '../../../../i18n/strings.g.dart';
@@ -239,14 +240,7 @@ class _LobbyActions extends StatelessWidget {
       );
     }
 
-    return Container(
-      padding: Insets.screen,
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        border: Border(
-          top: BorderSide(color: theme.colorScheme.outlineVariant),
-        ),
-      ),
+    return PinnedActionBar(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -266,10 +260,7 @@ class _LobbyActions extends StatelessWidget {
           FilledButton(
             onPressed: state.canStart ? bloc.start : null,
             child: state.starting
-                ? const SizedBox.square(
-                    dimension: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
+                ? const ButtonSpinner()
                 : Text(t.lobby.startButton),
           ),
         ],

@@ -65,6 +65,10 @@ still waiting on a human read-through, one per line, grouped by locale.
 - [ ] lobby.modeSectionTitle
 - [ ] lobby.waitingForPlayers
 - [ ] camera.shutterLabel
+- [ ] scan.instruction
+- [ ] scan.locked
+- [ ] preJoin.nameSectionTitle
+- [ ] preJoin.faceSectionTitle
 
 ## fr
 

@@ -109,7 +109,9 @@
     "privacyPolicyLink": "Privacybeleid",
     "selfieHint": "Juryleden vergelijken dit met elke frame waar je in zit. Zorg dat je gezicht duidelijk zichtbaar is.",
     "takeSelfie": "Referentieselfie maken",
-    "retakeSelfie": "Selfie opnieuw maken"
+    "retakeSelfie": "Selfie opnieuw maken",
+    "nameSectionTitle": "Je naam",
+    "faceSectionTitle": "Je gezicht"
   },
   "lobby": {
     "title": "Lobby",
@@ -214,7 +216,9 @@
   },
   "scan": {
     "title": "Scan om mee te doen",
-    "invalidCode": "Dat is geen geldige Framed-code. Blijf scannen."
+    "invalidCode": "Dat is geen geldige Framed-code. Blijf scannen.",
+    "instruction": "Richt op de code van de host",
+    "locked": "Hebbes"
   },
   "frame": {
     "button": "Frame",

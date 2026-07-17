@@ -109,7 +109,9 @@
     "privacyPolicyLink": "Politique de confidentialité",
     "selfieHint": "Les juges comparent ceci à chaque photo où vous apparaissez. Assurez-vous que votre visage est clairement visible.",
     "takeSelfie": "Prendre un selfie de référence",
-    "retakeSelfie": "Reprendre le selfie"
+    "retakeSelfie": "Reprendre le selfie",
+    "nameSectionTitle": "Votre nom",
+    "faceSectionTitle": "Votre visage"
   },
   "lobby": {
     "title": "Salle d'attente",
@@ -214,7 +216,9 @@
   },
   "scan": {
     "title": "Scannez pour rejoindre",
-    "invalidCode": "Ce n'est pas un code Framed valide. Continuez à scanner."
+    "invalidCode": "Ce n'est pas un code Framed valide. Continuez à scanner.",
+    "instruction": "Visez le code de l'hôte",
+    "locked": "C'est bon"
   },
   "frame": {
     "button": "Piéger",

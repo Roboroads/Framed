@@ -7,6 +7,7 @@ import '../../../../core/di/injector.dart';
 import '../../../../core/push/push_service.dart';
 import '../../../../core/session/game_session.dart';
 import '../../../../core/widgets/geofence_map.dart';
+import '../../../../core/widgets/pinned_action_bar.dart';
 import '../../../../i18n/strings.g.dart';
 import '../../domain/lobby_error.dart';
 import '../../domain/lobby_repository.dart';
@@ -73,30 +74,33 @@ class _HostSetupViewState extends State<_HostSetupView> {
         },
         builder: (context, state) {
           final cubit = context.read<HostSetupCubit>();
-          return ListView(
-            padding: const EdgeInsets.all(Space.lg),
+          return Column(
             children: [
-              Text(
-                t.preJoin.title,
-                style: Theme.of(context).textTheme.titleMedium,
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(
+                    Space.xl,
+                    Space.lg,
+                    Space.xl,
+                    Space.xl,
+                  ),
+                  children: [
+                    PreJoinForm(
+                      name: state.name,
+                      onNameChanged: cubit.nameChanged,
+                      selfieBytes: state.selfieBytes,
+                      onSelfieChanged: cubit.selfieChanged,
+                    ),
+                  ],
+                ),
               ),
-              Gap.sm,
-              PreJoinForm(
-                name: state.name,
-                onNameChanged: cubit.nameChanged,
-                selfieBytes: state.selfieBytes,
-                onSelfieChanged: cubit.selfieChanged,
-              ),
-              Gap.xl,
-              FilledButton(
-                onPressed: state.canSubmit ? cubit.submit : null,
-                child: state.status == HostSetupStatus.submitting
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(t.hostSetup.createGame),
+              PinnedActionBar(
+                child: FilledButton(
+                  onPressed: state.canSubmit ? cubit.submit : null,
+                  child: state.status == HostSetupStatus.submitting
+                      ? const ButtonSpinner()
+                      : Text(t.hostSetup.createGame),
+                ),
               ),
             ],
           );
