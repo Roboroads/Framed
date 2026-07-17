@@ -23,6 +23,7 @@ import '../../../../core/realtime/game_channels.dart';
 import '../../../../core/realtime/game_event.dart';
 import '../../../../core/session/game_session.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/framed_icons.dart';
 import '../../../../core/util/duration_format.dart';
 import '../../../../core/widgets/confirmation_dialog.dart';
 import '../../../../core/widgets/full_screen_photo_page.dart';
@@ -444,7 +445,7 @@ class _WarningOverlay extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.warning_amber_rounded, size: 48, color: danger),
+                FramedIcons(FramedIcon.warning, size: 48, color: danger),
                 const SizedBox(height: 16),
                 for (final reason in warning.reasons)
                   Padding(
@@ -930,7 +931,7 @@ class _FrameButton extends StatelessWidget {
     return switch (status) {
       FrameReady() => FilledButton.icon(
         onPressed: () => _openCamera(context),
-        icon: const Icon(Icons.camera_alt),
+        icon: const FramedIcons(FramedIcon.frame),
         label: Text(t.frame.button),
       ),
       FrameWaitingForVerdict() => FilledButton.icon(
@@ -1084,17 +1085,34 @@ class _CompassArrowState extends State<_CompassArrow> {
                 ).textTheme.titleMedium?.copyWith(color: compassColor),
               )
             else ...[
-              AnimatedRotation(
-                turns:
-                    _rotation.update(
-                      compassArrowAngle(
-                        targetBearingDeg: widget.compass.bearingDeg,
-                        headingDeg: heading,
-                      ),
-                    ) /
-                    360,
-                duration: const Duration(milliseconds: 200),
-                child: Icon(Icons.navigation, size: 48, color: compassColor),
+              // The needle turns inside a viewfinder that doesn't: the
+              // housing is the app's own mark, held still, so the only
+              // thing moving is the one thing that means anything.
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  FramedIcons(
+                    FramedIcon.reticle,
+                    size: 72,
+                    color: compassColor.withValues(alpha: 0.45),
+                  ),
+                  AnimatedRotation(
+                    turns:
+                        _rotation.update(
+                          compassArrowAngle(
+                            targetBearingDeg: widget.compass.bearingDeg,
+                            headingDeg: heading,
+                          ),
+                        ) /
+                        360,
+                    duration: const Duration(milliseconds: 200),
+                    child: FramedIcons(
+                      FramedIcon.compass,
+                      size: 40,
+                      color: compassColor,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 8),
               Text(

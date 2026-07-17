@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Modify this file to customize your launch splash screen -->
+<!-- Launch window: the reticle on brand charcoal, in light and dark alike.
+     The splash is brand surface, not system surface — it hands off to a
+     dark-first Flutter UI either way, so a white flash in between would
+     read as a bug. -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@android:color/white" />
-
-    <!-- You can insert your own image assets here -->
-    <!-- <item>
+    <item android:drawable="@color/brand_charcoal" />
+    <item>
         <bitmap
             android:gravity="center"
-            android:src="@mipmap/launch_image" />
-    </item> -->
+            android:src="@drawable/launch_mark" />
+    </item>
 </layer-list>

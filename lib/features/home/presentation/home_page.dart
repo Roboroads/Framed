@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/di/injector.dart';
 import '../../../core/session/resume_outcome.dart';
 import '../../../core/session/session_resume_service.dart';
+import '../../../core/widgets/framed_wordmark.dart';
 import '../../../i18n/strings.g.dart';
 
 /// Renders normally on every build — a resumed session (#54) is rare (app
@@ -53,10 +54,16 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    t.app.title,
-                    style: Theme.of(context).textTheme.displayMedium,
-                    textAlign: TextAlign.center,
+                  // Scales down on short screens rather than pushing the
+                  // buttons off the bottom, and stays put on wide ones —
+                  // a wordmark stretched to a tablet's width isn't a logo
+                  // any more.
+                  Center(
+                    child: FramedWordmark(
+                      fontSize: MediaQuery.sizeOf(context).height < 700
+                          ? 30
+                          : 40,
+                    ),
                   ),
                   const SizedBox(height: 48),
                   FilledButton(

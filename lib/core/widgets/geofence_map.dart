@@ -8,6 +8,7 @@ import 'package:latlong2/latlong.dart';
 import '../../i18n/strings.g.dart';
 import '../config/env.dart';
 import '../theme/app_theme.dart';
+import '../theme/framed_icons.dart';
 import 'permission_rationale.dart';
 
 /// OSM map showing the game's geofence: a live view of [center] (always the
@@ -160,13 +161,13 @@ class _GeofenceMapState extends State<GeofenceMap> {
             if (widget.showCenterMarker)
               Marker(
                 point: center,
-                // #59: location_pin's visual tip sits at the bottom-center
-                // of its bounding box, not the box's geometric center (the
-                // default alignment) — without this the pin renders visibly
-                // off the circle's true center.
-                alignment: Alignment.topCenter,
-                child: Icon(
-                  Icons.location_pin,
+                // The geofence glyph is radially symmetric — its meaning
+                // sits at its own center — so it wants the default
+                // center alignment, unlike the teardrop location_pin it
+                // replaced, which needed topCenter to put its tip on the
+                // point (#59).
+                child: FramedIcons(
+                  FramedIcon.geofence,
                   color: Theme.of(context).colorScheme.primary,
                   size: 36,
                 ),

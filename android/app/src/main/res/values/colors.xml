@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand charcoal. Kept in sync by hand with AppTheme.charcoal in
+         lib/core/theme/app_theme.dart — the launch window is drawn by the OS
+         before any Dart runs, so it can't read the Flutter theme. -->
+    <color name="brand_charcoal">#14100F</color>
+    <color name="ic_launcher_background">#14100F</color>
+</resources>

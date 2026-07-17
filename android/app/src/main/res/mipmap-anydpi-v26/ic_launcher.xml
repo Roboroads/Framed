@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Adaptive icon (API 26+): the launcher masks the foreground to whatever
+     shape the device uses, so the reticle is drawn at 76% scale to stay
+     inside the centre-66% safe zone. The mipmap-*/ic_launcher.png rasters
+     remain the full-bleed fallback for older launchers. -->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/ic_launcher_background" />
+    <foreground android:drawable="@mipmap/ic_launcher_foreground" />
+    <monochrome android:drawable="@mipmap/ic_launcher_foreground" />
+</adaptive-icon>

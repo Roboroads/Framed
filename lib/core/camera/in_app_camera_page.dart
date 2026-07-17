@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../i18n/strings.g.dart';
+import '../theme/framed_icons.dart';
 import '../widgets/permission_rationale.dart';
 
 enum _Status { initializing, ready, permissionDenied, error }
@@ -204,7 +205,7 @@ class _InAppCameraPageState extends State<InAppCameraPage>
               child: Center(
                 child: FloatingActionButton(
                   onPressed: _capture,
-                  child: const Icon(Icons.camera_alt),
+                  child: const FramedIcons(FramedIcon.frame),
                 ),
               ),
             ),
