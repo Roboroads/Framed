@@ -57,6 +57,14 @@ still waiting on a human read-through, one per line, grouped by locale.
 - [ ] frame.cooldownReasonRejected
 - [ ] frame.cooldownReasonTimeout
 - [ ] ingame.leaveNetworkWarning
+- [ ] lobby.joinSectionTitle
+- [ ] lobby.keyLivesHere
+- [ ] lobby.tapQrToEnlarge
+- [ ] lobby.rosterSectionTitle
+- [ ] lobby.playAreaSectionTitle
+- [ ] lobby.modeSectionTitle
+- [ ] lobby.waitingForPlayers
+- [ ] camera.shutterLabel
 
 ## fr
 

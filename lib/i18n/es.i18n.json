@@ -129,7 +129,14 @@
     "leaveConfirmTitle": "¿Salir de la sala de espera?",
     "leaveConfirmBody": "Perderás tu sitio. Puedes volver a unirte con el mismo código QR o enlace, mientras la partida no haya empezado.",
     "leaveConfirmButton": "Salir",
-    "errorGeneric": "Algo ha ido mal. Comprueba tu conexión e inténtalo de nuevo."
+    "errorGeneric": "Algo ha ido mal. Comprueba tu conexión e inténtalo de nuevo.",
+    "joinSectionTitle": "Trae gente",
+    "keyLivesHere": "Este código lleva la clave de la partida. Nunca llega a nuestro servidor, así que esta pantalla es la única forma de entrar, y lo único que puede leer el nombre o la foto de nadie.",
+    "tapQrToEnlarge": "Toca el código para verlo a pantalla completa",
+    "rosterSectionTitle": "Quién está",
+    "playAreaSectionTitle": "Zona de juego",
+    "modeSectionTitle": "Modo de juego",
+    "waitingForPlayers": "Todavía no se ha unido nadie más. Enséñales el código."
   },
   "ingame": {
     "disperseTitle": "Dispersaos",
@@ -227,7 +234,8 @@
     "permissionDeniedBody": "Framed necesita acceso a la cámara para esto. Concédelo e inténtalo de nuevo.",
     "permissionBlockedBody": "El acceso a la cámara está desactivado en Ajustes. Actívalo y vuelve; no hace falta reiniciar la app.",
     "errorGeneric": "No se pudo iniciar la cámara. Inténtalo de nuevo.",
-    "retry": "Reintentar"
+    "retry": "Reintentar",
+    "shutterLabel": "Hacer la foto"
   },
   "confirmationDialog": {
     "cancel": "Cancelar"

@@ -129,7 +129,14 @@
     "leaveConfirmTitle": "Quitter la salle d'attente ?",
     "leaveConfirmBody": "Vous perdrez votre place. Vous pouvez rejoindre à nouveau avec le même QR code ou lien, tant que la partie n'a pas commencé.",
     "leaveConfirmButton": "Quitter",
-    "errorGeneric": "Quelque chose s'est mal passé. Vérifiez votre connexion et réessayez."
+    "errorGeneric": "Quelque chose s'est mal passé. Vérifiez votre connexion et réessayez.",
+    "joinSectionTitle": "Faire venir du monde",
+    "keyLivesHere": "Ce code contient la clé de la partie. Elle n'atteint jamais notre serveur : cet écran est donc le seul moyen d'entrer, et la seule chose capable de lire le nom ou la photo de quiconque.",
+    "tapQrToEnlarge": "Touchez le code pour l'afficher en plein écran",
+    "rosterSectionTitle": "Qui est là",
+    "playAreaSectionTitle": "Zone de jeu",
+    "modeSectionTitle": "Mode de jeu",
+    "waitingForPlayers": "Personne d'autre n'a encore rejoint. Montrez-leur le code."
   },
   "ingame": {
     "disperseTitle": "Dispersez-vous",
@@ -227,7 +234,8 @@
     "permissionDeniedBody": "Framed a besoin de l'accès à l'appareil photo pour cela. Autorisez-le puis réessayez.",
     "permissionBlockedBody": "L'accès à l'appareil photo est désactivé dans les réglages. Activez-le, puis revenez. Inutile de redémarrer l'appli.",
     "errorGeneric": "Impossible de démarrer l'appareil photo. Réessayez.",
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "shutterLabel": "Prendre la photo"
   },
   "confirmationDialog": {
     "cancel": "Annuler"

@@ -11,9 +11,9 @@ import '../../../../core/crypto/qr_payload.dart';
 import '../../../../core/di/injector.dart';
 import '../../../../core/realtime/game_channels.dart';
 import '../../../../core/session/game_session.dart';
-import '../../../../core/widgets/closable_dialog.dart';
 import '../../../../core/widgets/confirmation_dialog.dart';
 import '../../../../core/widgets/geofence_map.dart';
+import '../../../../core/widgets/section_header.dart';
 import '../../../../core/widgets/geofence_map_viewer_page.dart';
 import '../../../../i18n/strings.g.dart';
 import '../../domain/game_mode.dart';
@@ -123,116 +123,157 @@ class _LobbyView extends StatelessWidget {
   );
 }
 
-class _LobbyBody extends StatefulWidget {
+/// The lobby's job changes as it fills, and the layout says so.
+///
+/// For a host standing alone, the only thing that matters is getting people
+/// in, so the join code leads. It used to be a dialog fired from the first
+/// build, which put the one irreplaceable thing on the screen behind a modal
+/// the host had to dismiss to see anything and hunt for a button to get back.
+/// Now it's the first thing under the bar, and the roster grows underneath it.
+class _LobbyBody extends StatelessWidget {
   const _LobbyBody({required this.state});
 
   final LobbyState state;
 
   @override
-  State<_LobbyBody> createState() => _LobbyBodyState();
-}
-
-class _LobbyBodyState extends State<_LobbyBody> {
-  // Auto-shown once when the join token first becomes available (i.e. when
-  // the host opens the lobby) — a flag rather than tying this to a specific
-  // lifecycle callback, since `joinToken` arrives asynchronously via bloc
-  // state, not necessarily on the first build.
-  bool _qrDialogShown = false;
-
-  @override
   Widget build(BuildContext context) {
     final bloc = context.read<LobbyBloc>();
-    final state = widget.state;
     final joinToken = state.joinToken;
-    if (!_qrDialogShown && bloc.isHost && joinToken != null) {
-      _qrDialogShown = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _showQrDialog(context, joinToken);
-      });
-    }
+
     return Column(
       children: [
-        _ModeBanner(
-          mode: state.mode,
-          isHost: bloc.isHost,
-          onChangeMode: bloc.changeMode,
-        ),
-        const Divider(height: 1),
         Expanded(
           child: ListView(
+            padding: const EdgeInsets.fromLTRB(
+              Space.xl,
+              Space.lg,
+              Space.xl,
+              Space.xl,
+            ),
             children: [
-              if (state.geofenceLat != null && state.geofenceLng != null)
+              if (bloc.isHost && joinToken != null) ...[
+                SectionHeader(t.lobby.joinSectionTitle),
+                // The code stays up for the whole lobby, however full it
+                // gets. Every player joins by scanning it, so in a ten-
+                // player game the host is still holding it out for the
+                // tenth — hiding it once the *first* person arrives would
+                // take it away exactly when nine people still need it, and
+                // take the note about the key with it. There's no expected
+                // headcount to know when everyone's in, so the app doesn't
+                // guess.
+                _JoinHandover(joinToken: joinToken),
+                Gap.xl,
+              ],
+              SectionHeader(t.lobby.modeSectionTitle),
+              _ModeBanner(
+                mode: state.mode,
+                isHost: bloc.isHost,
+                onChangeMode: bloc.changeMode,
+              ),
+              Gap.xl,
+              if (state.geofenceLat != null && state.geofenceLng != null) ...[
+                SectionHeader(t.lobby.playAreaSectionTitle),
                 _GeofencePreview(
                   center: LatLng(state.geofenceLat!, state.geofenceLng!),
                   radiusM: state.geofenceRadiusM.toDouble(),
                 ),
+                Gap.xl,
+              ],
+              SectionHeader(
+                t.lobby.rosterSectionTitle,
+                // A count is a number, so it's mono and tabular — it ticks
+                // up while you watch it, and the label shouldn't jitter.
+                trailing: Text(
+                  t.lobby.readyCount(
+                    ready: state.readyCount,
+                    total: state.roster.length,
+                  ),
+                  style: AppTheme.mono(Theme.of(context).textTheme.bodySmall!),
+                ),
+              ),
               for (final player in state.roster)
                 _RosterTile(
                   player: player,
                   isHost: player.id == state.hostPlayerId,
                 ),
+              if (state.roster.length == 1 && bloc.isHost) ...[
+                Gap.md,
+                Text(
+                  t.lobby.waitingForPlayers,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(Space.lg),
-          child: bloc.isHost
-              ? Column(
-                  children: [
-                    if (joinToken != null)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: Space.sm),
-                        child: OutlinedButton.icon(
-                          onPressed: () => _showQrDialog(context, joinToken),
-                          icon: const Icon(Icons.qr_code),
-                          label: Text(t.lobby.showQrButton),
-                        ),
-                      ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: Space.sm),
-                      child: OutlinedButton.icon(
-                        onPressed: () => Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => BlocProvider<LobbyBloc>.value(
-                              value: bloc,
-                              child: const LobbySettingsPage(),
-                            ),
-                          ),
-                        ),
-                        icon: const Icon(Icons.settings_outlined),
-                        label: Text(t.lobby.gameSettingsButton),
-                      ),
-                    ),
-                    Text(
-                      t.lobby.readyCount(
-                        ready: state.readyCount,
-                        total: state.roster.length,
-                      ),
-                    ),
-                    Gap.sm,
-                    FilledButton(
-                      onPressed: state.canStart ? bloc.start : null,
-                      child: state.starting
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : Text(t.lobby.startButton),
-                    ),
-                  ],
-                )
-              : Text(t.lobby.waitingForHost),
-        ),
+        _LobbyActions(state: state),
       ],
     );
   }
+}
 
-  void _showQrDialog(BuildContext context, String joinToken) {
-    showDialog<void>(
-      context: context,
-      builder: (context) =>
-          ClosableDialog(child: _JoinQr(joinToken: joinToken)),
+/// The host's controls, pinned below the scroll: whatever the roster is
+/// doing, "start" and "settings" stay where the thumb left them.
+class _LobbyActions extends StatelessWidget {
+  const _LobbyActions({required this.state});
+
+  final LobbyState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final bloc = context.read<LobbyBloc>();
+    final theme = Theme.of(context);
+
+    if (!bloc.isHost) {
+      return Padding(
+        padding: Insets.screen,
+        child: Text(
+          t.lobby.waitingForHost,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      padding: Insets.screen,
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        border: Border(
+          top: BorderSide(color: theme.colorScheme.outlineVariant),
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          OutlinedButton.icon(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => BlocProvider<LobbyBloc>.value(
+                  value: bloc,
+                  child: const LobbySettingsPage(),
+                ),
+              ),
+            ),
+            icon: const Icon(Icons.settings_outlined),
+            label: Text(t.lobby.gameSettingsButton),
+          ),
+          Gap.sm,
+          FilledButton(
+            onPressed: state.canStart ? bloc.start : null,
+            child: state.starting
+                ? const SizedBox.square(
+                    dimension: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Text(t.lobby.startButton),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -250,11 +291,39 @@ class _ModeBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(_title(mode), style: Theme.of(context).textTheme.titleLarge),
-      subtitle: Text(_description(mode)),
-      trailing: isHost ? const Icon(Icons.edit_outlined) : null,
-      onTap: isHost ? () => _showModePicker(context) : null,
+    final theme = Theme.of(context);
+    // Only the host can change this, so only the host gets the affordance —
+    // a tappable-looking row a guest can't tap is worse than a plain one.
+    final row = Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(_title(mode), style: theme.textTheme.headlineSmall),
+              Gap.xs,
+              Text(
+                _description(mode),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (isHost) ...[
+          HGap.md,
+          Icon(Icons.edit_outlined, color: theme.colorScheme.onSurfaceVariant),
+        ],
+      ],
+    );
+
+    if (!isHost) return row;
+    return InkWell(
+      onTap: () => _showModePicker(context),
+      borderRadius: AppTheme.corner,
+      child: Padding(padding: const EdgeInsets.all(Space.sm), child: row),
     );
   }
 
@@ -349,28 +418,57 @@ class _RosterTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(
-        player.hasSelfie ? Icons.check_circle : Icons.hourglass_empty,
+    final theme = Theme.of(context);
+    final game = theme.extension<GameColors>()!;
+    final ready = player.hasSelfie;
+    // Ready-ness carries an icon *and* a word, never just the colour — a
+    // player who can't tell green from grey still has two other signals.
+    final colour = ready ? game.alive : game.dead;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: Space.sm),
+      child: Row(
+        children: [
+          Icon(
+            ready ? Icons.check_circle : Icons.hourglass_empty,
+            size: 20,
+            color: colour,
+          ),
+          HGap.md,
+          Expanded(child: Text(player.name, style: theme.textTheme.bodyLarge)),
+          if (isHost) ...[
+            Chip(
+              label: Text(t.lobby.hostBadge),
+              visualDensity: VisualDensity.compact,
+            ),
+            HGap.sm,
+          ],
+          Text(
+            ready ? t.lobby.readyBadge : t.lobby.notReadyBadge,
+            style: theme.textTheme.labelMedium?.copyWith(color: colour),
+          ),
+        ],
       ),
-      title: Text(player.name),
-      trailing: isHost
-          ? Chip(label: Text(t.lobby.hostBadge))
-          : Text(player.hasSelfie ? t.lobby.readyBadge : t.lobby.notReadyBadge),
     );
   }
 }
 
-class _JoinQr extends StatefulWidget {
-  const _JoinQr({required this.joinToken});
+/// The handover. Everything else in this app is replaceable; this isn't.
+///
+/// The game key is generated on the host's phone and travels only inside this
+/// code (CLAUDE.md: never send the key to the server). That makes this the one
+/// screen where the app is holding something it can't get back — so it says
+/// so, rather than leaving the host to assume we have a copy.
+class _JoinHandover extends StatefulWidget {
+  const _JoinHandover({required this.joinToken});
 
   final String joinToken;
 
   @override
-  State<_JoinQr> createState() => _JoinQrState();
+  State<_JoinHandover> createState() => _JoinHandoverState();
 }
 
-class _JoinQrState extends State<_JoinQr> {
+class _JoinHandoverState extends State<_JoinHandover> {
   // Fetched once — a FutureBuilder built directly in build() would restart
   // from "waiting" (a visible flicker) on every parent rebuild (e.g. a
   // roster change), since `.keyBytes` returns a fresh Future each call.
@@ -378,11 +476,17 @@ class _JoinQrState extends State<_JoinQr> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return FutureBuilder<Uint8List>(
       future: _keyBytes,
       builder: (context, snapshot) {
         final keyBytes = snapshot.data;
-        if (keyBytes == null) return Gap.xl;
+        if (keyBytes == null) {
+          return const SizedBox(
+            height: 240,
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
         final payload = QrPayload(
           joinToken: widget.joinToken,
           keyBytes: keyBytes,
@@ -395,36 +499,125 @@ class _JoinQrState extends State<_JoinQr> {
           print('QR_PAYLOAD_DEBUG: ${payload.encode()}');
           return true;
         }());
-        return Padding(
+
+        void openFullScreen() => Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (_) => _FullScreenQr(payload: payload),
+          ),
+        );
+        final share = OutlinedButton.icon(
+          onPressed: () =>
+              SharePlus.instance.share(ShareParams(text: payload.encode())),
+          icon: const Icon(Icons.share_outlined),
+          label: Text(t.lobby.shareLinkButton),
+        );
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _QrCard(payload: payload, onTap: openFullScreen),
+            Gap.md,
+            Text(
+              t.lobby.keyLivesHere,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            Gap.md,
+            share,
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// The code itself, on white because a scanner needs the contrast.
+class _QrCard extends StatelessWidget {
+  const _QrCard({required this.payload, required this.onTap});
+
+  final QrPayload payload;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Semantics(
+      button: true,
+      label: t.lobby.scanToJoin,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: AppTheme.corner,
+        child: Container(
           padding: const EdgeInsets.all(Space.lg),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surfaceContainer,
+            borderRadius: AppTheme.corner,
+            border: Border.all(color: theme.colorScheme.outlineVariant),
+          ),
           child: Column(
             children: [
-              Text(
-                t.lobby.scanToJoin,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              Gap.md,
+              // Colors.white, not a scheme role, and not themed: a QR reader
+              // needs a bright quiet zone and dark modules. In dark mode a
+              // surface-coloured code is unscannable, which would break the
+              // one thing this screen exists to do.
               Container(
-                padding: const EdgeInsets.all(Space.lg),
-                color: Colors.white,
+                padding: const EdgeInsets.all(Space.md),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: AppTheme.corner,
+                ),
                 child: QrImageView(
                   data: payload.encode(),
                   version: QrVersions.auto,
                   size: 200,
+                  backgroundColor: Colors.white,
                 ),
               ),
               Gap.md,
-              TextButton.icon(
-                onPressed: () => SharePlus.instance.share(
-                  ShareParams(text: payload.encode()),
+              Text(
+                t.lobby.tapQrToEnlarge,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
-                icon: const Icon(Icons.share_outlined),
-                label: Text(t.lobby.shareLinkButton),
               ),
             ],
           ),
-        );
-      },
+        ),
+      ),
+    );
+  }
+}
+
+/// The code, as big as the glass allows.
+///
+/// Scanning happens across a pub table in bad light, on someone else's older
+/// phone camera. Size is the whole job here, so this screen is nothing but
+/// code — and it forces the backlight up by filling the screen with white.
+class _FullScreenQr extends StatelessWidget {
+  const _FullScreenQr({required this.payload});
+
+  final QrPayload payload;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        title: Text(t.lobby.scanToJoin),
+      ),
+      body: Center(
+        child: Padding(
+          padding: Insets.screen,
+          child: QrImageView(
+            data: payload.encode(),
+            version: QrVersions.auto,
+            backgroundColor: Colors.white,
+          ),
+        ),
+      ),
     );
   }
 }

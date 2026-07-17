@@ -129,7 +129,14 @@
     "leaveConfirmTitle": "Lobby verlaten?",
     "leaveConfirmBody": "Je verliest je plek. Je kunt opnieuw meedoen met dezelfde QR-code of link, zolang het spel nog niet is begonnen.",
     "leaveConfirmButton": "Verlaten",
-    "errorGeneric": "Er is iets misgegaan. Controleer je verbinding en probeer het opnieuw."
+    "errorGeneric": "Er is iets misgegaan. Controleer je verbinding en probeer het opnieuw.",
+    "joinSectionTitle": "Mensen erbij halen",
+    "keyLivesHere": "Deze code bevat de spelsleutel. Hij komt nooit op onze server, dus dit scherm is de enige manier om binnen te komen — en het enige dat iemands naam of foto kan lezen.",
+    "tapQrToEnlarge": "Tik op de code om hem schermvullend te maken",
+    "rosterSectionTitle": "Wie er zijn",
+    "playAreaSectionTitle": "Speelgebied",
+    "modeSectionTitle": "Spelmodus",
+    "waitingForPlayers": "Er is nog niemand anders. Laat ze de code zien."
   },
   "ingame": {
     "disperseTitle": "Verspreiden",
@@ -227,7 +234,8 @@
     "permissionDeniedBody": "Framed heeft hiervoor cameratoegang nodig. Geef toestemming en probeer het opnieuw.",
     "permissionBlockedBody": "Cameratoegang staat uit in Instellingen. Zet het aan en kom terug; je hoeft de app niet opnieuw te starten.",
     "errorGeneric": "Kon de camera niet starten. Probeer het opnieuw.",
-    "retry": "Opnieuw proberen"
+    "retry": "Opnieuw proberen",
+    "shutterLabel": "Maak de foto"
   },
   "confirmationDialog": {
     "cancel": "Annuleren"

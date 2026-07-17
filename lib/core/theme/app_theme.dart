@@ -197,7 +197,16 @@ abstract final class AppTheme {
         // silently drops the one in shape.
         shape: RoundedRectangleBorder(borderRadius: corner),
         side: BorderSide(color: scheme.outlineVariant),
-        labelStyle: text.labelMedium,
+        // Both of these have to be stated. A TextStyle from the TextTheme
+        // carries no colour, and Chip doesn't fall back to a legible one —
+        // it renders the label in whatever DefaultTextStyle it lands in,
+        // which is how the "Host" badge came out as an empty white box.
+        backgroundColor: scheme.surfaceContainerHighest,
+        labelStyle: text.labelMedium?.copyWith(color: scheme.onSurfaceVariant),
+        padding: const EdgeInsets.symmetric(
+          horizontal: Space.sm,
+          vertical: Space.xs,
+        ),
       ),
       segmentedButtonTheme: SegmentedButtonThemeData(
         style: ButtonStyle(
@@ -212,6 +221,18 @@ abstract final class AppTheme {
       ],
     );
   }
+
+  /// [style], re-set in the data face with tabular figures.
+  ///
+  /// The `display*` roles cover numbers that are the point of their screen —
+  /// a dispersal clock, a distance. This is for the smaller ones that still
+  /// have to hold still while they change: a ready count ticking up, a
+  /// countdown inside a sentence. Tabular figures stop the text reflowing
+  /// every time a 1 becomes a 4.
+  static TextStyle mono(TextStyle style) => style.copyWith(
+    fontFamily: _data,
+    fontFeatures: const [FontFeature.tabularFigures()],
+  );
 
   /// A filled button carrying one of the semantic [GameColors] instead of the
   /// brand primary — the judging verdict buttons, and anything else where the

@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../i18n/strings.g.dart';
-import '../theme/framed_icons.dart';
 import '../widgets/permission_rationale.dart';
 import '../theme/spacing.dart';
 
@@ -203,12 +202,7 @@ class _InAppCameraPageState extends State<InAppCameraPage>
               bottom: Space.xl,
               left: 0,
               right: 0,
-              child: Center(
-                child: FloatingActionButton(
-                  onPressed: _capture,
-                  child: const FramedIcons(FramedIcon.frame),
-                ),
-              ),
+              child: Center(child: _ShutterButton(onPressed: _capture)),
             ),
           ],
         ),
@@ -253,6 +247,55 @@ class _RetryMessage extends StatelessWidget {
               child: Text(retryLabel ?? t.camera.retry),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// The shutter.
+///
+/// A ring with a disc inside it, which is what every camera anyone has ever
+/// held looks like — not the app's mark. The brand reticle briefly lived here
+/// and it was the wrong instinct twice over: this screen is already a
+/// viewfinder, so a viewfinder glyph on the button says nothing the
+/// surrounding pixels don't, and it turned the one control with a
+/// universally-understood shape into something that reads as a logo. The
+/// place for the reticle is the ingame Frame button, where it names an action
+/// that has no standard icon.
+class _ShutterButton extends StatelessWidget {
+  const _ShutterButton({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: t.camera.shutterLabel,
+      child: InkWell(
+        onTap: onPressed,
+        customBorder: const CircleBorder(),
+        child: Container(
+          width: 76,
+          height: 76,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            // White, not a theme colour: this sits on a live camera feed, not
+            // on an app surface. It has to hold up against whatever the lens
+            // happens to be pointing at, which is why every camera app does
+            // the same thing.
+            border: Border.all(color: Colors.white, width: 3),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(Space.xs),
+            child: DecoratedBox(
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
+              ),
+            ),
+          ),
         ),
       ),
     );
