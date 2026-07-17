@@ -111,7 +111,8 @@
     "takeSelfie": "Referentieselfie maken",
     "retakeSelfie": "Selfie opnieuw maken",
     "nameSectionTitle": "Je naam",
-    "faceSectionTitle": "Je gezicht"
+    "faceSectionTitle": "Je gezicht",
+    "sharesSectionTitle": "Wat meespelen verstuurt"
   },
   "lobby": {
     "title": "Lobby",

@@ -111,7 +111,8 @@
     "takeSelfie": "Prendre un selfie de référence",
     "retakeSelfie": "Reprendre le selfie",
     "nameSectionTitle": "Votre nom",
-    "faceSectionTitle": "Votre visage"
+    "faceSectionTitle": "Votre visage",
+    "sharesSectionTitle": "Ce que jouer envoie"
   },
   "lobby": {
     "title": "Salle d'attente",

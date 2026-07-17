@@ -79,12 +79,21 @@ class _PreJoinFormState extends State<PreJoinForm> {
           maxLength: maxDisplayNameLength,
           onChanged: widget.onNameChanged,
         ),
+        Gap.xl,
 
-        // The notice sits here, above the selfie step and below nothing that
-        // collects anything, because IDEA.md ("Privacy & GDPR") requires it
-        // to be read before the selfie is taken — not tucked under the
-        // button that takes it. Its wording is tracked against the privacy
-        // policy in docs/release-checklist.md; don't reword it casually.
+        // Its own section, not a footnote under the name field. This notice
+        // covers the selfie, the location, the frame photos and the push
+        // token — everything — but with no header of its own it inherited
+        // "Your name" and read as being about the name alone, which is both
+        // wrong and the one thing a consent notice can't afford to be.
+        //
+        // It stays *above* the selfie step. IDEA.md:172 and the published
+        // privacy policy both state the notice is read before the selfie is
+        // taken, and docs/release-checklist.md keeps the policy honest
+        // against this screen — moving it below the camera button would make
+        // a live legal document false. Its wording is tracked there too;
+        // don't reword it casually.
+        SectionHeader(t.preJoin.sharesSectionTitle),
         Text(t.preJoin.consentNotice, style: theme.textTheme.bodySmall),
         Gap.xs,
         Align(

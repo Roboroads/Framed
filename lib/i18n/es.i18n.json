@@ -111,7 +111,8 @@
     "takeSelfie": "Hacer selfie de referencia",
     "retakeSelfie": "Repetir selfie",
     "nameSectionTitle": "Tu nombre",
-    "faceSectionTitle": "Tu cara"
+    "faceSectionTitle": "Tu cara",
+    "sharesSectionTitle": "Qué envía jugar"
   },
   "lobby": {
     "title": "Sala de espera",

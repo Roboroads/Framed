@@ -69,6 +69,7 @@ still waiting on a human read-through, one per line, grouped by locale.
 - [ ] scan.locked
 - [ ] preJoin.nameSectionTitle
 - [ ] preJoin.faceSectionTitle
+- [ ] preJoin.sharesSectionTitle
 
 ## fr
 

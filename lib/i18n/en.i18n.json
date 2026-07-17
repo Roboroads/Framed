@@ -111,7 +111,8 @@
     "takeSelfie": "Take reference selfie",
     "retakeSelfie": "Retake selfie",
     "nameSectionTitle": "Your name",
-    "faceSectionTitle": "Your face"
+    "faceSectionTitle": "Your face",
+    "sharesSectionTitle": "What playing sends"
   },
   "lobby": {
     "title": "Lobby",
