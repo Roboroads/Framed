@@ -32,11 +32,30 @@ abstract final class AppTheme {
   static ThemeData get dark => _build(Brightness.dark);
   static ThemeData get light => _build(Brightness.light);
 
+  /// Crimson, lifted just far enough to survive a near-black surface.
+  ///
+  /// The seed can't be used directly in dark mode: `#B3202E` against the
+  /// dark surface (`#1A1111`) measures 2.79:1, under the 3:1 WCAG floor for
+  /// a UI component, so the button's own edge would be the failing part. At
+  /// `#CC2936` the fill clears the surface at 3.48:1 and still carries white
+  /// at 5.33:1. Going brighter buys edge contrast and spends label contrast
+  /// — `#E0313E`, which the app icon uses, drops white to 4.49:1 and fails
+  /// the other way. This is the window where both hold.
+  ///
+  /// Numbers from test/theme/contrast_test.dart, which fails if any of this
+  /// stops being true.
+  static const _crimsonOnDark = Color(0xFFCC2936);
+
   static ThemeData _build(Brightness brightness) {
-    final scheme = ColorScheme.fromSeed(
-      seedColor: seed,
-      brightness: brightness,
-    );
+    final base = ColorScheme.fromSeed(seedColor: seed, brightness: brightness);
+    // fromSeed flattens the seed into a tonal palette, which turns "frame
+    // crimson" into a pale pink in dark mode (#FFB3B1) and a muted brick in
+    // light (#904A49). Neither is the brand, and a pastel-pink slab under a
+    // viewfinder undercuts the whole identity — so primary is stated rather
+    // than derived. Every other role still comes from the palette.
+    final scheme = brightness == Brightness.dark
+        ? base.copyWith(primary: _crimsonOnDark, onPrimary: Colors.white)
+        : base.copyWith(primary: seed, onPrimary: Colors.white);
     final text = _textTheme();
     return ThemeData(
       colorScheme: scheme,
