@@ -33,11 +33,7 @@ class FramedWordmark extends StatelessWidget {
         curve: Curves.easeOutCubic,
         // Named `value`, not `t` — slang's translations are also `t`.
         builder: (context, value, child) => CustomPaint(
-          painter: _ReticlePainter(
-            progress: value,
-            color: scheme.onSurface,
-            accent: AppTheme.seed,
-          ),
+          painter: _ReticlePainter(progress: value, color: scheme.onSurface),
           child: child,
         ),
         child: Padding(
@@ -60,16 +56,11 @@ class FramedWordmark extends StatelessWidget {
 }
 
 class _ReticlePainter extends CustomPainter {
-  const _ReticlePainter({
-    required this.progress,
-    required this.color,
-    required this.accent,
-  });
+  const _ReticlePainter({required this.progress, required this.color});
 
   /// 0 = brackets wide open and invisible, 1 = locked.
   final double progress;
   final Color color;
-  final Color accent;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -101,17 +92,10 @@ class _ReticlePainter extends CustomPainter {
       );
     }
 
-    // Focus confirmed: a crimson lamp lighting up at the tip of one arm,
-    // once the brackets have actually arrived. Sat on the stroke rather
-    // than floating beside it — detached, it just looks like dust.
-    final locked = ((progress - 0.8) / 0.2).clamp(0.0, 1.0);
-    if (locked > 0) {
-      canvas.drawCircle(
-        Offset(rect.right - arm, rect.top),
-        weight * 0.95 * locked,
-        Paint()..color = accent,
-      );
-    }
+    // No focus lamp, no accent dot. Crimson means one thing in this brand —
+    // the subject inside the frame, as in the app icon — and there's no
+    // subject here but the word itself. A dot parked on an arm's open end
+    // said nothing and read as dust.
   }
 
   @override
