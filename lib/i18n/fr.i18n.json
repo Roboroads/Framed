@@ -105,14 +105,17 @@
   "preJoin": {
     "title": "Vous jouez aussi",
     "nameLabel": "Votre nom",
-    "consentNotice": "Jouer envoie votre nom, votre selfie de référence, votre position en direct, vos photos de piégeage et votre jeton de notification au serveur, le tout supprimé à la fin de la partie ou au plus tard après 24 heures. Jouez prudemment : faites attention à la circulation, ne pénétrez pas dans des propriétés privées, évitez tout contact physique, photographiez uniquement votre cible et respectez les zones que l'hôte déclare interdites. En rejoignant, vous acceptez cela.",
+    "consentNotice": "Jouer envoie votre nom, votre selfie de référence, votre position en direct, vos photos de frame et votre jeton push au serveur. Tout est supprimé à la fin de la partie, ou au bout de 24 heures au plus tard.",
     "privacyPolicyLink": "Politique de confidentialité",
     "selfieHint": "Les juges comparent ceci à chaque photo où vous apparaissez. Assurez-vous que votre visage est clairement visible.",
     "takeSelfie": "Prendre un selfie de référence",
     "retakeSelfie": "Reprendre le selfie",
     "nameSectionTitle": "Votre nom",
     "faceSectionTitle": "Votre visage",
-    "sharesSectionTitle": "Ce que jouer envoie"
+    "sharesSectionTitle": "Ce que jouer envoie",
+    "playSafeSectionTitle": "Jouez prudemment",
+    "playSafeNotice": "Attention à la circulation. Pas d'intrusion. Jamais de contact physique. Photographiez votre cible, pas la foule. Respectez les zones interdites par l'hôte.",
+    "agreeNotice": "En rejoignant, vous acceptez les deux."
   },
   "lobby": {
     "title": "Salle d'attente",

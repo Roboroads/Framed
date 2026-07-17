@@ -70,6 +70,10 @@ still waiting on a human read-through, one per line, grouped by locale.
 - [ ] preJoin.nameSectionTitle
 - [ ] preJoin.faceSectionTitle
 - [ ] preJoin.sharesSectionTitle
+- [ ] preJoin.consentNotice (reworded: data only)
+- [ ] preJoin.playSafeSectionTitle
+- [ ] preJoin.playSafeNotice
+- [ ] preJoin.agreeNotice
 
 ## fr
 

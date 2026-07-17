@@ -79,41 +79,7 @@ class _PreJoinFormState extends State<PreJoinForm> {
           maxLength: maxDisplayNameLength,
           onChanged: widget.onNameChanged,
         ),
-        Gap.xl,
-
-        // Its own section, not a footnote under the name field. This notice
-        // covers the selfie, the location, the frame photos and the push
-        // token — everything — but with no header of its own it inherited
-        // "Your name" and read as being about the name alone, which is both
-        // wrong and the one thing a consent notice can't afford to be.
-        //
-        // It stays *above* the selfie step. IDEA.md:172 and the published
-        // privacy policy both state the notice is read before the selfie is
-        // taken, and docs/release-checklist.md keeps the policy honest
-        // against this screen — moving it below the camera button would make
-        // a live legal document false. Its wording is tracked there too;
-        // don't reword it casually.
-        SectionHeader(t.preJoin.sharesSectionTitle),
-        Text(t.preJoin.consentNotice, style: theme.textTheme.bodySmall),
-        Gap.xs,
-        Align(
-          alignment: Alignment.centerLeft,
-          child: InkWell(
-            onTap: () => launchUrl(Uri.parse(_privacyPolicyUrl)),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: Space.xs),
-              child: Text(
-                t.preJoin.privacyPolicyLink,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.primary,
-                  decoration: TextDecoration.underline,
-                ),
-              ),
-            ),
-          ),
-        ),
-        Gap.xl,
-
+        Gap.md,
         SectionHeader(t.preJoin.faceSectionTitle),
         Text(t.preJoin.selfieHint, style: theme.textTheme.bodySmall),
         Gap.md,
@@ -145,6 +111,51 @@ class _PreJoinFormState extends State<PreJoinForm> {
             widget.selfieBytes == null
                 ? t.preJoin.takeSelfie
                 : t.preJoin.retakeSelfie,
+          ),
+        ),
+        Gap.xl,
+
+        // Two sections, because these are two unrelated promises. One is a
+        // legal disclosure about what leaves your phone; the other is "don't
+        // walk into traffic". They used to be one paragraph, which made each
+        // of them easier to skim past, and left the notice inheriting the
+        // "Your name" header above it as though it were a footnote about
+        // that one field.
+        //
+        // Both sit directly above the button that acts on them. Nothing
+        // leaves the device until it's pressed — the selfie is captured
+        // locally, and joining is the consent action — so this is the point
+        // where the notice is actually load-bearing. Wording is tracked
+        // against the privacy policy in docs/release-checklist.md.
+        SectionHeader(t.preJoin.sharesSectionTitle),
+        Text(t.preJoin.consentNotice, style: theme.textTheme.bodySmall),
+        Gap.xs,
+        Align(
+          alignment: Alignment.centerLeft,
+          child: InkWell(
+            onTap: () => launchUrl(Uri.parse(_privacyPolicyUrl)),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: Space.xs),
+              child: Text(
+                t.preJoin.privacyPolicyLink,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.primary,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+            ),
+          ),
+        ),
+        Gap.xl,
+
+        SectionHeader(t.preJoin.playSafeSectionTitle),
+        Text(t.preJoin.playSafeNotice, style: theme.textTheme.bodySmall),
+        Gap.md,
+        Text(
+          t.preJoin.agreeNotice,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurface,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ],

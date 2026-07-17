@@ -105,14 +105,17 @@
   "preJoin": {
     "title": "Jij speelt ook mee",
     "nameLabel": "Jouw naam",
-    "consentNotice": "Meespelen stuurt je naam, referentieselfie, live locatie, frame-foto's en pushtoken naar de server, alles verwijderd zodra het spel eindigt of uiterlijk na 24 uur. Speel veilig: let op verkeer, betreed geen verboden terrein, geen fysiek contact, fotografeer alleen je doelwit en respecteer gebieden die de host verboden verklaart. Door mee te doen ga je hiermee akkoord.",
+    "consentNotice": "Meespelen stuurt je naam, referentieselfie, live locatie, framefoto's en pushtoken naar de server. Alles wordt verwijderd zodra het spel klaar is, of uiterlijk na 24 uur.",
     "privacyPolicyLink": "Privacybeleid",
     "selfieHint": "Juryleden vergelijken dit met elke frame waar je in zit. Zorg dat je gezicht duidelijk zichtbaar is.",
     "takeSelfie": "Referentieselfie maken",
     "retakeSelfie": "Selfie opnieuw maken",
     "nameSectionTitle": "Je naam",
     "faceSectionTitle": "Je gezicht",
-    "sharesSectionTitle": "Wat meespelen verstuurt"
+    "sharesSectionTitle": "Wat meespelen verstuurt",
+    "playSafeSectionTitle": "Speel veilig",
+    "playSafeNotice": "Let op het verkeer. Betreed geen verboden terrein. Nooit fysiek contact. Fotografeer je doelwit, geen omstanders. Respecteer plekken die de host verboden heeft verklaard.",
+    "agreeNotice": "Door mee te doen ga je met allebei akkoord."
   },
   "lobby": {
     "title": "Lobby",

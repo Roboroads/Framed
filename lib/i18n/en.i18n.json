@@ -105,14 +105,17 @@
   "preJoin": {
     "title": "You're playing too",
     "nameLabel": "Your name",
-    "consentNotice": "Playing sends your name, reference selfie, live location, frame photos, and push token to the server, all deleted when the game ends or after 24 hours at the latest. Play safe: watch for traffic, don't trespass, no physical contact, photograph your target only, and respect any areas the host puts off-limits. By joining, you agree.",
+    "consentNotice": "Playing sends your name, reference selfie, live location, frame photos, and push token to the server. All of it is deleted when the game ends, or after 24 hours at the latest.",
     "privacyPolicyLink": "Privacy policy",
     "selfieHint": "Judges compare this to every frame you're in. Make sure your face is clearly visible.",
     "takeSelfie": "Take reference selfie",
     "retakeSelfie": "Retake selfie",
     "nameSectionTitle": "Your name",
     "faceSectionTitle": "Your face",
-    "sharesSectionTitle": "What playing sends"
+    "sharesSectionTitle": "What playing sends",
+    "playSafeSectionTitle": "Play safe",
+    "playSafeNotice": "Watch for traffic. Don't trespass. No physical contact, ever. Photograph your target, not crowds. Respect any areas the host puts off-limits.",
+    "agreeNotice": "By joining, you agree to both."
   },
   "lobby": {
     "title": "Lobby",

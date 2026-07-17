@@ -105,14 +105,17 @@
   "preJoin": {
     "title": "Tú también juegas",
     "nameLabel": "Tu nombre",
-    "consentNotice": "Jugar envía tu nombre, tu selfie de referencia, tu ubicación en tiempo real, tus fotos de eliminación y tu token de notificaciones al servidor; todo se borra cuando termina la partida o, como máximo, a las 24 horas. Juega de forma segura: vigila el tráfico, no entres en propiedad privada, evita el contacto físico, fotografía solo a tu objetivo y respeta las zonas que el anfitrión declare prohibidas. Al unirte, aceptas esto.",
+    "consentNotice": "Jugar envía tu nombre, selfie de referencia, ubicación en directo, fotos de frames y token push al servidor. Todo se borra cuando termina la partida, o como máximo a las 24 horas.",
     "privacyPolicyLink": "Política de privacidad",
     "selfieHint": "Los jueces comparan esto con cada foto en la que apareces. Asegúrate de que tu cara se vea con claridad.",
     "takeSelfie": "Hacer selfie de referencia",
     "retakeSelfie": "Repetir selfie",
     "nameSectionTitle": "Tu nombre",
     "faceSectionTitle": "Tu cara",
-    "sharesSectionTitle": "Qué envía jugar"
+    "sharesSectionTitle": "Qué envía jugar",
+    "playSafeSectionTitle": "Juega seguro",
+    "playSafeNotice": "Atento al tráfico. No entres en propiedad ajena. Nunca contacto físico. Fotografía a tu objetivo, no a la gente alrededor. Respeta las zonas que el anfitrión declare prohibidas.",
+    "agreeNotice": "Al unirte, aceptas ambas cosas."
   },
   "lobby": {
     "title": "Sala de espera",
