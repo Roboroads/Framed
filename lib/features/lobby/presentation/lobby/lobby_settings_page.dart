@@ -3,8 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../../../core/widgets/closable_dialog.dart';
+import '../../../../core/widgets/confirmation_dialog.dart';
 import '../../../../core/widgets/geofence_map.dart';
 import '../../../../core/widgets/geofence_map_viewer_page.dart';
+import '../../../../core/widgets/section_header.dart';
 import '../../../../i18n/strings.g.dart';
 import 'lobby_bloc.dart';
 import 'lobby_state.dart';
@@ -27,26 +29,30 @@ class LobbySettingsPage extends StatelessWidget {
           final lat = state.geofenceLat;
           final lng = state.geofenceLng;
           return ListView(
-            padding: const EdgeInsets.all(Space.lg),
+            padding: const EdgeInsets.fromLTRB(
+              Space.xl,
+              Space.lg,
+              Space.xl,
+              Space.xl,
+            ),
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: Space.lg),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        t.hostSetup.geofenceSectionTitle,
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                    ),
-                    HGap.xs,
-                    _InfoIcon(message: t.hostSetup.geofenceInfo),
-                  ],
+              SectionHeader(t.hostSetup.geofenceSectionTitle),
+              // Shown, not hidden behind an info icon. It's one sentence and
+              // it's the rule the server will kill you over — the seven
+              // timing knobs below keep their [i] because their explanations
+              // are paragraphs, not because hiding things is the house style.
+              Text(
+                t.hostSetup.geofenceInfo,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
-              Gap.sm,
+              Gap.md,
               if (lat == null || lng == null)
-                const Center(child: CircularProgressIndicator())
+                const SizedBox(
+                  height: 240,
+                  child: Center(child: CircularProgressIndicator()),
+                )
               else ...[
                 ClipRRect(
                   borderRadius: AppTheme.corner,
@@ -70,14 +76,32 @@ class LobbySettingsPage extends StatelessWidget {
                     ),
                   ),
                 ),
+                Gap.md,
+                // The radius, stated. It used to live only in the slider's
+                // drag tooltip, so the host could see the circle and the
+                // handle but never the number unless they were mid-drag —
+                // and "how big is the play area" is the one question this
+                // screen exists to answer.
+                //
+                // Mono at title size, not a display role: the display sizes
+                // are for numbers that *are* the screen (a dispersal clock
+                // filling the view). This one labels the slider under it, and
+                // at 30px it shouted over the map it describes.
+                Center(
+                  child: Text(
+                    t.hostSetup.geofenceRadiusLabel(
+                      radius: state.geofenceRadiusM,
+                    ),
+                    style: AppTheme.mono(
+                      Theme.of(context).textTheme.titleLarge!,
+                    ),
+                  ),
+                ),
                 Slider(
                   value: state.geofenceRadiusM.toDouble(),
                   min: 50,
                   max: 2000,
                   divisions: 39,
-                  label: t.hostSetup.geofenceRadiusLabel(
-                    radius: state.geofenceRadiusM,
-                  ),
                   onChanged: (v) => bloc.changeGeofenceRadius(v.round()),
                 ),
                 Align(
@@ -98,11 +122,8 @@ class LobbySettingsPage extends StatelessWidget {
                   ),
                 ),
               ],
-              const Divider(height: 32),
-              Text(
-                t.hostSetup.timingSectionTitle,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
+              Gap.xl,
+              SectionHeader(t.hostSetup.timingSectionTitle),
               _Stepper(
                 label: t.hostSetup.disperseMinutes,
                 info: t.hostSetup.disperseMinutesInfo,
@@ -155,6 +176,31 @@ class LobbySettingsPage extends StatelessWidget {
                 unit: t.hostSetup.unitMinutesShort,
                 onChanged: (v) =>
                     bloc.changeSetting('frame_cooldown_minutes', v),
+              ),
+              Gap.xl,
+              // Danger-styled confirmation: reset isn't irreversible, but it
+              // throws away everything the host has tuned, so it asks first.
+              // The button is a plain text button, not filled — it's an
+              // escape hatch, not the screen's main action.
+              Center(
+                child: TextButton.icon(
+                  onPressed: () async {
+                    final ok = await showConfirmationDialog(
+                      context: context,
+                      title: t.hostSetup.resetConfirmTitle,
+                      message: t.hostSetup.resetConfirmBody,
+                      confirmLabel: t.hostSetup.resetConfirmButton,
+                    );
+                    if (ok) await bloc.resetSettings();
+                  },
+                  icon: const Icon(Icons.restart_alt),
+                  label: Text(t.hostSetup.resetButton),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Theme.of(
+                      context,
+                    ).extension<GameColors>()!.danger,
+                  ),
+                ),
               ),
             ],
           );
@@ -220,8 +266,13 @@ class _StepperState extends State<_Stepper> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      contentPadding: EdgeInsets.zero,
       title: Row(
         children: [
+          // Expanded, not Flexible: Flexible sizes to the text, so the icon
+          // hugged the end of each label and landed at a different x on every
+          // row. Expanded pushes it to a fixed right edge, so the column of
+          // icons reads as a column.
           Expanded(child: Text(widget.label)),
           HGap.xs,
           _InfoIcon(message: widget.info),
@@ -244,6 +295,10 @@ class _StepperState extends State<_Stepper> {
               textAlign: TextAlign.center,
               keyboardType: TextInputType.number,
               onSubmitted: (_) => _focusNode.unfocus(),
+              // A number, so the data face with tabular figures: these tick
+              // between 1 and 2 digits as you press, and a proportional font
+              // makes the field twitch on every step.
+              style: AppTheme.mono(Theme.of(context).textTheme.bodyLarge!),
               // `border: InputBorder.none` alone isn't enough against a
               // global inputDecorationTheme: it clears `border` but leaves
               // the theme's fill and its 16px content padding, which squeeze

@@ -1,4 +1,7 @@
 {
+  "common": {
+    "close": "Fermer"
+  },
   "app": {
     "title": "Framed"
   },
@@ -100,7 +103,11 @@
     "frameCooldownMinutesInfo": "Combien de temps un assassin attend après un vote de piégeage raté avant de pouvoir soumettre une nouvelle photo.",
     "createGame": "Créer la partie",
     "errorBadSettings": "Quelque chose ne va pas dans les réglages. Vérifiez les valeurs et réessayez.",
-    "errorGeneric": "Impossible de créer la partie. Vérifiez votre connexion et réessayez."
+    "errorGeneric": "Impossible de créer la partie. Vérifiez votre connexion et réessayez.",
+    "resetButton": "Rétablir les valeurs par défaut",
+    "resetConfirmTitle": "Rétablir tous les réglages ?",
+    "resetConfirmBody": "Chaque réglage de cet écran revient à sa valeur par défaut. L'emplacement de la zone de jeu ne change pas.",
+    "resetConfirmButton": "Rétablir"
   },
   "preJoin": {
     "title": "Vous jouez aussi",

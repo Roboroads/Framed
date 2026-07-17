@@ -1,4 +1,7 @@
 {
+  "common": {
+    "close": "Cerrar"
+  },
   "app": {
     "title": "Framed"
   },
@@ -100,7 +103,11 @@
     "frameCooldownMinutesInfo": "Cuánto espera un asesino tras un voto de eliminación fallido antes de poder enviar otra foto.",
     "createGame": "Crear partida",
     "errorBadSettings": "Algo en los ajustes no parece correcto. Revisa los valores e inténtalo de nuevo.",
-    "errorGeneric": "No se pudo crear la partida. Comprueba tu conexión e inténtalo de nuevo."
+    "errorGeneric": "No se pudo crear la partida. Comprueba tu conexión e inténtalo de nuevo.",
+    "resetButton": "Restablecer valores",
+    "resetConfirmTitle": "¿Restablecer todos los ajustes?",
+    "resetConfirmBody": "Cada ajuste de esta pantalla vuelve a su valor por defecto. La ubicación de la zona de juego se mantiene.",
+    "resetConfirmButton": "Restablecer"
   },
   "preJoin": {
     "title": "Tú también juegas",

@@ -1,4 +1,7 @@
 {
+  "common": {
+    "close": "Close"
+  },
   "app": {
     "title": "Framed"
   },
@@ -100,7 +103,11 @@
     "frameCooldownMinutesInfo": "How long an assassin waits after a failed frame vote before they can submit another photo.",
     "createGame": "Create game",
     "errorBadSettings": "Something in the settings doesn't look right. Check the values and try again.",
-    "errorGeneric": "Couldn't create the game. Check your connection and try again."
+    "errorGeneric": "Couldn't create the game. Check your connection and try again.",
+    "resetButton": "Reset to defaults",
+    "resetConfirmTitle": "Reset all settings?",
+    "resetConfirmBody": "Every setting on this screen goes back to its default. The play area's location stays where it is.",
+    "resetConfirmButton": "Reset"
   },
   "preJoin": {
     "title": "You're playing too",

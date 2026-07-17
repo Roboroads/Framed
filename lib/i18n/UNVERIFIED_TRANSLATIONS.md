@@ -74,6 +74,11 @@ still waiting on a human read-through, one per line, grouped by locale.
 - [ ] preJoin.playSafeSectionTitle
 - [ ] preJoin.playSafeNotice
 - [ ] preJoin.agreeNotice
+- [ ] common.close
+- [ ] hostSetup.resetButton
+- [ ] hostSetup.resetConfirmTitle
+- [ ] hostSetup.resetConfirmBody
+- [ ] hostSetup.resetConfirmButton
 
 ## fr
 

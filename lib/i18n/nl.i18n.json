@@ -1,4 +1,7 @@
 {
+  "common": {
+    "close": "Sluiten"
+  },
   "app": {
     "title": "Framed"
   },
@@ -100,7 +103,11 @@
     "frameCooldownMinutesInfo": "Hoe lang een moordenaar wacht na een mislukte frame-stemming voordat hij weer een foto kan insturen.",
     "createGame": "Spel aanmaken",
     "errorBadSettings": "Iets in de instellingen klopt niet. Controleer de waarden en probeer het opnieuw.",
-    "errorGeneric": "Kon het spel niet aanmaken. Controleer je verbinding en probeer het opnieuw."
+    "errorGeneric": "Kon het spel niet aanmaken. Controleer je verbinding en probeer het opnieuw.",
+    "resetButton": "Standaardwaarden herstellen",
+    "resetConfirmTitle": "Alle instellingen herstellen?",
+    "resetConfirmBody": "Elke instelling op dit scherm gaat terug naar de standaardwaarde. De locatie van het speelgebied blijft waar die is.",
+    "resetConfirmButton": "Herstellen"
   },
   "preJoin": {
     "title": "Jij speelt ook mee",

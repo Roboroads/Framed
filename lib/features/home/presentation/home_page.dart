@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/di/injector.dart';
 import '../../../core/session/resume_outcome.dart';
 import '../../../core/session/session_resume_service.dart';
+import '../../../core/widgets/closable_dialog.dart';
 import '../../../core/widgets/framed_wordmark.dart';
 import '../../../i18n/strings.g.dart';
 import '../../../core/theme/spacing.dart';
@@ -161,56 +162,36 @@ class _HomePageState extends State<HomePage> {
   Future<void> _showGoodToKnow(BuildContext context) {
     return showDialog<void>(
       context: context,
-      builder: (context) => Dialog(
-        child: Padding(
-          padding: const EdgeInsets.all(Space.xl),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxHeight: 500),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        t.goodToKnow.title,
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.of(context).pop(),
-                    ),
-                  ],
-                ),
-                Expanded(
-                  child: ListView(
-                    children: [
-                      _GoodToKnowSection(
-                        title: t.goodToKnow.fairPlayTitle,
-                        body: t.home.playFairDisclaimer,
-                      ),
-                      _GoodToKnowSection(
-                        title: t.goodToKnow.privacyTitle,
-                        body: t.goodToKnow.privacyBody,
-                      ),
-                      _GoodToKnowSection(
-                        title: t.goodToKnow.moneyTitle,
-                        body: t.goodToKnow.moneyBody,
-                      ),
-                      _GoodToKnowSection(
-                        title: t.goodToKnow.aiTitle,
-                        body: t.goodToKnow.aiBody,
-                      ),
-                      _GoodToKnowSection(
-                        title: t.goodToKnow.beginnerTipsTitle,
-                        body: t.goodToKnow.beginnerTipsBody,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+      // Same shape as every other dialog: read from the top, leave from the
+      // bottom. This one had its own hand-rolled title-plus-X row.
+      builder: (context) => ClosableDialog(
+        title: t.goodToKnow.title,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxHeight: 420),
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              _GoodToKnowSection(
+                title: t.goodToKnow.fairPlayTitle,
+                body: t.home.playFairDisclaimer,
+              ),
+              _GoodToKnowSection(
+                title: t.goodToKnow.privacyTitle,
+                body: t.goodToKnow.privacyBody,
+              ),
+              _GoodToKnowSection(
+                title: t.goodToKnow.moneyTitle,
+                body: t.goodToKnow.moneyBody,
+              ),
+              _GoodToKnowSection(
+                title: t.goodToKnow.aiTitle,
+                body: t.goodToKnow.aiBody,
+              ),
+              _GoodToKnowSection(
+                title: t.goodToKnow.beginnerTipsTitle,
+                body: t.goodToKnow.beginnerTipsBody,
+              ),
+            ],
           ),
         ),
       ),

@@ -210,24 +210,27 @@ class _GeofenceMapState extends State<GeofenceMap> {
         // — this widget renders as small as ~160px tall in some callers, too
         // little room for Rich's expandable layout. Not SimpleAttributionWidget
         // either: it hardcodes a "flutter_map | " prefix ahead of the source.
-        SafeArea(
-          child: Align(
-            alignment: Alignment.bottomRight,
-            child: ColoredBox(
-              color: Theme.of(
-                context,
-              ).colorScheme.surface.withValues(alpha: 0.8),
-              child: Padding(
-                padding: const EdgeInsets.all(3),
-                child: Text(
-                  '© ${t.hostSetup.osmAttribution}',
-                  style: TextStyle(
-                    fontSize:
-                        (Theme.of(context).textTheme.bodyMedium?.fontSize ??
-                            14) *
-                        0.5,
-                  ),
-                ),
+        // No SafeArea: this widget is usually a small box inside a page
+        // that has already handled the insets, and asking again pushed the
+        // credit off its own corner and into the map. Flush bottom-right.
+        Align(
+          alignment: Alignment.bottomRight,
+          child: ColoredBox(
+            color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: Space.xs,
+                vertical: 2,
+              ),
+              child: Text(
+                '© ${t.hostSetup.osmAttribution}',
+                // labelSmall from the theme, not half of bodyMedium's size.
+                // That worked out at ~7px, and the policy this box exists to
+                // satisfy asks for attribution that's *visible* — a credit
+                // nobody can read isn't one. It's the smallest role the type
+                // scale has, which is the honest way to say "as small as this
+                // is allowed to get".
+                style: Theme.of(context).textTheme.labelSmall,
               ),
             ),
           ),

@@ -11,6 +11,7 @@ import '../../domain/lobby_error.dart';
 import '../../domain/lobby_repository.dart';
 import '../../domain/lobby_roster_entry.dart';
 import 'lobby_state.dart';
+import '../../domain/game_settings.dart';
 
 class LobbyBloc extends Cubit<LobbyState> {
   LobbyBloc({
@@ -249,6 +250,24 @@ class LobbyBloc extends Cubit<LobbyState> {
         'geofence_lng': center.longitude,
       },
     );
+  }
+
+  /// Reset every host-configurable setting to its default (#106).
+  ///
+  /// The defaults have exactly one home — GameSettings' `@Default`s, which
+  /// mirror the DB column defaults — so this builds a GameSettings with only
+  /// the geofence supplied and ships its toJson(). The center is deliberately
+  /// carried through rather than reset: it's the host's actual location, not
+  /// a preference, and there's no sensible "default" coordinate to snap it to.
+  Future<void> resetSettings() async {
+    final defaults =
+        GameSettings(
+            geofenceLat: state.geofenceLat ?? 0,
+            geofenceLng: state.geofenceLng ?? 0,
+          ).toJson()
+          ..remove('geofence_lat')
+          ..remove('geofence_lng');
+    await _repository.updateSettings(gameId: gameId, settings: defaults);
   }
 
   Future<void> start() async {
