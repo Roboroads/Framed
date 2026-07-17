@@ -36,6 +36,10 @@ The first pulse fires as soon as dispersal ends and targets are assigned, not on
 
 The simultaneous pulse is a feature: everyone stops to check their phone at the same moment, which is itself a tell you can watch for IRL.
 
+**The pulse has a sound**, which makes that tell audible instead of only visible: a two-tone rising blip, the noise a camera makes when focus locks. Every phone in earshot fires it at the same instant, so a player who hears one nearby knows someone is standing right there — even if they never looked up. Muting your phone hides you from that, at the cost of missing your own pulses. That trade is the player's to make, and it's a real one.
+
+The frame camera, by contrast, is **silent on purpose**. Photographing your target is covert (the target is never told), so a shutter noise at capture time would hand them the one warning they should never get. The shutter sound belongs to the judging screen, where the photo is revealed to the jury — a moment that's already public.
+
 ## Notifications
 
 Anything that needs your attention fires a **high-priority, time-sensitive push notification** (on both platforms), so the game works with your phone in your pocket:

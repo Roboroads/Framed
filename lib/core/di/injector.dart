@@ -5,6 +5,7 @@ import '../../features/game/data/supabase_game_repository.dart';
 import '../../features/game/domain/game_repository.dart';
 import '../../features/lobby/data/supabase_lobby_repository.dart';
 import '../../features/lobby/domain/lobby_repository.dart';
+import '../audio/game_sounds.dart';
 import '../location/wake_lock_service.dart';
 import '../push/local_alarms.dart';
 import '../push/push_service.dart';
@@ -20,6 +21,7 @@ void configureDependencies() {
   getIt.registerSingleton<SupabaseClient>(Supabase.instance.client);
   getIt.registerLazySingleton<GameChannels>(() => GameChannels(getIt()));
   getIt.registerLazySingleton<SessionStore>(SessionStore.new);
+  getIt.registerLazySingleton<GameSounds>(AudioPlayerGameSounds.new);
   getIt.registerLazySingleton<PushService>(PushService.new);
   getIt.registerLazySingleton<LocalAlarms>(FlutterLocalAlarms.new);
   getIt.registerLazySingleton<WakeLockService>(FlutterWakeLockService.new);

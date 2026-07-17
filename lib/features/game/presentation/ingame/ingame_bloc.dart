@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/audio/game_sounds.dart';
 import '../../../../core/chat/chat_limits.dart';
 import '../../../../core/chat/chat_message.dart';
 import '../../../../core/crypto/game_crypto.dart';
@@ -24,6 +25,10 @@ class IngameBloc extends Cubit<IngameState> {
     required LocalAlarms localAlarms,
     required GameSession session,
     required WakeLockService wakeLockService,
+    // Optional: null means silence. Every sound here accompanies something
+    // already on screen, so tests (and any caller that doesn't care) can
+    // leave it off without changing what the bloc does.
+    GameSounds? sounds,
     // game:{game_id}:dead (#24) — unlike [events], not joined until this
     // player actually dies (RLS refuses the subscribe before then; see
     // _startDeadChat), same lazy-join-on-listen behaviour as GameChannels.
@@ -43,6 +48,7 @@ class IngameBloc extends Cubit<IngameState> {
   }) : _crypto = crypto,
        _repository = repository,
        _localAlarms = localAlarms,
+       _sounds = sounds,
        _session = session,
        _wakeLockService = wakeLockService,
        _deadChatEvents = deadChatEvents,
@@ -74,6 +80,7 @@ class IngameBloc extends Cubit<IngameState> {
   final GameCrypto _crypto;
   final GameRepository _repository;
   final LocalAlarms _localAlarms;
+  final GameSounds? _sounds;
   final GameSession _session;
   final WakeLockService _wakeLockService;
   final Stream<GameEvent> _deadChatEvents;
@@ -489,6 +496,17 @@ class IngameBloc extends Cubit<IngameState> {
           ),
         ),
       );
+      // The pulse's sound, and only for a pulse that actually shows an
+      // arrow: an already-expired snapshot is dropped above, and chirping
+      // with nothing on screen would be a false tell — it tells everyone
+      // nearby where you are for a bearing you never got. Sound follows the
+      // screen here, same as everywhere else in GameSounds.
+      //
+      // It can't double up with the notification's: FCM registers only a
+      // *background* handler (see pushBackgroundHandler), so a foreground
+      // pulse posts no notification at all and this is the only noise made.
+      unawaited(_sounds?.play(GameSound.pulse));
+
       _compassTimer = Timer(remaining, () {
         if (isClosed || generation != _compassGeneration) return;
         emit(state.copyWith(compass: null));
@@ -685,6 +703,16 @@ class IngameBloc extends Cubit<IngameState> {
         ],
       ),
     );
+
+    // The photo just reached the jury. This is the one place that transition
+    // happens — the overlay renders it, but only the bloc knows it's new, so
+    // the sound can't fire twice for one frame however often the widget
+    // rebuilds or remounts.
+    //
+    // The camera that took this was silent on purpose (IDEA.md: the target
+    // is never told they've been framed). A shutter here costs nobody their
+    // cover; the reveal is already public.
+    if (loaded != null) unawaited(_sounds?.play(GameSound.shutter));
   }
 
   @override

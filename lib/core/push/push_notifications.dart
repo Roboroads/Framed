@@ -11,9 +11,52 @@ import '../../i18n/strings.g.dart';
 class PushNotifications {
   PushNotifications._();
 
+  /// An Android channel's sound is fixed the moment the channel is first
+  /// created. Later edits to the same id are ignored, and deleting the
+  /// channel doesn't help either — Android deliberately restores a
+  /// recreated channel's old settings so an update can't silently override
+  /// what a user chose. Changing a sound therefore means a *new id*.
+  ///
+  /// Nothing has shipped, so this id keeps its original name: the only
+  /// installs that ever created a soundless `framed_game_events` are dev
+  /// devices, and reinstalling clears it. After the first store build that
+  /// stops being true, and any sound change from then on has to bump this.
   static const _channelId = 'framed_game_events';
+
+  /// `android/app/src/main/res/raw/pulse.ogg` and `ios/Runner/Sounds/pulse.caf`,
+  /// both generated from `assets/audio/src/pulse.wav` by tools/gen_audio.sh.
+  /// Android addresses it as a resource name (no extension); iOS by filename.
+  static const _soundResource = 'pulse';
+  static const _soundFileIos = 'pulse.caf';
+
+  static const _sound = RawResourceAndroidNotificationSound(_soundResource);
+
   static final _plugin = FlutterLocalNotificationsPlugin();
   static bool _initialized = false;
+
+  /// Shared by [show] and [scheduleAt] — a pulse must sound the same whether
+  /// it arrived as a push or as the local alarm backing that push up (#46).
+  static NotificationDetails get _details => NotificationDetails(
+    android: AndroidNotificationDetails(
+      _channelId,
+      t.push.channelName,
+      channelDescription: t.push.channelDescription,
+      importance: Importance.max,
+      priority: Priority.high,
+      // Redundant on API 26+, where the channel owns the sound, but this is
+      // what pre-O devices read.
+      sound: _sound,
+    ),
+    iOS: const DarwinNotificationDetails(
+      interruptionLevel: InterruptionLevel.timeSensitive,
+      // Unverified: iOS resolves this against the app bundle, and adding
+      // ios/Runner/Sounds/ to the Runner target meant hand-editing
+      // project.pbxproj — there's no macOS or Xcode on this dev machine to
+      // check it against. Falls back to the default sound if the resource
+      // never made it into the bundle. Verify on real hardware with #31.
+      sound: _soundFileIos,
+    ),
+  );
 
   static Future<void> ensureInitialized() async {
     if (_initialized) return;
@@ -33,6 +76,7 @@ class PushNotifications {
             t.push.channelName,
             description: t.push.channelDescription,
             importance: Importance.max,
+            sound: _sound,
           ),
         );
     _initialized = true;
@@ -50,18 +94,7 @@ class PushNotifications {
       DateTime.now().millisecondsSinceEpoch.remainder(1 << 31),
       title,
       body,
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          _channelId,
-          t.push.channelName,
-          channelDescription: t.push.channelDescription,
-          importance: Importance.max,
-          priority: Priority.high,
-        ),
-        iOS: const DarwinNotificationDetails(
-          interruptionLevel: InterruptionLevel.timeSensitive,
-        ),
-      ),
+      _details,
     );
   }
 
@@ -94,18 +127,7 @@ class PushNotifications {
       // reason to resolve (or ship a dependency to resolve) the device's
       // actual timezone name just for this.
       tz.TZDateTime.from(at, tz.UTC),
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          _channelId,
-          t.push.channelName,
-          channelDescription: t.push.channelDescription,
-          importance: Importance.max,
-          priority: Priority.high,
-        ),
-        iOS: const DarwinNotificationDetails(
-          interruptionLevel: InterruptionLevel.timeSensitive,
-        ),
-      ),
+      _details,
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
     );
   }

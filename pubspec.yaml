@@ -7,6 +7,7 @@ environment:
   sdk: ^3.11.5
 
 dependencies:
+  audioplayers: ^6.8.1
   camera: ^0.12.0+1
   characters: ^1.4.0
   cryptography: ^2.9.0
@@ -51,6 +52,14 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  # In-app SFX only. The notification sounds live in the Android res/raw tree
+  # and the iOS bundle instead — an OS channel can't read a Flutter asset.
+  # Flutter doesn't recurse into subdirectories, so assets/audio/src/ (the
+  # .wav sources tools/gen_audio.sh generates everything from) stays out of
+  # the bundle.
+  assets:
+    - assets/audio/
 
   # Fonts are bundled, not fetched. The google_fonts package pulls from
   # fonts.gstatic.com at runtime, which would put a Google request in an

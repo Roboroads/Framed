@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:framed/core/audio/game_sounds.dart';
 import 'package:framed/core/crypto/game_crypto.dart';
 import 'package:framed/core/location/wake_lock_service.dart';
 import 'package:framed/core/push/local_alarms.dart';
@@ -43,6 +44,15 @@ class _FakeWakeLockService implements WakeLockService {
   Future<void> disable() async {
     disableCallCount++;
     lastEnabled = false;
+  }
+}
+
+class _FakeGameSounds implements GameSounds {
+  final played = <GameSound>[];
+
+  @override
+  Future<void> play(GameSound sound) async {
+    played.add(sound);
   }
 }
 
@@ -269,6 +279,7 @@ void main() {
     late _FakeLocalAlarms localAlarms;
     late GameSession session;
     late _FakeWakeLockService wakeLockService;
+    late _FakeGameSounds sounds;
     late StreamController<GameEvent> events;
     late DateTime endsAt;
 
@@ -278,6 +289,7 @@ void main() {
       localAlarms = _FakeLocalAlarms();
       session = GameSession(SessionStore(_FakeSecureKeyValueStore()));
       wakeLockService = _FakeWakeLockService();
+      sounds = _FakeGameSounds();
       events = StreamController<GameEvent>();
       endsAt = DateTime.utc(2026, 1, 1, 12);
     });
@@ -1044,6 +1056,71 @@ void main() {
       expect(bloc.state.compass, isNull);
     });
 
+    // #109: the pulse is the game's signature sound, and IDEA.md treats
+    // every phone chirping at once as a tell players can act on. A silent
+    // pulse is a broken mechanic, not a missing nicety.
+    test('compass_pulse plays the pulse sound', () async {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        localAlarms: localAlarms,
+        session: session,
+        wakeLockService: wakeLockService,
+        sounds: sounds,
+        gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
+        initialEndsAt: endsAt,
+      );
+      addTearDown(bloc.close);
+
+      events.add(
+        GameEvent.compassPulse(
+          bearingDeg: 42,
+          distanceM: 1234,
+          expiresAt: DateTime.now().add(const Duration(minutes: 1)),
+          nextPulseAt: DateTime.now().add(const Duration(minutes: 10)),
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      expect(sounds.played, [GameSound.pulse]);
+    });
+
+    // The mirror of the test above: an expired pulse is dropped without ever
+    // drawing an arrow, so it must not chirp either. A sound with nothing on
+    // screen tells everyone nearby where you are, for a bearing you never got.
+    test('an already-expired compass_pulse plays nothing', () async {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        localAlarms: localAlarms,
+        session: session,
+        wakeLockService: wakeLockService,
+        sounds: sounds,
+        gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
+        initialEndsAt: endsAt,
+      );
+      addTearDown(bloc.close);
+
+      events.add(
+        GameEvent.compassPulse(
+          bearingDeg: 42,
+          distanceM: 1234,
+          expiresAt: DateTime.now().subtract(const Duration(seconds: 1)),
+          nextPulseAt: DateTime.now().add(const Duration(minutes: 10)),
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.compass, isNull);
+      expect(sounds.played, isEmpty);
+    });
+
     test(
       'compass_pulse sets nextPulseAt for the following countdown',
       () async {
@@ -1466,6 +1543,82 @@ void main() {
       expect(loaded, isNotNull);
       expect(loaded!.targetName, 'Bob');
       expect(loaded.photoBytes, photoBytes);
+    });
+
+    // #109: the shutter belongs to the photo reaching the jury, which is the
+    // moment the bloc emits `loaded` — not to the overlay appearing (it shows
+    // a spinner first) and not to any of the rebuilds after. Living here
+    // rather than in the widget is what makes "once per frame" true no matter
+    // how often the overlay remounts.
+    test('a loaded frame_to_judge plays the shutter once', () async {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        localAlarms: localAlarms,
+        session: session,
+        wakeLockService: wakeLockService,
+        sounds: sounds,
+        gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
+        initialEndsAt: endsAt,
+      );
+      addTearDown(bloc.close);
+      repository.framePhotoBytes = await crypto.encryptBytes(
+        Uint8List.fromList([9]),
+      );
+      repository.selfieBytes = await crypto.encryptBytes(
+        Uint8List.fromList([8]),
+      );
+
+      events.add(
+        GameEvent.frameToJudge(
+          frameId: 'frame-1',
+          photoPath: 'game-1/uuid-x',
+          targetNameCiphertext: await crypto.encryptString('Bob'),
+          targetSelfiePath: 'game-1/bob',
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.judgingQueue.first.loaded, isNotNull);
+      expect(sounds.played, [GameSound.shutter]);
+    });
+
+    // A frame whose photo never decrypts shows the retry message, not a
+    // picture. Nothing was revealed, so nothing should be heard.
+    test('a frame_to_judge that fails to load plays nothing', () async {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        localAlarms: localAlarms,
+        session: session,
+        wakeLockService: wakeLockService,
+        sounds: sounds,
+        gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
+        initialEndsAt: endsAt,
+      );
+      addTearDown(bloc.close);
+      repository.framePhotoBytes = null;
+
+      events.add(
+        GameEvent.frameToJudge(
+          frameId: 'frame-1',
+          photoPath: 'game-1/uuid-x',
+          targetNameCiphertext: await crypto.encryptString('Bob'),
+          targetSelfiePath: 'game-1/bob',
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.judgingQueue.first.failed, isTrue);
+      expect(sounds.played, isEmpty);
     });
 
     test('a second frame_to_judge queues behind the first, unloaded', () async {

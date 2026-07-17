@@ -11,6 +11,7 @@ import 'package:latlong2/latlong.dart';
 
 import 'package:flutter_compass/flutter_compass.dart';
 
+import '../../../../core/audio/game_sounds.dart';
 import '../../../../core/camera/in_app_camera_page.dart';
 import '../../../../core/chat/chat_message.dart';
 import '../../../../core/chat/chat_panel.dart';
@@ -78,6 +79,7 @@ class _IngamePageState extends State<IngamePage> {
       localAlarms: getIt<LocalAlarms>(),
       session: session,
       wakeLockService: getIt<WakeLockService>(),
+      sounds: getIt<GameSounds>(),
       deadChatEvents: channels.deadChat(session.gameId),
       gameId: session.gameId,
       myPlayerId: session.playerId,
