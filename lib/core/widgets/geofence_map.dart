@@ -10,6 +10,7 @@ import '../config/env.dart';
 import '../theme/app_theme.dart';
 import '../theme/framed_icons.dart';
 import 'permission_rationale.dart';
+import '../theme/spacing.dart';
 
 /// OSM map showing the game's geofence: a live view of [center] (always the
 /// host's current location — see [currentLocationOrFallback]) and [radiusM],
@@ -88,7 +89,7 @@ class _GeofenceMapState extends State<GeofenceMap> {
     final self = widget.selfMarker;
     if (self != null) bounds.extend(self);
     _mapController.fitCamera(
-      CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(8)),
+      CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(Space.sm)),
     );
   }
 

@@ -13,6 +13,7 @@ import '../../domain/lobby_repository.dart';
 import '../pre_join/pre_join_form.dart';
 import 'host_setup_cubit.dart';
 import 'host_setup_state.dart';
+import '../../../../core/theme/spacing.dart';
 
 /// Arbitrary fallback when GPS is unavailable/denied — Utrecht, NL (this
 /// backend's home region).
@@ -73,20 +74,20 @@ class _HostSetupViewState extends State<_HostSetupView> {
         builder: (context, state) {
           final cubit = context.read<HostSetupCubit>();
           return ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(Space.lg),
             children: [
               Text(
                 t.preJoin.title,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
-              const SizedBox(height: 8),
+              Gap.sm,
               PreJoinForm(
                 name: state.name,
                 onNameChanged: cubit.nameChanged,
                 selfieBytes: state.selfieBytes,
                 onSelfieChanged: cubit.selfieChanged,
               ),
-              const SizedBox(height: 24),
+              Gap.xl,
               FilledButton(
                 onPressed: state.canSubmit ? cubit.submit : null,
                 child: state.status == HostSetupStatus.submitting

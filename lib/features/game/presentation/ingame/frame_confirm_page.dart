@@ -9,6 +9,8 @@ import '../../../../core/widgets/full_screen_photo_page.dart';
 import '../../../../i18n/strings.g.dart';
 import '../../domain/frame_error.dart';
 import 'ingame_bloc.dart';
+import '../../../../core/theme/spacing.dart';
+import '../../../../core/theme/app_theme.dart';
 
 /// Confirm/retake screen for a just-captured frame photo (#21).
 ///
@@ -83,7 +85,7 @@ class _FrameConfirmPageState extends State<FrameConfirmPage> {
     return Scaffold(
       appBar: AppBar(title: Text(t.frame.confirmTitle)),
       body: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(Space.xl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -92,15 +94,15 @@ class _FrameConfirmPageState extends State<FrameConfirmPage> {
                 onTap: () =>
                     FullScreenPhotoPage.open(context, widget.photoBytes),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: AppTheme.corner,
                   child: Image.memory(widget.photoBytes, fit: BoxFit.cover),
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            Gap.lg,
             if (_error case final error?)
               Padding(
-                padding: const EdgeInsets.only(bottom: 16),
+                padding: const EdgeInsets.only(bottom: Space.lg),
                 child: Text(
                   _errorText(error),
                   textAlign: TextAlign.center,
@@ -115,7 +117,7 @@ class _FrameConfirmPageState extends State<FrameConfirmPage> {
                     child: Text(t.frame.retake),
                   ),
                 ),
-                const SizedBox(width: 16),
+                HGap.lg,
                 Expanded(
                   child: FilledButton(
                     onPressed: _submitting ? null : _submit,

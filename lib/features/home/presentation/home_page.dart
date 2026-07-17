@@ -8,6 +8,7 @@ import '../../../core/session/resume_outcome.dart';
 import '../../../core/session/session_resume_service.dart';
 import '../../../core/widgets/framed_wordmark.dart';
 import '../../../i18n/strings.g.dart';
+import '../../../core/theme/spacing.dart';
 
 /// Renders normally on every build — a resumed session (#54) is rare (app
 /// crash/close mid-game) and the check is fast, so this redirects shortly
@@ -49,7 +50,7 @@ class _HomePageState extends State<HomePage> {
         child: Stack(
           children: [
             Padding(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(Space.xl),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -65,19 +66,19 @@ class _HomePageState extends State<HomePage> {
                           : 40,
                     ),
                   ),
-                  const SizedBox(height: 48),
+                  Gap.xxl,
                   FilledButton(
                     onPressed: () =>
                         context.push('/permission-gate', extra: '/scan'),
                     child: Text(t.home.joinGame),
                   ),
-                  const SizedBox(height: 16),
+                  Gap.lg,
                   OutlinedButton(
                     onPressed: () =>
                         context.push('/permission-gate', extra: '/host-setup'),
                     child: Text(t.home.hostGame),
                   ),
-                  const SizedBox(height: 48),
+                  Gap.xxl,
                   TextButton(
                     onPressed: () => _showGoodToKnow(context),
                     child: Text(t.home.goodToKnowButton),
@@ -114,7 +115,7 @@ class _HomePageState extends State<HomePage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(Space.lg),
                 child: Text(
                   t.home.languagePickerTitle,
                   style: Theme.of(context).textTheme.titleMedium,
@@ -162,7 +163,7 @@ class _HomePageState extends State<HomePage> {
       context: context,
       builder: (context) => Dialog(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(Space.xl),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxHeight: 500),
             child: Column(
@@ -226,12 +227,12 @@ class _GoodToKnowSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: Space.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 4),
+          Gap.xs,
           Text(body),
         ],
       ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/spacing.dart';
+
 /// A [Dialog] with a top-right close button above [child] (#94) -- the
 /// join-QR dialog and the game-settings info dialog were two copies of
 /// this exact scaffold.
@@ -12,7 +14,7 @@ class ClosableDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dialog(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(Space.xl),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

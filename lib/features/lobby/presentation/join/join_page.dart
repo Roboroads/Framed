@@ -13,6 +13,7 @@ import '../../domain/lobby_repository.dart';
 import '../pre_join/pre_join_form.dart';
 import 'join_cubit.dart';
 import 'join_state.dart';
+import '../../../../core/theme/spacing.dart';
 
 class JoinPage extends StatelessWidget {
   const JoinPage({
@@ -64,7 +65,7 @@ class _JoinView extends StatelessWidget {
         builder: (context, state) {
           final cubit = context.read<JoinCubit>();
           return ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(Space.lg),
             children: [
               PreJoinForm(
                 name: state.name,
@@ -75,7 +76,7 @@ class _JoinView extends StatelessWidget {
                     ? t.join.errorNameTaken
                     : null,
               ),
-              const SizedBox(height: 24),
+              Gap.xl,
               FilledButton(
                 onPressed: state.canSubmit ? cubit.submit : null,
                 child: state.status == JoinStatus.submitting

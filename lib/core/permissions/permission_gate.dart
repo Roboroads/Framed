@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../i18n/strings.g.dart';
+import '../theme/spacing.dart';
 
 enum _GateStatus { explaining, requesting, blocked }
 
@@ -136,7 +137,7 @@ class _PermissionGateState extends State<PermissionGate>
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(Space.xl),
           child: Center(
             child: switch (_status) {
               _GateStatus.explaining => _Explainer(
@@ -165,15 +166,15 @@ class _Explainer extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         const Icon(Icons.shield_outlined, size: 48),
-        const SizedBox(height: 16),
+        Gap.lg,
         Text(
           t.permissionGate.explainerTitle,
           style: Theme.of(context).textTheme.titleLarge,
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 8),
+        Gap.sm,
         Text(t.permissionGate.explainerBody, textAlign: TextAlign.center),
-        const SizedBox(height: 24),
+        Gap.xl,
         FilledButton(
           onPressed: onContinue,
           child: Text(t.permissionGate.continueButton),
@@ -194,15 +195,15 @@ class _Blocked extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         const Icon(Icons.block, size: 48),
-        const SizedBox(height: 16),
+        Gap.lg,
         Text(
           t.permissionGate.blockedTitle,
           style: Theme.of(context).textTheme.titleLarge,
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 8),
+        Gap.sm,
         Text(t.permissionGate.blockedBody, textAlign: TextAlign.center),
-        const SizedBox(height: 24),
+        Gap.xl,
         FilledButton(
           onPressed: onOpenSettings,
           child: Text(t.permissionGate.openSettings),

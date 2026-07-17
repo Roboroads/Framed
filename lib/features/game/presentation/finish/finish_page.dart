@@ -13,6 +13,7 @@ import '../../../../i18n/strings.g.dart';
 import '../../domain/game_repository.dart';
 import 'finish_bloc.dart';
 import 'finish_state.dart';
+import '../../../../core/theme/spacing.dart';
 
 /// Crowns the winner, shows stats and the kill chain, and offers the host
 /// "replay with same players" (everyone else: "leave game") — issue #26,
@@ -84,13 +85,13 @@ class _FinishView extends StatelessWidget {
                         t.finish.title,
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
-                      const SizedBox(height: 12),
+                      Gap.md,
                       Text(
                         state.youWon ? t.finish.youWon : _winnerLine(state),
                         style: Theme.of(context).textTheme.headlineMedium,
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 8),
+                      Gap.sm,
                       Text(
                         t.finish.statDuration(
                           time: formatDuration(state.durationSeconds),
@@ -101,13 +102,13 @@ class _FinishView extends StatelessWidget {
                 ),
                 Expanded(
                   child: ListView(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    padding: const EdgeInsets.symmetric(horizontal: Space.xl),
                     children: [
                       Text(
                         t.finish.statsTitle,
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
-                      const SizedBox(height: 8),
+                      Gap.sm,
                       _StatLine(
                         label: t.finish.statMostKills,
                         names: _namesWithMax(state.stats, (s) => s.kills),
@@ -126,7 +127,7 @@ class _FinishView extends StatelessWidget {
                           (s) => s.stillSeconds,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      Gap.xs,
                       Text(
                         t.finish.statCombinedMovement(
                           distance: state.totalDistanceMovedM
@@ -134,15 +135,17 @@ class _FinishView extends StatelessWidget {
                               .toString(),
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      Gap.xl,
                       Text(
                         t.finish.killChainTitle,
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
-                      const SizedBox(height: 8),
+                      Gap.sm,
                       for (final entry in state.killChain)
                         Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: Space.xs,
+                          ),
                           child: Text(switch (entry.cause) {
                             'mia' => t.finish.killChainMia(
                               victim: entry.victimName,
@@ -156,12 +159,12 @@ class _FinishView extends StatelessWidget {
                             ),
                           }),
                         ),
-                      const SizedBox(height: 24),
+                      Gap.xl,
                       Text(
                         t.finish.chatTitle,
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
-                      const SizedBox(height: 8),
+                      Gap.sm,
                       SizedBox(
                         height: 240,
                         child: ChatPanel(
@@ -174,14 +177,14 @@ class _FinishView extends StatelessWidget {
                           sendTooltip: t.finish.chatSendButton,
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      Gap.xl,
                     ],
                   ),
                 ),
                 SafeArea(
                   top: false,
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(Space.lg),
                     child: state.isHost
                         ? FilledButton(
                             onPressed:
@@ -208,7 +211,7 @@ class _FinishView extends StatelessWidget {
                 ),
                 if (state.replayStatus == FinishReplayStatus.error)
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
+                    padding: const EdgeInsets.only(bottom: Space.lg),
                     child: Text(
                       t.finish.replayError,
                       style: TextStyle(

@@ -65,6 +65,11 @@ final appRouter = GoRouter(
   ],
 );
 
+// The screen transition isn't configured here: it lives in AppTheme's
+// pageTransitionsTheme. That keeps these as MaterialPages — which is what
+// carries iOS's interactive back-swipe — and means the camera flows pushed
+// imperatively with Navigator.push get the same transition for free.
+
 // https://getframed.fun/join?v=1&t={token}#k={key} (the QR payload format,
 // core/crypto/qr_payload.dart — an Android App Link / iOS Universal Link,
 // #66) has "join" as a *path* segment, but go_router's own route table

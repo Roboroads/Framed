@@ -22,6 +22,8 @@ import '../../domain/lobby_repository.dart';
 import 'lobby_bloc.dart';
 import 'lobby_settings_page.dart';
 import 'lobby_state.dart';
+import '../../../../core/theme/spacing.dart';
+import '../../../../core/theme/app_theme.dart';
 
 /// The waiting room: live roster, settings, the join QR, and the start
 /// button. Everything about this game — the id, this device's player id,
@@ -173,13 +175,13 @@ class _LobbyBodyState extends State<_LobbyBody> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(Space.lg),
           child: bloc.isHost
               ? Column(
                   children: [
                     if (joinToken != null)
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
+                        padding: const EdgeInsets.only(bottom: Space.sm),
                         child: OutlinedButton.icon(
                           onPressed: () => _showQrDialog(context, joinToken),
                           icon: const Icon(Icons.qr_code),
@@ -187,7 +189,7 @@ class _LobbyBodyState extends State<_LobbyBody> {
                         ),
                       ),
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
+                      padding: const EdgeInsets.only(bottom: Space.sm),
                       child: OutlinedButton.icon(
                         onPressed: () => Navigator.of(context).push(
                           MaterialPageRoute<void>(
@@ -207,7 +209,7 @@ class _LobbyBodyState extends State<_LobbyBody> {
                         total: state.roster.length,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    Gap.sm,
                     FilledButton(
                       onPressed: state.canStart ? bloc.start : null,
                       child: state.starting
@@ -280,7 +282,7 @@ class _ModeBanner extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(Space.lg),
                 child: Text(
                   t.lobby.changeMode,
                   style: Theme.of(context).textTheme.titleMedium,
@@ -319,7 +321,7 @@ class _GeofencePreview extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppTheme.corner,
         child: SizedBox(
           height: 160,
           child: GestureDetector(
@@ -380,7 +382,7 @@ class _JoinQrState extends State<_JoinQr> {
       future: _keyBytes,
       builder: (context, snapshot) {
         final keyBytes = snapshot.data;
-        if (keyBytes == null) return const SizedBox(height: 24);
+        if (keyBytes == null) return Gap.xl;
         final payload = QrPayload(
           joinToken: widget.joinToken,
           keyBytes: keyBytes,
@@ -394,16 +396,16 @@ class _JoinQrState extends State<_JoinQr> {
           return true;
         }());
         return Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(Space.lg),
           child: Column(
             children: [
               Text(
                 t.lobby.scanToJoin,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
-              const SizedBox(height: 12),
+              Gap.md,
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(Space.lg),
                 color: Colors.white,
                 child: QrImageView(
                   data: payload.encode(),
@@ -411,7 +413,7 @@ class _JoinQrState extends State<_JoinQr> {
                   size: 200,
                 ),
               ),
-              const SizedBox(height: 12),
+              Gap.md,
               TextButton.icon(
                 onPressed: () => SharePlus.instance.share(
                   ShareParams(text: payload.encode()),

@@ -8,6 +8,8 @@ import '../../../../core/widgets/geofence_map_viewer_page.dart';
 import '../../../../i18n/strings.g.dart';
 import 'lobby_bloc.dart';
 import 'lobby_state.dart';
+import '../../../../core/theme/spacing.dart';
+import '../../../../core/theme/app_theme.dart';
 
 /// Play area (radius only — the center always tracks GPS, #43) and timing,
 /// editable in the lobby instead of upfront in host setup (#62). Game mode
@@ -25,10 +27,10 @@ class LobbySettingsPage extends StatelessWidget {
           final lat = state.geofenceLat;
           final lng = state.geofenceLng;
           return ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(Space.lg),
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: Space.lg),
                 child: Row(
                   children: [
                     Expanded(
@@ -37,17 +39,17 @@ class LobbySettingsPage extends StatelessWidget {
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                     ),
-                    const SizedBox(width: 4),
+                    HGap.xs,
                     _InfoIcon(message: t.hostSetup.geofenceInfo),
                   ],
                 ),
               ),
-              const SizedBox(height: 8),
+              Gap.sm,
               if (lat == null || lng == null)
                 const Center(child: CircularProgressIndicator())
               else ...[
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppTheme.corner,
                   child: SizedBox(
                     height: 240,
                     child: GestureDetector(
@@ -221,7 +223,7 @@ class _StepperState extends State<_Stepper> {
       title: Row(
         children: [
           Expanded(child: Text(widget.label)),
-          const SizedBox(width: 4),
+          HGap.xs,
           _InfoIcon(message: widget.info),
         ],
       ),
@@ -242,11 +244,19 @@ class _StepperState extends State<_Stepper> {
               textAlign: TextAlign.center,
               keyboardType: TextInputType.number,
               onSubmitted: (_) => _focusNode.unfocus(),
-              decoration: InputDecoration(
-                isDense: true,
-                border: InputBorder.none,
-                suffixText: widget.unit,
-              ),
+              // `border: InputBorder.none` alone isn't enough against a
+              // global inputDecorationTheme: it clears `border` but leaves
+              // the theme's fill and its 16px content padding, which squeeze
+              // the number and its unit out of a 72px-wide field entirely.
+              // collapsed drops both.
+              //
+              // The theme's outline survives (collapsed leaves the per-state
+              // borders alone) and is left that way on purpose — it's the
+              // only thing marking this as type-able rather than as a label
+              // between two buttons.
+              decoration: InputDecoration.collapsed(
+                hintText: null,
+              ).copyWith(isDense: true, suffixText: widget.unit),
             ),
           ),
           IconButton(
@@ -273,7 +283,7 @@ class _InfoIcon extends StatelessWidget {
         builder: (context) => ClosableDialog(child: Text(message)),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(4),
+        padding: const EdgeInsets.all(Space.xs),
         child: Icon(
           Icons.info_outline,
           size: 18,

@@ -25,6 +25,7 @@ import '../../../../core/realtime/game_event.dart';
 import '../../../../core/session/game_session.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/framed_icons.dart';
+import '../../../../core/theme/motion.dart';
 import '../../../../core/util/duration_format.dart';
 import '../../../../core/widgets/confirmation_dialog.dart';
 import '../../../../core/widgets/full_screen_photo_page.dart';
@@ -37,6 +38,7 @@ import '../../domain/target.dart';
 import 'frame_confirm_page.dart';
 import 'ingame_bloc.dart';
 import 'ingame_state.dart';
+import '../../../../core/theme/spacing.dart';
 
 /// Lands here from the lobby (#10) on `dispersal_started`, behind the
 /// background location gate (#14).
@@ -193,7 +195,7 @@ class _IngameView extends StatelessWidget {
                     ),
                     IngameTargetLoadFailed() => Center(
                       child: Padding(
-                        padding: const EdgeInsets.all(24),
+                        padding: const EdgeInsets.all(Space.xl),
                         child: Text(
                           t.ingame.errorTargetLoad,
                           textAlign: TextAlign.center,
@@ -290,7 +292,7 @@ class _DeadScreen extends StatelessWidget {
             children: [
               if (photoBytes != null)
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
+                  padding: const EdgeInsets.only(bottom: Space.lg),
                   child: AspectRatio(
                     aspectRatio: 3 / 4,
                     child: _TappablePhoto(
@@ -312,7 +314,7 @@ class _DeadScreen extends StatelessWidget {
                 style: Theme.of(context).textTheme.headlineMedium,
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 16),
+              Gap.lg,
               if (cause == 'mia')
                 Text(t.ingame.deadCauseMia, textAlign: TextAlign.center)
               else if (cause == 'left')
@@ -322,26 +324,26 @@ class _DeadScreen extends StatelessWidget {
                   t.ingame.deadKilledBy(name: killerName!),
                   textAlign: TextAlign.center,
                 ),
-              const SizedBox(height: 8),
+              Gap.sm,
               Text(
                 t.ingame.deadSurvivedFor(time: formatDuration(survivedSeconds)),
                 textAlign: TextAlign.center,
               ),
               if (otherDeadPlayerNames.isNotEmpty) ...[
-                const SizedBox(height: 8),
+                Gap.sm,
                 Text(
                   t.ingame.deadAlsoOut(names: otherDeadPlayerNames.join(', ')),
                   style: Theme.of(context).textTheme.bodySmall,
                   textAlign: TextAlign.center,
                 ),
               ],
-              const SizedBox(height: 16),
+              Gap.lg,
               Text(
                 t.ingame.deadLeaveWarning,
                 style: Theme.of(context).textTheme.bodySmall,
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 8),
+              Gap.sm,
               // No leave option existed on this screen before #77 — only
               // force-closing the app. Dead-only: IDEA.md "Game rules"'
               // no-mid-game-quit still binds the living, this screen only
@@ -372,8 +374,8 @@ class _DeadScreen extends StatelessWidget {
               hintText: t.ingame.deadChatHint,
               sendTooltip: t.ingame.deadChatSendButton,
               listPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 8,
+                horizontal: Space.lg,
+                vertical: Space.sm,
               ),
             ),
           ),
@@ -443,22 +445,22 @@ class _WarningOverlay extends StatelessWidget {
         color: Theme.of(context).colorScheme.surface,
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(Space.xl),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 FramedIcons(FramedIcon.warning, size: 48, color: danger),
-                const SizedBox(height: 16),
+                Gap.lg,
                 for (final reason in warning.reasons)
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.only(bottom: Space.md),
                     child: Text(
                       _reasonText(reason),
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
-                const SizedBox(height: 16),
+                Gap.lg,
                 _CountdownText(
                   deadline: warning.hardDeadline,
                   builder: (context, time) => Text(
@@ -493,17 +495,20 @@ class _ProximityBanner extends StatelessWidget {
       right: 0,
       child: SafeArea(
         child: Container(
-          margin: const EdgeInsets.all(16),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          margin: const EdgeInsets.all(Space.lg),
+          padding: const EdgeInsets.symmetric(
+            horizontal: Space.lg,
+            vertical: Space.md,
+          ),
           decoration: BoxDecoration(
             color: warningColor.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppTheme.corner,
             border: Border.all(color: warningColor),
           ),
           child: Row(
             children: [
               Icon(Icons.arrow_circle_left_outlined, color: warningColor),
-              const SizedBox(width: 12),
+              HGap.md,
               Expanded(
                 child: Text(
                   t.ingame.nearGeofenceEdge,
@@ -536,7 +541,7 @@ class _SelfNameLabel extends StatelessWidget {
       left: 0,
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(Space.lg),
           child: Text(
             t.ingame.selfNameLabel(name: name),
             style: Theme.of(context).textTheme.labelMedium,
@@ -589,7 +594,7 @@ class _LeaveButton extends StatelessWidget {
       left: 0,
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(Space.sm),
           child: FloatingActionButton.small(
             heroTag: 'leave',
             tooltip: t.ingame.leaveButton,
@@ -623,7 +628,7 @@ class _WakeLockButton extends StatelessWidget {
       right: 0,
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(Space.sm),
           child: FloatingActionButton.small(
             heroTag: 'wakeLock',
             tooltip: keepAwake
@@ -658,7 +663,7 @@ class _MyLocationButton extends StatelessWidget {
       right: 0,
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(Space.sm),
           child: FloatingActionButton.small(
             heroTag: 'myLocation',
             tooltip: t.ingame.myLocationButton,
@@ -702,7 +707,7 @@ class _JudgingOverlay extends StatelessWidget {
         color: Theme.of(context).colorScheme.surface,
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(Space.xl),
             child: loaded == null
                 ? Center(
                     child: entry.failed
@@ -713,7 +718,7 @@ class _JudgingOverlay extends StatelessWidget {
                                 t.ingame.judgingLoadError,
                                 textAlign: TextAlign.center,
                               ),
-                              const SizedBox(height: 16),
+                              Gap.lg,
                               FilledButton(
                                 onPressed: bloc.retryFrontLoad,
                                 child: Text(t.ingame.judgingRetry),
@@ -730,7 +735,7 @@ class _JudgingOverlay extends StatelessWidget {
                         style: Theme.of(context).textTheme.titleLarge,
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 16),
+                      Gap.lg,
                       Expanded(
                         child: Row(
                           children: [
@@ -741,7 +746,7 @@ class _JudgingOverlay extends StatelessWidget {
                                 fit: BoxFit.cover,
                               ),
                             ),
-                            const SizedBox(width: 8),
+                            HGap.sm,
                             Expanded(
                               child: _TappablePhoto(
                                 bytes: loaded.targetSelfieBytes,
@@ -752,20 +757,18 @@ class _JudgingOverlay extends StatelessWidget {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      Gap.sm,
                       Text(
                         t.ingame.judgingNudge,
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
-                      const SizedBox(height: 16),
+                      Gap.lg,
                       Row(
                         children: [
                           Expanded(
                             child: FilledButton.icon(
-                              style: FilledButton.styleFrom(
-                                backgroundColor: danger,
-                              ),
+                              style: AppTheme.semanticFilled(danger),
                               onPressed: () => bloc.castVote(
                                 frameId: entry.frameId,
                                 vote: false,
@@ -774,12 +777,10 @@ class _JudgingOverlay extends StatelessWidget {
                               label: Text(t.ingame.judgingNo),
                             ),
                           ),
-                          const SizedBox(width: 16),
+                          HGap.lg,
                           Expanded(
                             child: FilledButton.icon(
-                              style: FilledButton.styleFrom(
-                                backgroundColor: alive,
-                              ),
+                              style: AppTheme.semanticFilled(alive),
                               onPressed: () => bloc.castVote(
                                 frameId: entry.frameId,
                                 vote: true,
@@ -814,13 +815,13 @@ class _DisperseCountdown extends StatelessWidget {
             t.ingame.disperseTitle,
             style: Theme.of(context).textTheme.headlineSmall,
           ),
-          const SizedBox(height: 16),
+          Gap.lg,
           _CountdownText(
             deadline: endsAt,
             builder: (context, time) =>
                 Text(time, style: Theme.of(context).textTheme.displayLarge),
           ),
-          const SizedBox(height: 16),
+          Gap.lg,
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Text(
@@ -856,7 +857,7 @@ class _TargetCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(Space.xl),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -866,7 +867,7 @@ class _TargetCard extends StatelessWidget {
             style: Theme.of(context).textTheme.titleMedium,
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 16),
+          Gap.lg,
           // BoxFit.cover at a fixed height cropped portrait selfies down to
           // a near-square sliver — contain (still capped) shows the whole
           // photo instead.
@@ -878,13 +879,13 @@ class _TargetCard extends StatelessWidget {
               fit: BoxFit.contain,
             ),
           ),
-          const SizedBox(height: 16),
+          Gap.lg,
           Text(
             target.name,
             style: Theme.of(context).textTheme.headlineSmall,
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 24),
+          Gap.xl,
           _CompassPanel(
             compass: compass,
             nextPulseAt: nextPulseAt,
@@ -892,10 +893,10 @@ class _TargetCard extends StatelessWidget {
           ),
           if (targetLocation case final location?)
             if (geofence case final geofence?) ...[
-              const SizedBox(height: 24),
+              Gap.xl,
               _TargetLocationPanel(location: location, geofence: geofence),
             ],
-          const SizedBox(height: 24),
+          Gap.xl,
           _FrameButton(status: frameStatus),
         ],
       ),
@@ -955,7 +956,7 @@ class _FrameButton extends StatelessWidget {
               style: Theme.of(context).textTheme.bodySmall,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 4),
+            Gap.xs,
           ],
           _CountdownText(
             deadline: until,
@@ -1107,7 +1108,7 @@ class _CompassArrowState extends State<_CompassArrow> {
                           ),
                         ) /
                         360,
-                    duration: const Duration(milliseconds: 200),
+                    duration: Motion.gate(context, Motion.standard),
                     child: FramedIcons(
                       FramedIcon.compass,
                       size: 40,
@@ -1116,7 +1117,7 @@ class _CompassArrowState extends State<_CompassArrow> {
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              Gap.sm,
               Text(
                 t.ingame.compassDistanceMeters(distance: distance),
                 style: Theme.of(
@@ -1124,9 +1125,9 @@ class _CompassArrowState extends State<_CompassArrow> {
                 ).textTheme.titleMedium?.copyWith(color: compassColor),
               ),
             ],
-            const SizedBox(height: 8),
+            Gap.sm,
             ClipRRect(
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: AppTheme.corner,
               child: LinearProgressIndicator(
                 value: progress,
                 color: compassColor,
@@ -1160,9 +1161,9 @@ class _TargetLocationPanel extends StatelessWidget {
             context,
           ).textTheme.bodyMedium?.copyWith(color: danger),
         ),
-        const SizedBox(height: 8),
+        Gap.sm,
         ClipRRect(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: AppTheme.corner,
           child: SizedBox(
             height: 200,
             child: GeofenceMap(

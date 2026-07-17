@@ -8,6 +8,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../i18n/strings.g.dart';
 import '../theme/framed_icons.dart';
 import '../widgets/permission_rationale.dart';
+import '../theme/spacing.dart';
 
 enum _Status { initializing, ready, permissionDenied, error }
 
@@ -199,7 +200,7 @@ class _InAppCameraPageState extends State<InAppCameraPage>
               ),
             ),
             Positioned(
-              bottom: 24,
+              bottom: Space.xl,
               left: 0,
               right: 0,
               child: Center(
@@ -231,7 +232,7 @@ class _RetryMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(Space.xl),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -240,13 +241,13 @@ class _RetryMessage extends StatelessWidget {
               color: Colors.white,
               size: 48,
             ),
-            const SizedBox(height: 16),
+            Gap.lg,
             Text(
               message,
               textAlign: TextAlign.center,
               style: const TextStyle(color: Colors.white),
             ),
-            const SizedBox(height: 16),
+            Gap.lg,
             FilledButton(
               onPressed: onRetry,
               child: Text(retryLabel ?? t.camera.retry),

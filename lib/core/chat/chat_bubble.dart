@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'chat_message.dart';
+import '../theme/spacing.dart';
+import '../theme/app_theme.dart';
 
 /// One chat bubble, aligned right and tinted for the local player's own
 /// messages (#91) -- shared by the ingame dead chat and the finish
@@ -20,13 +22,16 @@ class ChatBubble extends StatelessWidget {
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width * 0.75,
         ),
-        margin: const EdgeInsets.symmetric(vertical: 4),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        margin: const EdgeInsets.symmetric(vertical: Space.xs),
+        padding: const EdgeInsets.symmetric(
+          horizontal: Space.md,
+          vertical: Space.sm,
+        ),
         decoration: BoxDecoration(
           color: isMine
               ? scheme.primaryContainer
               : scheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppTheme.corner,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

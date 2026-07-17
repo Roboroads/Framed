@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../i18n/strings.g.dart';
 import '../theme/app_theme.dart';
+import '../theme/motion.dart';
 
 /// The wordmark: the word FRAMED inside a viewfinder's corner brackets.
 ///
@@ -17,9 +18,9 @@ class FramedWordmark extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    // A locked-focus animation that a user can't perceive as focus locking
-    // is just a moving logo, so it's dropped rather than shortened when the
-    // platform asks for less motion.
+    // A locked-focus animation a user can't perceive as focus locking is
+    // just a moving logo, so it's dropped rather than shortened when the
+    // platform asks for less motion. See Motion.gate.
     final still = MediaQuery.disableAnimationsOf(context);
 
     return Semantics(
@@ -29,7 +30,7 @@ class FramedWordmark extends StatelessWidget {
       excludeSemantics: true,
       child: TweenAnimationBuilder<double>(
         tween: Tween(begin: still ? 1 : 0, end: 1),
-        duration: still ? Duration.zero : const Duration(milliseconds: 900),
+        duration: Motion.gate(context, Motion.lock),
         curve: Curves.easeOutCubic,
         // Named `value`, not `t` — slang's translations are also `t`.
         builder: (context, value, child) => CustomPaint(

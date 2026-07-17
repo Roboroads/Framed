@@ -13,6 +13,7 @@ import 'core/push/push_service.dart';
 import 'core/session/game_session.dart';
 import 'features/game/domain/game_repository.dart';
 import 'i18n/strings.g.dart';
+import 'core/theme/spacing.dart';
 
 // A real server outage or a bad connection shouldn't leave the user staring
 // at the native splash screen forever with no feedback — bound every step
@@ -89,14 +90,14 @@ class _BootstrapErrorApp extends StatelessWidget {
       home: Scaffold(
         body: Center(
           child: Padding(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(Space.xl),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Icon(Icons.cloud_off_outlined, size: 48),
-                const SizedBox(height: 16),
+                Gap.lg,
                 Text(t.bootstrap.errorGeneric, textAlign: TextAlign.center),
-                const SizedBox(height: 16),
+                Gap.lg,
                 FilledButton(
                   onPressed: onRetry,
                   child: Text(t.bootstrap.retry),

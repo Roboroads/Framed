@@ -4,6 +4,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../../../../core/crypto/qr_payload.dart';
 import '../../../../i18n/strings.g.dart';
+import '../../../../core/theme/spacing.dart';
 
 /// Full-screen QR scan from the Home "Join game" button. Hands a valid
 /// payload straight to the join page; anything malformed keeps scanning.
@@ -64,14 +65,14 @@ class _ScanError extends StatelessWidget {
         : t.camera.errorGeneric;
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(Space.xl),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             const Icon(Icons.camera_alt_outlined, size: 48),
-            const SizedBox(height: 16),
+            Gap.lg,
             Text(message, textAlign: TextAlign.center),
-            const SizedBox(height: 16),
+            Gap.lg,
             FilledButton(onPressed: onRetry, child: Text(t.camera.retry)),
           ],
         ),

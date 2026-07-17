@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../i18n/strings.g.dart';
+import '../theme/spacing.dart';
 
 /// Explains why a permission is needed before the OS prompt appears, so the
 /// native dialog is never the first thing a user sees. Returns `true` if the
@@ -33,7 +34,7 @@ class _PermissionRationaleDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dialog(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(Space.xl),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -47,9 +48,9 @@ class _PermissionRationaleDialog extends StatelessWidget {
               ],
             ),
             Icon(icon, size: 48),
-            const SizedBox(height: 16),
+            Gap.lg,
             Text(explanation, textAlign: TextAlign.center),
-            const SizedBox(height: 16),
+            Gap.lg,
             FilledButton(
               onPressed: () => Navigator.of(context).pop(true),
               child: Text(t.permissionRationale.ok),

@@ -7,6 +7,8 @@ import '../../../../core/camera/in_app_camera_page.dart';
 import '../../../../core/text/name_sanitizer.dart';
 import '../../../../core/widgets/full_screen_photo_page.dart';
 import '../../../../i18n/strings.g.dart';
+import '../../../../core/theme/spacing.dart';
+import '../../../../core/theme/app_theme.dart';
 
 /// Same domain #66 already set up for join links, GitHub Pages-hosted
 /// (docs/privacy-policy/index.html).
@@ -74,7 +76,7 @@ class _PreJoinFormState extends State<PreJoinForm> {
           maxLength: maxDisplayNameLength,
           onChanged: widget.onNameChanged,
         ),
-        const SizedBox(height: 16),
+        Gap.lg,
         Text(
           t.preJoin.consentNotice,
           style: Theme.of(context).textTheme.bodySmall,
@@ -92,12 +94,12 @@ class _PreJoinFormState extends State<PreJoinForm> {
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        Gap.lg,
         Text(
           t.preJoin.selfieHint,
           style: Theme.of(context).textTheme.bodySmall,
         ),
-        const SizedBox(height: 8),
+        Gap.sm,
         if (widget.selfieBytes != null)
           Center(
             child: SizedBox(
@@ -110,14 +112,14 @@ class _PreJoinFormState extends State<PreJoinForm> {
                   onTap: () =>
                       FullScreenPhotoPage.open(context, widget.selfieBytes!),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppTheme.corner,
                     child: Image.memory(widget.selfieBytes!, fit: BoxFit.cover),
                   ),
                 ),
               ),
             ),
           ),
-        const SizedBox(height: 8),
+        Gap.sm,
         OutlinedButton.icon(
           onPressed: _takeSelfie,
           icon: const Icon(Icons.camera_alt_outlined),
