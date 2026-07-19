@@ -128,7 +128,7 @@ jobs:
         run: echo "name=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
 
       - name: Import distribution certificate
-        uses: apple-actions/import-codesign-certs@v3
+        uses: apple-actions/import-codesign-certs@v7
         with:
           p12-file-base64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
           p12-password: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
