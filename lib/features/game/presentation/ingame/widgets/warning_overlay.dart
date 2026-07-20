@@ -5,8 +5,15 @@ import '../../../../../core/theme/framed_icons.dart';
 import '../../../../../core/theme/spacing.dart';
 import '../../../../../i18n/strings.g.dart';
 import '../ingame_state.dart';
+import 'breathe.dart';
 import 'countdown_text.dart';
 
+/// The rule-break modal (#12/#13). Full-screen and unmissable per IDEA.md —
+/// the back gesture can't dismiss it (see the PopScope on IngamePage), only
+/// the server clearing the break can. It says three things in order: something
+/// is wrong (the pulsing alarm), what to do about it (the reason, which for a
+/// geofence break is literally "go back"), and how long is left (the death
+/// clock, the hero of the screen).
 class WarningOverlay extends StatelessWidget {
   const WarningOverlay({required this.warning, super.key});
 
@@ -20,39 +27,84 @@ class WarningOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final danger = Theme.of(context).extension<GameColors>()!.danger;
+    final theme = Theme.of(context);
+    final danger = theme.extension<GameColors>()!.danger;
 
     return Positioned.fill(
+      // Solid surface, not translucent: it has to fully occlude the target and
+      // compass behind it so a glance lands on the alarm and nothing else.
       child: ColoredBox(
-        color: Theme.of(context).colorScheme.surface,
+        color: theme.colorScheme.surface,
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(Space.xl),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                FramedIcons(FramedIcon.warning, size: 48, color: danger),
-                Gap.lg,
-                for (final reason in warning.reasons)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: Space.md),
-                    child: Text(
-                      _reasonText(reason),
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.titleMedium,
+          // Centred when it fits, scrollable when it doesn't: the death clock
+          // is the last child and the one number that must never be clipped,
+          // so at large text scale on a small screen this scrolls rather than
+          // pushing it past the bottom edge.
+          child: LayoutBuilder(
+            builder: (context, constraints) => SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Center(
+                  child: Padding(
+                    padding: Insets.screen,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox.square(
+                          dimension: 168,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Breathe(
+                                min: 0.15,
+                                max: 0.55,
+                                child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    gradient: RadialGradient(
+                                      colors: [
+                                        danger.withValues(alpha: 0.5),
+                                        danger.withValues(alpha: 0),
+                                      ],
+                                    ),
+                                  ),
+                                  child: const SizedBox.expand(),
+                                ),
+                              ),
+                              FramedIcons(
+                                FramedIcon.warning,
+                                size: 72,
+                                color: danger,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Gap.xl,
+                        for (final reason in warning.reasons)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: Space.md),
+                            child: Text(
+                              _reasonText(reason),
+                              textAlign: TextAlign.center,
+                              style: theme.textTheme.titleLarge,
+                            ),
+                          ),
+                        Gap.lg,
+                        CountdownText(
+                          deadline: warning.hardDeadline,
+                          builder: (context, time) => Text(
+                            t.ingame.warningDeadline(time: time),
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.displaySmall?.copyWith(
+                              color: danger,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                Gap.lg,
-                CountdownText(
-                  deadline: warning.hardDeadline,
-                  builder: (context, time) => Text(
-                    t.ingame.warningDeadline(time: time),
-                    style: Theme.of(
-                      context,
-                    ).textTheme.displaySmall?.copyWith(color: danger),
-                  ),
                 ),
-              ],
+              ),
             ),
           ),
         ),

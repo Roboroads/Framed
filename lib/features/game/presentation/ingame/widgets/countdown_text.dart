@@ -6,7 +6,11 @@ import 'package:flutter/material.dart';
 /// shared by the warning overlay and the dispersal countdown, the only two
 /// places that need a live countdown.
 class CountdownText extends StatefulWidget {
-  const CountdownText({required this.deadline, required this.builder, super.key});
+  const CountdownText({
+    required this.deadline,
+    required this.builder,
+    super.key,
+  });
 
   final DateTime deadline;
   final Widget Function(BuildContext context, String time) builder;
