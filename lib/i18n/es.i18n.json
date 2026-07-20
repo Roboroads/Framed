@@ -135,7 +135,6 @@
     "startTooFewPlayers": "Se necesitan al menos 3 jugadores listos",
     "waitingForHost": "Esperando a que el anfitrión empiece...",
     "changeMode": "Cambiar modo",
-    "showQrButton": "Mostrar código QR de unión",
     "shareLinkButton": "Compartir enlace de unión",
     "gameSettingsButton": "Ajustes de la partida",
     "leaveButton": "Salir de la sala",

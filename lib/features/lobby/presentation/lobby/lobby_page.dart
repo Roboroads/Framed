@@ -378,22 +378,23 @@ class _GeofencePreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-      child: ClipRRect(
-        borderRadius: AppTheme.corner,
-        child: SizedBox(
-          height: 160,
-          child: GestureDetector(
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) =>
-                    GeofenceMapViewerPage(center: center, radiusM: radiusM),
-              ),
+    // No padding of its own: the parent ListView already gutters at Space.xl
+    // and spaces sections with SectionHeaders. The old fromLTRB(16,16,16,0)
+    // predates that layout and inset the map to a different edge than every
+    // other section.
+    return ClipRRect(
+      borderRadius: AppTheme.corner,
+      child: SizedBox(
+        height: 160,
+        child: GestureDetector(
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) =>
+                  GeofenceMapViewerPage(center: center, radiusM: radiusM),
             ),
-            child: AbsorbPointer(
-              child: GeofenceMap(center: center, radiusM: radiusM),
-            ),
+          ),
+          child: AbsorbPointer(
+            child: GeofenceMap(center: center, radiusM: radiusM),
           ),
         ),
       ),
@@ -597,7 +598,14 @@ class _FullScreenQr extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
-        title: Text(t.lobby.scanToJoin),
+        // titleTextStyle restated, not just foregroundColor. The AppBarTheme
+        // sets titleTextStyle with scheme.onSurface, which beats
+        // foregroundColor and — in the dark theme, onSurface being near-white
+        // — rendered this title white-on-white on the forced-white bar. Same
+        // trap ScanPage documents; this screen forgot to spring it.
+        titleTextStyle: Theme.of(
+          context,
+        ).textTheme.titleLarge?.copyWith(color: Colors.black),
       ),
       body: Center(
         child: Padding(

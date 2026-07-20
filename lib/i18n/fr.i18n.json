@@ -135,7 +135,6 @@
     "startTooFewPlayers": "Au moins 3 joueurs prêts sont nécessaires",
     "waitingForHost": "En attente que l'hôte démarre...",
     "changeMode": "Changer de mode",
-    "showQrButton": "Afficher le QR code d'invitation",
     "shareLinkButton": "Partager le lien d'invitation",
     "gameSettingsButton": "Réglages de la partie",
     "leaveButton": "Quitter la salle",

@@ -135,7 +135,6 @@
     "startTooFewPlayers": "Need at least 3 ready players",
     "waitingForHost": "Waiting for the host to start...",
     "changeMode": "Change mode",
-    "showQrButton": "Show join QR code",
     "shareLinkButton": "Share join link",
     "gameSettingsButton": "Game settings",
     "leaveButton": "Leave lobby",

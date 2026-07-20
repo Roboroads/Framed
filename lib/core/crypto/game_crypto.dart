@@ -31,8 +31,19 @@ class GameCrypto {
     return GameCrypto._(await _algorithm.newSecretKeyFromBytes(keyBytes));
   }
 
-  Future<Uint8List> get keyBytes async =>
-      Uint8List.fromList(await _secretKey.extractBytes());
+  Future<Uint8List>? _keyBytes;
+
+  /// The raw key bytes — for the join QR (#106) and for persisting the
+  /// session on the joining side.
+  ///
+  /// Memoized. The extraction is deterministic (same key, same bytes), so
+  /// there's no reason to redo the async work, and a stable future identity
+  /// matters to callers: the lobby's `_JoinHandover` hands this to a
+  /// `FutureBuilder`, and when that widget is disposed and rebuilt (it scrolls
+  /// off in a full roster), a fresh future would blank the QR back to a
+  /// spinner. The same completed future resolves in a single frame.
+  Future<Uint8List> get keyBytes =>
+      _keyBytes ??= _secretKey.extractBytes().then(Uint8List.fromList);
 
   /// Raw `nonce(12) ‖ ciphertext ‖ tag(16)`, fresh nonce every call — what
   /// Storage blobs (selfies, frame photos) upload directly, no text

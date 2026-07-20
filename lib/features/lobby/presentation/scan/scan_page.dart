@@ -58,6 +58,11 @@ class _ScanPageState extends State<ScanPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Black, not the theme surface: this is a camera screen. The white
+      // AppBar text and the error state both assume a dark backdrop, and
+      // when the feed fails (errorBuilder) or is still starting there's no
+      // feed to provide one — in light mode that left white-on-white.
+      backgroundColor: Colors.black,
       // The bar floats over the feed: cropping a camera preview to fit a
       // solid bar costs the user viewfinder, which is the whole screen.
       extendBodyBehindAppBar: true,
@@ -201,15 +206,25 @@ class _ScanError extends StatelessWidget {
     final message = error.errorCode == MobileScannerErrorCode.permissionDenied
         ? t.camera.permissionDeniedBody
         : t.camera.errorGeneric;
+    // On the black camera backdrop, so the copy carries its own light colour
+    // rather than the theme's onSurface (dark in light mode).
     return Center(
       child: Padding(
         padding: Insets.screen,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.camera_alt_outlined, size: 48),
+            const Icon(
+              Icons.camera_alt_outlined,
+              size: 48,
+              color: Colors.white,
+            ),
             Gap.lg,
-            Text(message, textAlign: TextAlign.center),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.white),
+            ),
             Gap.lg,
             FilledButton(onPressed: onRetry, child: Text(t.camera.retry)),
           ],
