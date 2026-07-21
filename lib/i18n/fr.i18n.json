@@ -187,7 +187,7 @@
     "deadCauseMia": "Vous avez enfreint une règle du jeu trop longtemps.",
     "deadCauseLeft": "Vous avez quitté la partie.",
     "deadKilledBy": "Éliminé par $name",
-    "deadSurvivedFor": "A survécu $time",
+    "deadSurvivedCaption": "de survie",
     "deadAlsoOut": "Également hors jeu : $names",
     "deadChatEmpty": "Personne n'a encore rien dit.",
     "deadChatHint": "Message aux éliminés",
@@ -201,13 +201,26 @@
   "finish": {
     "title": "Partie terminée",
     "youWon": "Vous avez gagné !",
-    "winnerFrames": "$name a gagné avec $count piégeages",
-    "winnerLastManStanding": "$name est le dernier survivant",
+    "winnerEyebrow": "Gagnant",
+    "framesCaption": {
+      "one": "piégeage confirmé",
+      "other": "piégeages confirmés"
+    },
+    "lastOneStanding": "dernier survivant",
+    "wonWhileDead": "Vous êtes hors jeu aussi, mais personne n'a fait mieux que vous.",
+    "winnerDied": "$name est aussi hors jeu. Le plus de piégeages gagne quand même.",
+    "yourResult": {
+      "one": "Vous terminez avec $n piégeage confirmé.",
+      "other": "Vous terminez avec $n piégeages confirmés."
+    },
+    "statCombinedLabel": "Parcouru ensemble",
+    "stillValue": "$time immobile",
+    "metersValue": "$n m",
+    "kmValue": "$whole,$tenth km",
     "statsTitle": "Statistiques",
     "statMostKills": "Le plus d'éliminations",
     "statMostMoved": "Le plus de déplacement",
     "statMostStill": "Le moins de déplacement",
-    "statCombinedMovement": "$distance m parcourus ensemble",
     "statDuration": "La partie a duré $time",
     "killChainTitle": "Chaîne d'éliminations",
     "killChainFramed": "$killer a piégé $victim",

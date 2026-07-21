@@ -187,7 +187,7 @@
     "deadCauseMia": "Has incumplido una regla demasiado tiempo.",
     "deadCauseLeft": "Has salido de la partida.",
     "deadKilledBy": "Eliminado por $name",
-    "deadSurvivedFor": "Sobreviviste $time",
+    "deadSurvivedCaption": "sobrevivido",
     "deadAlsoOut": "También fuera: $names",
     "deadChatEmpty": "Todavía nadie ha dicho nada.",
     "deadChatHint": "Mensaje para los eliminados",
@@ -201,13 +201,26 @@
   "finish": {
     "title": "Partida terminada",
     "youWon": "¡Has ganado!",
-    "winnerFrames": "$name ha ganado con $count eliminaciones",
-    "winnerLastManStanding": "$name es el último en pie",
+    "winnerEyebrow": "Ganador",
+    "framesCaption": {
+      "one": "eliminación confirmada",
+      "other": "eliminaciones confirmadas"
+    },
+    "lastOneStanding": "último en pie",
+    "wonWhileDead": "Tú también estás fuera, pero nadie superó tus eliminaciones.",
+    "winnerDied": "$name también está fuera. Aun así ganan las eliminaciones.",
+    "yourResult": {
+      "one": "Terminaste con $n eliminación confirmada.",
+      "other": "Terminaste con $n eliminaciones confirmadas."
+    },
+    "statCombinedLabel": "Recorrido entre todos",
+    "stillValue": "$time quieto",
+    "metersValue": "$n m",
+    "kmValue": "$whole,$tenth km",
     "statsTitle": "Estadísticas",
     "statMostKills": "Más eliminaciones",
     "statMostMoved": "Más movimiento",
     "statMostStill": "Menos movimiento",
-    "statCombinedMovement": "$distance m recorridos entre todos",
     "statDuration": "La partida duró $time",
     "killChainTitle": "Cadena de eliminaciones",
     "killChainFramed": "$killer eliminó a $victim",

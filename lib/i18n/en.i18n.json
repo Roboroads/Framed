@@ -187,7 +187,7 @@
     "deadCauseMia": "You broke a game rule for too long.",
     "deadCauseLeft": "You left the game.",
     "deadKilledBy": "Killed by $name",
-    "deadSurvivedFor": "Survived $time",
+    "deadSurvivedCaption": "survived",
     "deadAlsoOut": "Also out: $names",
     "deadChatEmpty": "No one's said anything yet.",
     "deadChatHint": "Message the dead",
@@ -201,13 +201,26 @@
   "finish": {
     "title": "Game over",
     "youWon": "You won!",
-    "winnerFrames": "$name won with $count frames",
-    "winnerLastManStanding": "$name is the last one standing",
+    "winnerEyebrow": "Winner",
+    "framesCaption": {
+      "one": "confirmed frame",
+      "other": "confirmed frames"
+    },
+    "lastOneStanding": "last one standing",
+    "wonWhileDead": "You're out too, but nobody out-framed you.",
+    "winnerDied": "$name is out too. Most frames still wins.",
+    "yourResult": {
+      "one": "You finished with $n confirmed frame.",
+      "other": "You finished with $n confirmed frames."
+    },
+    "statCombinedLabel": "Moved as a group",
+    "stillValue": "$time still",
+    "metersValue": "$n m",
+    "kmValue": "$whole.$tenth km",
     "statsTitle": "Stats",
     "statMostKills": "Most kills",
     "statMostMoved": "Most moved",
     "statMostStill": "Least movement",
-    "statCombinedMovement": "$distance m moved as a group",
     "statDuration": "Game lasted $time",
     "killChainTitle": "Kill chain",
     "killChainFramed": "$killer framed $victim",

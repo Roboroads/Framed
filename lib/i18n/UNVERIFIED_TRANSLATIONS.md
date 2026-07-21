@@ -26,6 +26,17 @@ still waiting on a human read-through, one per line, grouped by locale.
 
 ## es
 
+- [ ] finish.stillValue
+- [ ] ingame.deadSurvivedCaption
+- [ ] finish.winnerEyebrow
+- [ ] finish.framesCaption
+- [ ] finish.lastOneStanding
+- [ ] finish.wonWhileDead
+- [ ] finish.winnerDied
+- [ ] finish.yourResult
+- [ ] finish.statCombinedLabel
+- [ ] finish.metersValue
+- [ ] finish.kmValue
 - [ ] frame.sendToJudges
 - [ ] lobby.leaveButton
 - [ ] lobby.leaveConfirmTitle
@@ -83,6 +94,17 @@ still waiting on a human read-through, one per line, grouped by locale.
 
 ## fr
 
+- [ ] finish.stillValue
+- [ ] ingame.deadSurvivedCaption
+- [ ] finish.winnerEyebrow
+- [ ] finish.framesCaption
+- [ ] finish.lastOneStanding
+- [ ] finish.wonWhileDead
+- [ ] finish.winnerDied
+- [ ] finish.yourResult
+- [ ] finish.statCombinedLabel
+- [ ] finish.metersValue
+- [ ] finish.kmValue
 - [ ] frame.sendToJudges
 - [ ] lobby.leaveButton
 - [ ] lobby.leaveConfirmTitle
@@ -118,6 +140,17 @@ still waiting on a human read-through, one per line, grouped by locale.
 
 ## nl
 
+- [ ] finish.stillValue
+- [ ] ingame.deadSurvivedCaption
+- [ ] finish.winnerEyebrow
+- [ ] finish.framesCaption
+- [ ] finish.lastOneStanding
+- [ ] finish.wonWhileDead
+- [ ] finish.winnerDied
+- [ ] finish.yourResult
+- [ ] finish.statCombinedLabel
+- [ ] finish.metersValue
+- [ ] finish.kmValue
 - [ ] frame.sendToJudges
 - [ ] lobby.leaveButton
 - [ ] lobby.leaveConfirmTitle

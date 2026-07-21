@@ -187,7 +187,7 @@
     "deadCauseMia": "Je hebt te lang een spelregel overtreden.",
     "deadCauseLeft": "Je hebt het spel verlaten.",
     "deadKilledBy": "Gedood door $name",
-    "deadSurvivedFor": "Overleefde $time",
+    "deadSurvivedCaption": "overleefd",
     "deadAlsoOut": "Ook eruit: $names",
     "deadChatEmpty": "Nog niemand heeft iets gezegd.",
     "deadChatHint": "Bericht aan de doden",
@@ -201,13 +201,26 @@
   "finish": {
     "title": "Spel afgelopen",
     "youWon": "Je hebt gewonnen!",
-    "winnerFrames": "$name heeft gewonnen met $count frames",
-    "winnerLastManStanding": "$name is de laatste overlevende",
+    "winnerEyebrow": "Winnaar",
+    "framesCaption": {
+      "one": "bevestigde frame",
+      "other": "bevestigde frames"
+    },
+    "lastOneStanding": "laatste overlevende",
+    "wonWhileDead": "Je ligt er zelf ook uit, maar niemand framede er meer dan jij.",
+    "winnerDied": "$name ligt er ook uit. De meeste frames winnen alsnog.",
+    "yourResult": {
+      "one": "Je eindigde met $n bevestigde frame.",
+      "other": "Je eindigde met $n bevestigde frames."
+    },
+    "statCombinedLabel": "Samen afgelegd",
+    "stillValue": "$time stil",
+    "metersValue": "$n m",
+    "kmValue": "$whole,$tenth km",
     "statsTitle": "Statistieken",
     "statMostKills": "Meeste kills",
     "statMostMoved": "Meest bewogen",
     "statMostStill": "Minste beweging",
-    "statCombinedMovement": "$distance m samen afgelegd",
     "statDuration": "Spel duurde $time",
     "killChainTitle": "Moordketen",
     "killChainFramed": "$killer heeft $victim geframed",
