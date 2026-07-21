@@ -238,7 +238,7 @@
     "cooldownReasonTimeout": "Nobody judged it in time.",
     "confirmTitle": "Confirm frame",
     "retake": "Retake",
-    "submit": "Submit",
+    "sendToJudges": "Send to judges",
     "errorOnCooldown": "Still cooling down from your last frame.",
     "errorAlreadyPending": "You already have a frame awaiting judgment.",
     "errorWrongStatus": "You can't frame anyone right now.",

@@ -24,6 +24,11 @@ abstract final class Motion {
   /// once, on the screen that opens the app.
   static const lock = Duration(milliseconds: 900);
 
+  /// A thrown or released object settling back into place. Longer than
+  /// [standard] because settling is physics, not a state change — cutting
+  /// it short reads as teleporting, not landing.
+  static const settle = Duration(milliseconds: 350);
+
   /// Things arriving: fast at first, settling at the end. The same shape as
   /// autofocus catching — which is the app's whole visual idea.
   static const enter = Curves.easeOutCubic;

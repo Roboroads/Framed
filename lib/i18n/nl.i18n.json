@@ -238,7 +238,7 @@
     "cooldownReasonTimeout": "Niemand heeft het op tijd beoordeeld.",
     "confirmTitle": "Frame bevestigen",
     "retake": "Opnieuw",
-    "submit": "Versturen",
+    "sendToJudges": "Naar de juryleden",
     "errorOnCooldown": "Je koelt nog af van je vorige frame.",
     "errorAlreadyPending": "Je hebt al een frame die op een uitspraak wacht.",
     "errorWrongStatus": "Je kunt nu niemand framen.",

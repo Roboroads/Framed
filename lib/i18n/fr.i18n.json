@@ -238,7 +238,7 @@
     "cooldownReasonTimeout": "Personne ne l'a jugée à temps.",
     "confirmTitle": "Confirmer la photo",
     "retake": "Reprendre",
-    "submit": "Envoyer",
+    "sendToJudges": "Envoyer aux juges",
     "errorOnCooldown": "Vous êtes encore en délai après votre dernier piégeage.",
     "errorAlreadyPending": "Vous avez déjà un piégeage en attente de verdict.",
     "errorWrongStatus": "Vous ne pouvez piéger personne pour le moment.",

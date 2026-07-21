@@ -238,7 +238,7 @@
     "cooldownReasonTimeout": "Nadie lo juzgó a tiempo.",
     "confirmTitle": "Confirmar foto",
     "retake": "Repetir",
-    "submit": "Enviar",
+    "sendToJudges": "Enviar a los jueces",
     "errorOnCooldown": "Todavía estás en tiempo de espera de tu última foto.",
     "errorAlreadyPending": "Ya tienes una foto esperando veredicto.",
     "errorWrongStatus": "Ahora mismo no puedes eliminar a nadie.",

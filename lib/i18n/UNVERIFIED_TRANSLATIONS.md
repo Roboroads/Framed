@@ -26,6 +26,7 @@ still waiting on a human read-through, one per line, grouped by locale.
 
 ## es
 
+- [ ] frame.sendToJudges
 - [ ] lobby.leaveButton
 - [ ] lobby.leaveConfirmTitle
 - [ ] lobby.leaveConfirmBody
@@ -82,6 +83,7 @@ still waiting on a human read-through, one per line, grouped by locale.
 
 ## fr
 
+- [ ] frame.sendToJudges
 - [ ] lobby.leaveButton
 - [ ] lobby.leaveConfirmTitle
 - [ ] lobby.leaveConfirmBody
@@ -116,6 +118,7 @@ still waiting on a human read-through, one per line, grouped by locale.
 
 ## nl
 
+- [ ] frame.sendToJudges
 - [ ] lobby.leaveButton
 - [ ] lobby.leaveConfirmTitle
 - [ ] lobby.leaveConfirmBody
