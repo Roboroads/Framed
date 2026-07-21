@@ -205,5 +205,6 @@ end $$;
 
 revoke execute on function tick_punishments(public.games),
   is_outside_geofence(public.players, public.games),
-  is_near_geofence_edge(public.players, public.games), send_pulse_to(uuid)
+  is_near_geofence_edge(public.players, public.games),
+  send_pulse_to(uuid, timestamptz)
   from public, anon, authenticated;
