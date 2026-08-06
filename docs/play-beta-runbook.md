@@ -38,7 +38,7 @@ Without this, builds still work — `PushService` degrades to "no push", but tes
 
 1. [console.firebase.google.com](https://console.firebase.google.com) > create project (analytics off — the app ships none by policy).
 2. Add an Android app with package name `me.roboroads.framed`, download `google-services.json`.
-3. App side: `gh secret set GOOGLE_SERVICES_JSON --repo Roboroads/Framed < google-services.json`. For a local build with push, drop the same file at `android/app/google-services.json` (gitignored — the repo is public, never commit it).
+3. App side: `gh variable set GOOGLE_SERVICES_JSON --repo Roboroads/Framed < google-services.json` — a variable, not a secret: every value in the file ships inside the APK anyway, and a variable stays viewable/editable in the repo settings. For a local build with push, drop the same file at `android/app/google-services.json` (gitignored so the public repo never carries a copy).
 4. Server side: project settings > Service accounts > Generate new private key. Put the JSON in the prod server's env as `FCM_SERVICE_ACCOUNT_JSON` for the functions container (`backend/volumes/functions/push/index.ts` reads it), then restart that container.
 
 iOS later needs its own `GoogleService-Info.plist` plus APNs keys (`APNS_*` in the same index.ts); not part of this runbook.
@@ -92,7 +92,7 @@ Version code is minutes-since-epoch, monotonic across nightly and tagged runs �
 | `ANDROID_KEY_ALIAS` / `ANDROID_KEY_PASSWORD` / `ANDROID_STORE_PASSWORD` | step 1 |
 | `PROD_SUPABASE_URL` | `https://game.getframed.fun` |
 | `PROD_SUPABASE_ANON_KEY` | prod server `backend/.env` |
-| `GOOGLE_SERVICES_JSON` | Firebase console (optional; no push without it) |
+| `GOOGLE_SERVICES_JSON` (repo variable, not secret) | Firebase console (optional; no push without it) |
 | `PLAY_SERVICE_ACCOUNT_JSON` | Google Cloud + Play Console invite |
 | `TILE_URL_TEMPLATE` | optional; unset means OSM's volunteer server (beta only) |
 | Prod server env `FCM_SERVICE_ACCOUNT_JSON` | Firebase service account key (not a GitHub secret) |

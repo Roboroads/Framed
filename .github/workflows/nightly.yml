@@ -25,7 +25,8 @@ name: Nightly build
 #                                    - App Store Connect API key
 #                                      (`base64 -w0 AuthKey_XXXX.p8`)
 #
-# Android, optional:
+# Android, optional (a repo *variable*, not a secret — every value in it
+# ships inside the APK anyway, and a variable stays viewable in the UI):
 #   GOOGLE_SERVICES_JSON      - android/app/google-services.json verbatim
 #                               (Firebase console > project settings). Unset
 #                               means the build ships without push — the app
@@ -94,7 +95,7 @@ jobs:
 
       - name: Write Firebase config (skipped when the secret is unset)
         env:
-          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          GOOGLE_SERVICES_JSON: ${{ vars.GOOGLE_SERVICES_JSON }}
         run: |
           if [ -n "$GOOGLE_SERVICES_JSON" ]; then
             printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
