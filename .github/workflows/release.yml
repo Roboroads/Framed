@@ -22,7 +22,7 @@ jobs:
       - id: check
         run: |
           if [ -n "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" ] && \
-             [ -n "${{ secrets.ANDROID_KEY_ALIAS }}" ] && \
+             [ -n "${{ vars.ANDROID_KEY_ALIAS }}" ] && \
              [ -n "${{ secrets.ANDROID_KEY_PASSWORD }}" ] && \
              [ -n "${{ secrets.ANDROID_STORE_PASSWORD }}" ] && \
              [ -n "${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}" ]; then
@@ -57,11 +57,11 @@ jobs:
           cat > android/key.properties <<EOF
           storePassword=${{ secrets.ANDROID_STORE_PASSWORD }}
           keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
-          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
+          keyAlias=${{ vars.ANDROID_KEY_ALIAS }}
           storeFile=upload-keystore.jks
           EOF
 
-      - name: Write Firebase config (skipped when the secret is unset)
+      - name: Write Firebase config (skipped when the variable is unset)
         env:
           GOOGLE_SERVICES_JSON: ${{ vars.GOOGLE_SERVICES_JSON }}
         run: |
@@ -74,14 +74,14 @@ jobs:
           flutter build appbundle --release \
             --build-name=${{ steps.version.outputs.name }} \
             --build-number=$(( $(date +%s) / 60 )) \
-            --dart-define=SUPABASE_URL=${{ secrets.PROD_SUPABASE_URL || 'http://localhost:8000' }} \
-            --dart-define=SUPABASE_ANON_KEY=${{ secrets.PROD_SUPABASE_ANON_KEY }} \
+            --dart-define=SUPABASE_URL=${{ vars.PROD_SUPABASE_URL || 'http://localhost:8000' }} \
+            --dart-define=SUPABASE_ANON_KEY=${{ vars.PROD_SUPABASE_ANON_KEY }} \
             --dart-define=TILE_URL_TEMPLATE=${{ secrets.TILE_URL_TEMPLATE || 'https://tile.openstreetmap.org/{z}/{x}/{y}.png' }}
           flutter build apk --release \
             --build-name=${{ steps.version.outputs.name }} \
             --build-number=$(( $(date +%s) / 60 )) \
-            --dart-define=SUPABASE_URL=${{ secrets.PROD_SUPABASE_URL || 'http://localhost:8000' }} \
-            --dart-define=SUPABASE_ANON_KEY=${{ secrets.PROD_SUPABASE_ANON_KEY }} \
+            --dart-define=SUPABASE_URL=${{ vars.PROD_SUPABASE_URL || 'http://localhost:8000' }} \
+            --dart-define=SUPABASE_ANON_KEY=${{ vars.PROD_SUPABASE_ANON_KEY }} \
             --dart-define=TILE_URL_TEMPLATE=${{ secrets.TILE_URL_TEMPLATE || 'https://tile.openstreetmap.org/{z}/{x}/{y}.png' }}
 
       - name: Upload to Play Console (internal testing)
@@ -108,9 +108,9 @@ jobs:
         run: |
           if [ -n "${{ secrets.IOS_CERTIFICATE_BASE64 }}" ] && \
              [ -n "${{ secrets.IOS_CERTIFICATE_PASSWORD }}" ] && \
-             [ -n "${{ secrets.IOS_PROVISION_PROFILE_BASE64 }}" ] && \
-             [ -n "${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}" ] && \
-             [ -n "${{ secrets.IOS_TEAM_ID }}" ] && \
+             [ -n "${{ vars.IOS_PROVISION_PROFILE_BASE64 }}" ] && \
+             [ -n "${{ vars.IOS_PROVISIONING_PROFILE_NAME }}" ] && \
+             [ -n "${{ vars.IOS_TEAM_ID }}" ] && \
              [ -n "${{ secrets.APPSTORE_ISSUER_ID }}" ] && \
              [ -n "${{ secrets.APPSTORE_KEY_ID }}" ] && \
              [ -n "${{ secrets.APPSTORE_API_KEY_BASE64 }}" ]; then
@@ -146,7 +146,7 @@ jobs:
       - name: Install provisioning profile
         run: |
           mkdir -p ~/Library/MobileDevice/"Provisioning Profiles"
-          echo "${{ secrets.IOS_PROVISION_PROFILE_BASE64 }}" | base64 -d \
+          echo "${{ vars.IOS_PROVISION_PROFILE_BASE64 }}" | base64 -d \
             > ~/Library/MobileDevice/"Provisioning Profiles"/framed.mobileprovision
 
       - name: Build unsigned app
@@ -154,8 +154,8 @@ jobs:
           flutter build ios --release --no-codesign \
             --build-name=${{ steps.version.outputs.name }} \
             --build-number=$(( $(date +%s) / 60 )) \
-            --dart-define=SUPABASE_URL=${{ secrets.PROD_SUPABASE_URL || 'http://localhost:8000' }} \
-            --dart-define=SUPABASE_ANON_KEY=${{ secrets.PROD_SUPABASE_ANON_KEY }} \
+            --dart-define=SUPABASE_URL=${{ vars.PROD_SUPABASE_URL || 'http://localhost:8000' }} \
+            --dart-define=SUPABASE_ANON_KEY=${{ vars.PROD_SUPABASE_ANON_KEY }} \
             --dart-define=TILE_URL_TEMPLATE=${{ secrets.TILE_URL_TEMPLATE || 'https://tile.openstreetmap.org/{z}/{x}/{y}.png' }}
 
       - name: Archive and sign
@@ -165,8 +165,8 @@ jobs:
             -configuration Release -archivePath build/Runner.xcarchive \
             archive \
             CODE_SIGN_STYLE=Manual \
-            DEVELOPMENT_TEAM="${{ secrets.IOS_TEAM_ID }}" \
-            PROVISIONING_PROFILE_SPECIFIER="${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}" \
+            DEVELOPMENT_TEAM="${{ vars.IOS_TEAM_ID }}" \
+            PROVISIONING_PROFILE_SPECIFIER="${{ vars.IOS_PROVISIONING_PROFILE_NAME }}" \
             CODE_SIGN_IDENTITY="Apple Distribution"
 
       - name: Export .ipa
@@ -178,12 +178,12 @@ jobs:
           <plist version="1.0">
           <dict>
             <key>method</key><string>app-store-connect</string>
-            <key>teamID</key><string>${{ secrets.IOS_TEAM_ID }}</string>
+            <key>teamID</key><string>${{ vars.IOS_TEAM_ID }}</string>
             <key>signingStyle</key><string>manual</string>
             <key>provisioningProfiles</key>
             <dict>
               <key>me.roboroads.framed</key>
-              <string>${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}</string>
+              <string>${{ vars.IOS_PROVISIONING_PROFILE_NAME }}</string>
             </dict>
           </dict>
           </plist>

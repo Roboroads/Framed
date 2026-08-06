@@ -18,18 +18,18 @@ Store the `.jks` and both passwords in the password manager, then:
 
 ```sh
 gh secret set ANDROID_KEYSTORE_BASE64 --repo Roboroads/Framed --body "$(base64 -w0 upload-keystore.jks)"
-gh secret set ANDROID_KEY_ALIAS --repo Roboroads/Framed --body "upload"
+gh variable set ANDROID_KEY_ALIAS --repo Roboroads/Framed --body "upload"
 gh secret set ANDROID_STORE_PASSWORD --repo Roboroads/Framed   # paste when prompted
 gh secret set ANDROID_KEY_PASSWORD --repo Roboroads/Framed
 ```
 
 ## 2. Production backend
 
-The URL is public knowledge; the anon key lives in the prod server's `backend/.env` (`ANON_KEY`).
+Both are variables, not secrets: the URL is public knowledge, and Supabase's anon key is public-by-design — it ships inside every build, security comes from RLS. The key's value lives in the prod server's `backend/.env` (`ANON_KEY`).
 
 ```sh
-gh secret set PROD_SUPABASE_URL --repo Roboroads/Framed --body "https://game.getframed.fun"
-gh secret set PROD_SUPABASE_ANON_KEY --repo Roboroads/Framed   # paste ANON_KEY from the prod .env
+gh variable set PROD_SUPABASE_URL --repo Roboroads/Framed --body "https://game.getframed.fun"
+gh variable set PROD_SUPABASE_ANON_KEY --repo Roboroads/Framed --body "<ANON_KEY from the prod .env>"
 ```
 
 ## 3. Firebase (push)
@@ -84,15 +84,20 @@ git tag v0.2.0 && git push origin v0.2.0
 
 Version code is minutes-since-epoch, monotonic across nightly and tagged runs — never set it by hand. Version *name* comes from the tag; keep `pubspec.yaml`'s `version:` roughly in sync for local builds.
 
-## Secret inventory
+## Secrets and variables inventory
 
-| Secret | Source |
-| --- | --- |
-| `ANDROID_KEYSTORE_BASE64` | step 1, `base64 -w0 upload-keystore.jks` |
-| `ANDROID_KEY_ALIAS` / `ANDROID_KEY_PASSWORD` / `ANDROID_STORE_PASSWORD` | step 1 |
-| `PROD_SUPABASE_URL` | `https://game.getframed.fun` |
-| `PROD_SUPABASE_ANON_KEY` | prod server `backend/.env` |
-| `GOOGLE_SERVICES_JSON` (repo variable, not secret) | Firebase console (optional; no push without it) |
-| `PLAY_SERVICE_ACCOUNT_JSON` | Google Cloud + Play Console invite |
-| `TILE_URL_TEMPLATE` | optional; unset means OSM's volunteer server (beta only) |
-| Prod server env `FCM_SERVICE_ACCOUNT_JSON` | Firebase service account key (not a GitHub secret) |
+One rule decides which is which: key material, passwords, and billable credentials are **secrets**; values already public in the shipped artifact, or plain names, are **variables** (viewable and editable in the repo settings).
+
+| Name | Kind | Source |
+| --- | --- | --- |
+| `ANDROID_KEYSTORE_BASE64` | secret | step 1, `base64 -w0 upload-keystore.jks` |
+| `ANDROID_KEY_PASSWORD` / `ANDROID_STORE_PASSWORD` | secret | step 1 |
+| `ANDROID_KEY_ALIAS` | variable | step 1, just a name |
+| `PROD_SUPABASE_URL` | variable | `https://game.getframed.fun` |
+| `PROD_SUPABASE_ANON_KEY` | variable | prod server `backend/.env` (public-by-design client key) |
+| `GOOGLE_SERVICES_JSON` | variable | Firebase console (optional; no push without it) |
+| `PLAY_SERVICE_ACCOUNT_JSON` | secret | Google Cloud + Play Console invite |
+| `TILE_URL_TEMPLATE` | secret | optional; a paid template embeds a billable key. Unset means OSM's volunteer server (beta only) |
+| Prod server env `FCM_SERVICE_ACCOUNT_JSON` | server env | Firebase service account key (never on GitHub) |
+
+iOS additions for later (`IOS_*`, `APPSTORE_*`) are classified the same way in `nightly.yml`'s header: certificate + App Store Connect key stay secrets, the team id, profile name, and provisioning profile are variables.
