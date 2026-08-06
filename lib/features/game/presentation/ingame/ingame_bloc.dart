@@ -221,6 +221,17 @@ class IngameBloc extends Cubit<IngameState> {
     int? generation,
   }) async {
     generation ??= ++_targetGeneration;
+    // #119: an inherited target must not sit on top of the previous
+    // target's revealed location — the pin would point at the dead
+    // ex-target, labeled as the new one, until the silence timeout. Only
+    // a genuinely different target clears it: the warning-resync catch-up
+    // re-delivers the current target, and that must not wipe a live reveal.
+    if (state.phase case IngamePlaying(
+      :final target,
+    ) when target.playerId != event.targetId) {
+      _targetLocationTimer?.cancel();
+      emit(state.copyWith(targetLocation: null));
+    }
     try {
       final name = await _crypto.decryptString(event.nameCiphertext);
       final encryptedSelfie = await _repository.downloadSelfie(
@@ -279,6 +290,10 @@ class IngameBloc extends Cubit<IngameState> {
           survivedSeconds: event.survivedSeconds,
           photoBytes: photoBytes,
         ),
+        // #121: the server stops sending warning updates to a dead player,
+        // so a warning left standing here would cover the death screen
+        // forever, frozen at "You die in 00:00".
+        warning: null,
         keepAwake: false,
       ),
     );

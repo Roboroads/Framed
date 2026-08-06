@@ -907,6 +907,41 @@ void main() {
       expect(localAlarms.cancelWarningDeadlineCallCount, 1);
     });
 
+    // #121: the server stops sending warning updates to a dead player, so
+    // nothing would ever clear an overlay left behind by the death — it
+    // sits frozen at "You die in 00:00" on top of the dead screen.
+    test('you_died clears an active warning', () async {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        localAlarms: localAlarms,
+        session: session,
+        wakeLockService: wakeLockService,
+        gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
+        initialEndsAt: endsAt,
+      );
+
+      events.add(
+        GameEvent.warning(
+          active: true,
+          reasons: const ['geofence'],
+          hardDeadline: DateTime.now().add(const Duration(minutes: 1)),
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      expect(bloc.state.warning, isNotNull);
+
+      events.add(const GameEvent.youDied(cause: 'mia', survivedSeconds: 60));
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.phase, isA<IngameDead>());
+      expect(bloc.state.warning, isNull);
+    });
+
     test(
       'a warning past its deadline with no resolution re-fetches state',
       () async {
@@ -1312,6 +1347,104 @@ void main() {
       expect(
         bloc.state.targetLocation,
         const IngameTargetLocation(lat: 5, lng: 6),
+      );
+    });
+
+    // #119: an inherited target must not sit on top of the previous
+    // target's revealed location — the pin would point at the dead
+    // ex-target, labeled as the new one, until the silence timeout.
+    test(
+      'a new target_assigned clears the old target location reveal',
+      () async {
+        final bloc = IngameBloc(
+          events: events.stream,
+          crypto: crypto,
+          repository: repository,
+          localAlarms: localAlarms,
+          session: session,
+          wakeLockService: wakeLockService,
+          gameId: 'game-1',
+          myPlayerId: 'player-me',
+          deadChatEvents: const Stream<GameEvent>.empty(),
+          initialEndsAt: endsAt,
+        );
+        repository.selfieBytes = await crypto.encryptBytes(
+          Uint8List.fromList([1]),
+        );
+
+        events.add(
+          GameEvent.targetAssigned(
+            targetId: 'first',
+            nameCiphertext: await crypto.encryptString('First'),
+            selfiePath: 'game-1/first',
+          ),
+        );
+        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+        events.add(const GameEvent.targetLocation(lat: 1, lng: 2));
+        await Future<void>.delayed(Duration.zero);
+        expect(bloc.state.targetLocation, isNotNull);
+
+        events.add(
+          GameEvent.targetAssigned(
+            targetId: 'second',
+            nameCiphertext: await crypto.encryptString('Second'),
+            selfiePath: 'game-1/second',
+          ),
+        );
+        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+
+        expect((bloc.state.phase as IngamePlaying).target.playerId, 'second');
+        expect(bloc.state.targetLocation, isNull);
+      },
+    );
+
+    // The guard on the test above: a re-delivery of the *same* target (the
+    // warning-resync catch-up fetch re-applies whatever get_my_state
+    // returns) must not wipe a reveal that's still live.
+    test('a re-delivered same target keeps the location reveal', () async {
+      final bloc = IngameBloc(
+        events: events.stream,
+        crypto: crypto,
+        repository: repository,
+        localAlarms: localAlarms,
+        session: session,
+        wakeLockService: wakeLockService,
+        gameId: 'game-1',
+        myPlayerId: 'player-me',
+        deadChatEvents: const Stream<GameEvent>.empty(),
+        initialEndsAt: endsAt,
+      );
+      repository.selfieBytes = await crypto.encryptBytes(
+        Uint8List.fromList([1]),
+      );
+
+      events.add(
+        GameEvent.targetAssigned(
+          targetId: 'target-1',
+          nameCiphertext: await crypto.encryptString('Alice'),
+          selfiePath: 'game-1/target-1',
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+      events.add(const GameEvent.targetLocation(lat: 1, lng: 2));
+      await Future<void>.delayed(Duration.zero);
+
+      events.add(
+        GameEvent.targetAssigned(
+          targetId: 'target-1',
+          nameCiphertext: await crypto.encryptString('Alice'),
+          selfiePath: 'game-1/target-1',
+        ),
+      );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(
+        bloc.state.targetLocation,
+        const IngameTargetLocation(lat: 1, lng: 2),
       );
     });
 
