@@ -41,7 +41,7 @@ Without this, builds still work — `PushService` degrades to "no push", but tes
 3. App side: `gh variable set GOOGLE_SERVICES_JSON --repo Roboroads/Framed < google-services.json` — a variable, not a secret: every value in the file ships inside the APK anyway, and a variable stays viewable/editable in the repo settings. For a local build with push, drop the same file at `android/app/google-services.json` (gitignored so the public repo never carries a copy).
 4. Server side: project settings > Service accounts > Generate new private key. Put the JSON in the prod server's env as `FCM_SERVICE_ACCOUNT_JSON` for the functions container (`backend/volumes/functions/push/index.ts` reads it), then restart that container.
 
-iOS later needs its own `GoogleService-Info.plist` plus APNs keys (`APNS_*` in the same index.ts); not part of this runbook.
+iOS later reuses all of this: add an iOS app to the same Firebase project (`GoogleService-Info.plist`) and upload the APNs `.p8` auth key in the Firebase console (project settings > Cloud Messaging). The server needs nothing extra — FCM relays to APNs, and the push function already sends the iOS background-push fields on every message.
 
 ## 4. Play Console
 

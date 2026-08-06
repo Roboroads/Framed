@@ -38,14 +38,13 @@ logs what it would have sent instead of sending — the local stack runs
 clean with zero setup:
 
 - `FCM_SERVICE_ACCOUNT_JSON` — the full service account JSON (as a string)
-  for an Android FCM project.
-- `APNS_KEY_P8` — the `.p8` private key contents for iOS APNs token auth.
-- `APNS_KEY_ID`, `APNS_TEAM_ID` — from the Apple Developer portal, paired
-  with the key above.
-- `APNS_BUNDLE_ID` — defaults to `me.roboroads.framed`.
+  for the Firebase project. This is the only push credential: the app
+  registers FCM tokens on Android and iOS alike, and for iOS FCM relays to
+  APNs itself — the APNs `.p8` auth key is uploaded once in the Firebase
+  console (project settings > Cloud Messaging), never on this server.
 
-No Firebase project or APNs credentials exist for this app yet — real key
-provisioning and live push delivery are tracked separately (#31).
+Real key provisioning and live push delivery are tracked separately
+(#31, docs/play-beta-runbook.md).
 
 ## Cleanup and retention (issue #29)
 

@@ -507,10 +507,6 @@ services:
       # Push (#27) — unset locally means the push function logs instead of
       # sending, see backend/README.md "Push notifications".
       FCM_SERVICE_ACCOUNT_JSON: ${FCM_SERVICE_ACCOUNT_JSON:-}
-      APNS_KEY_P8: ${APNS_KEY_P8:-}
-      APNS_KEY_ID: ${APNS_KEY_ID:-}
-      APNS_TEAM_ID: ${APNS_TEAM_ID:-}
-      APNS_BUNDLE_ID: ${APNS_BUNDLE_ID:-me.roboroads.framed}
     command:
       [
         "start",

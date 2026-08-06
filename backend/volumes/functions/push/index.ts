@@ -1,10 +1,16 @@
 // Framed data-only push (issue #27). Triggered by a `push_outbox` insert
 // (backend/volumes/db/init/24-push.sql); sweeps every unsent row, sends a
-// content-free wake-up to FCM (Android) or APNs (iOS) per player, stamps
-// sent_at. The device decrypts and renders locally (#28) — this function
-// never sees or sends a name, photo, or ciphertext, only {event, game_id}.
+// content-free wake-up per player, stamps sent_at. The device decrypts and
+// renders locally (#28) — this function never sees or sends a name, photo,
+// or ciphertext, only {event, game_id}.
 //
-// No provider keys configured (the local dev default — see #27's decision
+// One provider for both platforms: the app registers FCM tokens on Android
+// AND iOS (firebase_messaging's getToken() never returns a raw APNs device
+// token), so FCM is the only API these tokens work with. For iOS, FCM
+// relays to APNs itself — the APNs .p8 auth key is uploaded once in the
+// Firebase console (project settings > Cloud Messaging), never here.
+//
+// No FCM key configured (the local dev default — see #27's decision
 // comment, real key provisioning is separate): logs one line per would-be
 // push instead of sending, and still marks the row sent. A queue that
 // backs up waiting for keys that will never exist defeats the point of
@@ -16,12 +22,6 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
 const FCM_SERVICE_ACCOUNT_JSON = Deno.env.get('FCM_SERVICE_ACCOUNT_JSON')
-const APNS_KEY_P8 = Deno.env.get('APNS_KEY_P8')
-const APNS_KEY_ID = Deno.env.get('APNS_KEY_ID')
-const APNS_TEAM_ID = Deno.env.get('APNS_TEAM_ID')
-const APNS_BUNDLE_ID = Deno.env.get('APNS_BUNDLE_ID') ?? 'me.roboroads.framed'
-
-const KEYS_CONFIGURED = Boolean(FCM_SERVICE_ACCOUNT_JSON || APNS_KEY_P8)
 
 const client = createClient(SUPABASE_URL, SERVICE_ROLE_KEY)
 
@@ -75,22 +75,14 @@ async function sendOne(row: OutboxRow) {
   const platform = row.players?.platform
   if (!token) return // no token on file — nothing to wake up
 
-  if (!KEYS_CONFIGURED) {
+  if (!FCM_SERVICE_ACCOUNT_JSON) {
     console.log(
       `push (no keys configured): would send {event: ${row.event}, game_id: ${row.game_id}} to ${platform ?? 'unknown'} token ${token}`,
     )
     return
   }
 
-  if (platform === 'ios' && APNS_KEY_P8) {
-    await sendApns(token, row)
-    return
-  }
-  if (platform === 'android' && FCM_SERVICE_ACCOUNT_JSON) {
-    await sendFcm(token, row)
-    return
-  }
-  console.error(`push: no provider key configured for platform ${platform}`)
+  await sendFcm(token, row)
 }
 
 // FCM HTTP v1: exchange the service account for a short-lived OAuth2
@@ -138,48 +130,19 @@ async function sendFcm(token: string, row: OutboxRow) {
           token,
           data: { event: row.event, game_id: row.game_id },
           android: { priority: 'high' },
+          // iOS rides the same message — FCM applies whichever override
+          // matches the token's platform. Apple requires background
+          // (content-available, no alert) pushes at priority 5; the client
+          // renders its own time-sensitive local notification (#28).
+          apns: {
+            headers: {
+              'apns-push-type': 'background',
+              'apns-priority': '5',
+            },
+            payload: { aps: { 'content-available': 1 } },
+          },
         },
       }),
     },
   )
-}
-
-// APNs token-based auth: an ES256 JWT signed with the .p8 key, cached per
-// cold start (APNs allows the same provider token across many pushes for
-// up to an hour). Background push: content-available only, no alert — the
-// client renders its own time-sensitive local notification (#28).
-let cachedApnsJwt: { token: string; expiresAt: number } | null = null
-
-async function apnsProviderToken(): Promise<string> {
-  const now = Math.floor(Date.now() / 1000)
-  if (cachedApnsJwt && cachedApnsJwt.expiresAt > now + 60) {
-    return cachedApnsJwt.token
-  }
-  const key = await jose.importPKCS8(APNS_KEY_P8!, 'ES256')
-  const token = await new jose.SignJWT({})
-    .setProtectedHeader({ alg: 'ES256', kid: APNS_KEY_ID })
-    .setIssuer(APNS_TEAM_ID!)
-    .setIssuedAt(now)
-    .sign(key)
-  cachedApnsJwt = { token, expiresAt: now + 3000 }
-  return token
-}
-
-async function sendApns(token: string, row: OutboxRow) {
-  const providerToken = await apnsProviderToken()
-  await fetch(`https://api.push.apple.com/3/device/${token}`, {
-    method: 'POST',
-    headers: {
-      authorization: `bearer ${providerToken}`,
-      'apns-topic': APNS_BUNDLE_ID,
-      'apns-push-type': 'background',
-      'apns-priority': '5',
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      aps: { 'content-available': 1 },
-      event: row.event,
-      game_id: row.game_id,
-    }),
-  })
 }
