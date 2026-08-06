@@ -23,14 +23,19 @@ class LocationService {
     required String gameId,
     required Stream<GameEvent> gameEvents,
     required Stream<GameEvent> playerEvents,
+    // Overridable so tests don't wait 5s — see _restartAfterError.
+    Duration retryDelay = const Duration(seconds: 5),
   }) : _repository = repository,
-       _gameId = gameId {
+       _gameId = gameId,
+       _retryDelay = retryDelay {
     _gameEventsSub = gameEvents.listen(_onEvent);
     _playerEventsSub = playerEvents.listen(_onEvent);
   }
 
   final GameRepository _repository;
   final String _gameId;
+  final Duration _retryDelay;
+  Timer? _retryTimer;
   StreamSubscription<Position>? _positionSub;
   late final StreamSubscription<GameEvent> _gameEventsSub;
   late final StreamSubscription<GameEvent> _playerEventsSub;
@@ -47,7 +52,18 @@ class LocationService {
     if (_stopped) return;
     _positionSub = Geolocator.getPositionStream(
       locationSettings: _platformSettings(),
-    ).listen(_onPosition, onError: (_) {});
+    ).listen(_onPosition, onError: (_) => _restartAfterError());
+  }
+
+  // A stream error is worse than a missed beat: geolocator never
+  // resubscribes an errored stream, so without this a single hiccup would
+  // silently end uploads for the rest of the game — the player passes every
+  // visible check and is guaranteed an MIA death (#122).
+  void _restartAfterError() {
+    unawaited(_positionSub?.cancel());
+    _positionSub = null;
+    _retryTimer?.cancel();
+    _retryTimer = Timer(_retryDelay, start);
   }
 
   void _onEvent(GameEvent event) {
@@ -77,6 +93,16 @@ class LocationService {
   LocationSettings _platformSettings() {
     if (Platform.isAndroid) {
       return AndroidSettings(
+        // LocationManager, not Google Play Services (#122). The gate's
+        // isLocationServiceEnabled() asks LocationManager, but the default
+        // fused path re-checks through GMS SettingsClient, which rejects
+        // high accuracy whenever "Google Location Accuracy" is off — and
+        // with no Activity behind this foreground-service stream that
+        // rejection is an instant stream error, not a fix-it dialog. So a
+        // player could pass the gate and still never upload a single fix.
+        // LocationManager needs no Google consent, matches what the gate
+        // verified, and fits the app's no-Google stance.
+        forceLocationManager: true,
         intervalDuration: _updateInterval,
         foregroundNotificationConfig: ForegroundNotificationConfig(
           notificationTitle: t.location.notificationTitle,
@@ -97,6 +123,7 @@ class LocationService {
   void stop() {
     if (_stopped) return;
     _stopped = true;
+    _retryTimer?.cancel();
     unawaited(_positionSub?.cancel());
     unawaited(_gameEventsSub.cancel());
     unawaited(_playerEventsSub.cancel());
