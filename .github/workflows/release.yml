@@ -149,6 +149,17 @@ jobs:
           echo "${{ vars.IOS_PROVISION_PROFILE_BASE64 }}" | base64 -d \
             > ~/Library/MobileDevice/"Provisioning Profiles"/framed.mobileprovision
 
+      # Lands the file on disk; it only reaches the app bundle once
+      # GoogleService-Info.plist is added to the Runner target in Xcode
+      # (pending — needs a Mac, like the rest of this unverified job).
+      - name: Write Firebase config (skipped when the variable is unset)
+        env:
+          GOOGLE_SERVICE_INFO_PLIST: ${{ vars.GOOGLE_SERVICE_INFO_PLIST }}
+        run: |
+          if [ -n "$GOOGLE_SERVICE_INFO_PLIST" ]; then
+            printf '%s' "$GOOGLE_SERVICE_INFO_PLIST" > ios/Runner/GoogleService-Info.plist
+          fi
+
       - name: Build unsigned app
         run: |
           flutter build ios --release --no-codesign \
