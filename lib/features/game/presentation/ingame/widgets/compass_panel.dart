@@ -154,6 +154,19 @@ class _CompassArrowState extends State<_CompassArrow> {
   @override
   void initState() {
     super.initState();
+    // The dossier scrolls, and the panel sits low in it — a pulse that
+    // lands below the fold would spend its whole 30-second window
+    // invisible (#120). "Everyone stop and look" needs something to look
+    // at, so the instrument pulls itself into view the moment it mounts.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      Scrollable.ensureVisible(
+        context,
+        alignment: 0.5,
+        duration: Motion.gate(context, Motion.standard),
+        curve: Motion.enter,
+      );
+    });
     // Redraws the countdown bar; the panel's own disappearance is driven
     // by IngameBloc clearing state.compass on expiry, not by this timer.
     _ticker = Timer.periodic(const Duration(milliseconds: 200), (_) {
