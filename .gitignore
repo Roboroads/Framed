@@ -63,3 +63,6 @@ backend/volumes/storage/
 /android/key.properties
 *.jks
 *.keystore
+
+# Firebase config (#28/#33) — public repo, CI writes it from a secret
+/android/app/google-services.json

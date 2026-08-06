@@ -25,10 +25,20 @@ name: Nightly build
 #                                    - App Store Connect API key
 #                                      (`base64 -w0 AuthKey_XXXX.p8`)
 #
+# Android, optional:
+#   GOOGLE_SERVICES_JSON      - android/app/google-services.json verbatim
+#                               (Firebase console > project settings). Unset
+#                               means the build ships without push — the app
+#                               degrades gracefully, testers just miss
+#                               background pulses/warnings.
+#
 # Both platforms:
 #   PROD_SUPABASE_URL, PROD_SUPABASE_ANON_KEY - optional; falls back to the
 #                               local dev backend's address, which no real
 #                               device can reach
+#   TILE_URL_TEMPLATE         - optional; falls back to OSM's volunteer tile
+#                               server, acceptable for a small beta only
+#                               (env.dart documents the policy concern)
 #
 # The iOS job is unverified — this repo's dev machine has no macOS/Xcode
 # to build and codesign-check against like the Android path was (see
@@ -82,12 +92,21 @@ jobs:
           storeFile=upload-keystore.jks
           EOF
 
+      - name: Write Firebase config (skipped when the secret is unset)
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          if [ -n "$GOOGLE_SERVICES_JSON" ]; then
+            printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+          fi
+
       - name: Build signed app bundle
         run: |
           flutter build appbundle --release \
-            --build-number=${{ github.run_number }} \
+            --build-number=$(( $(date +%s) / 60 )) \
             --dart-define=SUPABASE_URL=${{ secrets.PROD_SUPABASE_URL || 'http://localhost:8000' }} \
-            --dart-define=SUPABASE_ANON_KEY=${{ secrets.PROD_SUPABASE_ANON_KEY }}
+            --dart-define=SUPABASE_ANON_KEY=${{ secrets.PROD_SUPABASE_ANON_KEY }} \
+            --dart-define=TILE_URL_TEMPLATE=${{ secrets.TILE_URL_TEMPLATE || 'https://tile.openstreetmap.org/{z}/{x}/{y}.png' }}
 
       - name: Upload to Play Console (internal testing)
         uses: r0adkll/upload-google-play@v1
@@ -147,9 +166,10 @@ jobs:
       - name: Build unsigned app
         run: |
           flutter build ios --release --no-codesign \
-            --build-number=${{ github.run_number }} \
+            --build-number=$(( $(date +%s) / 60 )) \
             --dart-define=SUPABASE_URL=${{ secrets.PROD_SUPABASE_URL || 'http://localhost:8000' }} \
-            --dart-define=SUPABASE_ANON_KEY=${{ secrets.PROD_SUPABASE_ANON_KEY }}
+            --dart-define=SUPABASE_ANON_KEY=${{ secrets.PROD_SUPABASE_ANON_KEY }} \
+            --dart-define=TILE_URL_TEMPLATE=${{ secrets.TILE_URL_TEMPLATE || 'https://tile.openstreetmap.org/{z}/{x}/{y}.png' }}
 
       - name: Archive and sign
         working-directory: ios

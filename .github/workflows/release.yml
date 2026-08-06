@@ -61,18 +61,28 @@ jobs:
           storeFile=upload-keystore.jks
           EOF
 
+      - name: Write Firebase config (skipped when the secret is unset)
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          if [ -n "$GOOGLE_SERVICES_JSON" ]; then
+            printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+          fi
+
       - name: Build signed app bundle and APK
         run: |
           flutter build appbundle --release \
             --build-name=${{ steps.version.outputs.name }} \
-            --build-number=${{ github.run_number }} \
+            --build-number=$(( $(date +%s) / 60 )) \
             --dart-define=SUPABASE_URL=${{ secrets.PROD_SUPABASE_URL || 'http://localhost:8000' }} \
-            --dart-define=SUPABASE_ANON_KEY=${{ secrets.PROD_SUPABASE_ANON_KEY }}
+            --dart-define=SUPABASE_ANON_KEY=${{ secrets.PROD_SUPABASE_ANON_KEY }} \
+            --dart-define=TILE_URL_TEMPLATE=${{ secrets.TILE_URL_TEMPLATE || 'https://tile.openstreetmap.org/{z}/{x}/{y}.png' }}
           flutter build apk --release \
             --build-name=${{ steps.version.outputs.name }} \
-            --build-number=${{ github.run_number }} \
+            --build-number=$(( $(date +%s) / 60 )) \
             --dart-define=SUPABASE_URL=${{ secrets.PROD_SUPABASE_URL || 'http://localhost:8000' }} \
-            --dart-define=SUPABASE_ANON_KEY=${{ secrets.PROD_SUPABASE_ANON_KEY }}
+            --dart-define=SUPABASE_ANON_KEY=${{ secrets.PROD_SUPABASE_ANON_KEY }} \
+            --dart-define=TILE_URL_TEMPLATE=${{ secrets.TILE_URL_TEMPLATE || 'https://tile.openstreetmap.org/{z}/{x}/{y}.png' }}
 
       - name: Upload to Play Console (internal testing)
         uses: r0adkll/upload-google-play@v1
@@ -143,9 +153,10 @@ jobs:
         run: |
           flutter build ios --release --no-codesign \
             --build-name=${{ steps.version.outputs.name }} \
-            --build-number=${{ github.run_number }} \
+            --build-number=$(( $(date +%s) / 60 )) \
             --dart-define=SUPABASE_URL=${{ secrets.PROD_SUPABASE_URL || 'http://localhost:8000' }} \
-            --dart-define=SUPABASE_ANON_KEY=${{ secrets.PROD_SUPABASE_ANON_KEY }}
+            --dart-define=SUPABASE_ANON_KEY=${{ secrets.PROD_SUPABASE_ANON_KEY }} \
+            --dart-define=TILE_URL_TEMPLATE=${{ secrets.TILE_URL_TEMPLATE || 'https://tile.openstreetmap.org/{z}/{x}/{y}.png' }}
 
       - name: Archive and sign
         working-directory: ios

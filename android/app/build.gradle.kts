@@ -7,6 +7,15 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Push (#28/#33): the google-services plugin bakes google-services.json into
+// resources FirebaseInitProvider reads at startup. The file is gitignored
+// (public repo) — CI writes it from the GOOGLE_SERVICES_JSON secret, a local
+// checkout can drop in its own copy. Without it the plugin must stay off or
+// it fails the build; PushService already degrades to "no push" gracefully.
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
+}
+
 // Release signing (issue #33): android/key.properties, gitignored. CI writes
 // it from repo secrets; a local dev machine without one just falls back to
 // debug signing below, same as the Flutter-scaffold default.
