@@ -44,7 +44,8 @@ clean with zero setup:
   console (project settings > Cloud Messaging), never on this server.
 
 Real key provisioning and live push delivery are tracked separately
-(#31, docs/play-beta-runbook.md).
+(#31; setup steps live in a local, untracked runbook on the dev
+machine).
 
 ## Cleanup and retention (issue #29)
 

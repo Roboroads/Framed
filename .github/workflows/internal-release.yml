@@ -10,8 +10,8 @@ name: Internal testing release
 # Secrets vs repo variables, one rule: key material, passwords, and
 # billable credentials are secrets; values already public in the shipped
 # artifact (or plain names/identifiers) are variables, which stay viewable
-# and editable in the repo settings. docs/play-beta-runbook.md walks
-# through setting every one of these.
+# and editable in the repo settings. A local, untracked runbook on the
+# dev machine walks through setting every one of these.
 #
 # Android secrets:
 #   ANDROID_KEYSTORE_BASE64   - `base64 -w0 upload-keystore.jks`

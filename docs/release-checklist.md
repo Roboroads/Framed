@@ -1,6 +1,6 @@
 # Release checklist
 
-Store submission blockers, not a general pre-flight list — `dart format .`, `flutter analyze`, and `flutter test` already gate every commit (CLAUDE.md). The one-time Play Console / secrets setup lives in [play-beta-runbook.md](play-beta-runbook.md).
+Store submission blockers, not a general pre-flight list — `dart format .`, `flutter analyze`, and `flutter test` already gate every commit (CLAUDE.md). The one-time Play Console / secrets setup lives in a local, untracked `play-beta-runbook.md` on the dev machine.
 
 ## Privacy policy (#30)
 
