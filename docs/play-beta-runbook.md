@@ -8,20 +8,39 @@ The workflows already do the rest — once the secrets below exist, every push t
 
 Play App Signing (default for new apps) means Google holds the key that signs what users install. The keystore generated here is only the *upload key* CI signs bundles with; Play can reset it via support if it's ever lost, so this is low-stakes.
 
+Generate it somewhere permanent *outside the repo* — the local release
+build needs it at a stable path, and inside the checkout it would only
+be one gitignore edit away from a public repo:
+
 ```sh
 keytool -genkeypair -v \
-  -keystore upload-keystore.jks \
+  -keystore ~/.android-keys/framed-upload.jks \
   -alias upload -keyalg RSA -keysize 4096 -validity 10000
 ```
 
-Store the `.jks` and both passwords in the password manager, then:
+Store the `.jks` and both passwords in the password manager as backup.
 
-```sh
-gh secret set ANDROID_KEYSTORE_BASE64 --repo Roboroads/Framed --body "$(base64 -w0 upload-keystore.jks)"
-gh variable set ANDROID_KEY_ALIAS --repo Roboroads/Framed --body "upload"
-gh secret set ANDROID_STORE_PASSWORD --repo Roboroads/Framed   # paste when prompted
-gh secret set ANDROID_KEY_PASSWORD --repo Roboroads/Framed
-```
+The keystore feeds two places, and both need setting up now:
+
+1. **This machine**, so local release builds are signed (the build
+   silently falls back to debug keys without it, which Play rejects):
+
+   ```sh
+   cp android/key.properties.example android/key.properties
+   ```
+
+   Fill in both passwords, `keyAlias=upload`, and
+   `storeFile=/home/<user>/.android-keys/framed-upload.jks` (absolute
+   path). The file is gitignored.
+
+2. **GitHub**, so CI builds are signed:
+
+   ```sh
+   gh secret set ANDROID_KEYSTORE_BASE64 --repo Roboroads/Framed --body "$(base64 -w0 ~/.android-keys/framed-upload.jks)"
+   gh variable set ANDROID_KEY_ALIAS --repo Roboroads/Framed --body "upload"
+   gh secret set ANDROID_STORE_PASSWORD --repo Roboroads/Framed   # paste when prompted
+   gh secret set ANDROID_KEY_PASSWORD --repo Roboroads/Framed
+   ```
 
 ## 2. Production backend
 
@@ -46,7 +65,7 @@ iOS later reuses all of this: add an iOS app to the same Firebase project, then 
 ## 4. Play Console
 
 1. Create the app (name Framed, app id `me.roboroads.framed`, free, app not game category is fine either way). Accept Play App Signing.
-2. **First upload is manual** — the Play API refuses to create the very first release. Build locally with the prod defines and the keystore from step 1 (copy `android/key.properties.example` to `android/key.properties` and fill it in):
+2. **First upload is manual** — the Play API refuses to create the very first release. Build locally with the prod defines; step 1's `android/key.properties` must exist on this machine:
 
    ```sh
    flutter build appbundle --release \
