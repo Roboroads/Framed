@@ -1,12 +1,16 @@
 [
   {
-    "relation": ["delegate_permission/common.handle_all_urls"],
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
     "target": {
       "namespace": "android_app",
       "package_name": "me.roboroads.framed",
       "sha256_cert_fingerprints": [
-        "FIXME: SHA256 fingerprint of the release signing certificate — get it with `keytool -list -v -keystore <release.jks> | grep SHA256`, or from Play Console > Setup > App integrity once a release build has been uploaded there. App Links verification silently fails until this is a real fingerprint.",
-        "0D:97:93:34:A3:A1:BB:50:F3:5F:47:22:2D:09:37:5B:97:34:08:40:99:5A:FC:80:F7:5D:D9:D5:96:AC:2A:98"
+        "0D:97:93:34:A3:A1:BB:50:F3:5F:47:22:2D:09:37:5B:97:34:08:40:99:5A:FC:80:F7:5D:D9:D5:96:AC:2A:98",
+        "EB:FD:06:B0:53:4A:0F:B2:AD:CF:37:66:12:58:75:C2:1F:D3:ED:9E:DC:95:3A:B1:62:59:E8:A8:CF:B1:B4:84",
+        "96:A9:CF:02:B1:63:3F:E6:9E:CF:A2:22:6A:B7:BF:84:21:D1:1D:BD:7F:62:6B:C8:08:38:0F:91:44:DF:C7:B1",
+        "90:42:C9:B4:4E:5A:02:5A:A2:32:BC:B9:6B:36:44:0A:03:F7:36:1C:14:37:52:41:92:EF:1D:4A:8B:FC:FA:A7"
       ]
     }
   }
