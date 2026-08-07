@@ -41,6 +41,50 @@ def bust(cx, cy, s, color):
     )
 
 
+def wide_brackets(cx, cy, bw, bh, stroke, color):
+    """The mark's viewfinder brackets stretched to a non-square frame."""
+    hw, hh = bw / 2, bh / 2
+    corners = [
+        (cx - hw, cy - hh, 1, 1), (cx + hw, cy - hh, -1, 1),
+        (cx + hw, cy + hh, -1, -1), (cx - hw, cy + hh, 1, -1),
+    ]
+    arms = (0.30, 0.26, 0.30, 0.26)
+    out = []
+    for (x, y, sx, sy), a in zip(corners, arms):
+        ax = a * min(bw, bh)
+        out.append(
+            f'<path d="M {x + sx * ax:.1f} {y:.1f} L {x:.1f} {y:.1f} '
+            f'L {x:.1f} {y + sy * ax:.1f}" fill="none" stroke="{color}" '
+            f'stroke-width="{stroke:.1f}" stroke-linecap="butt" stroke-linejoin="miter"/>')
+    return "\n    ".join(out)
+
+
+def feature_graphic_svg():
+    """Play Store feature graphic (1024x500): the wordmark caught in the
+    viewfinder, the crimson subject slipping out through the frame.
+
+    Text needs Archivo visible to Inkscape via fontconfig — copy
+    assets/fonts/Archivo-Variable.ttf to ~/.local/share/fonts and run
+    fc-cache before regenerating. The wordmark matches AppTheme.wordmark:
+    weight 800, width axis 125.
+    """
+    w, h = 1024, 500
+    word = (
+        f'<text x="{w / 2}" y="{h / 2 + 55}" text-anchor="middle" '
+        f'font-family="Archivo" font-weight="800" font-size="150" '
+        f"style=\"font-variation-settings: 'wght' 800, 'wdth' 125\" "
+        f'fill="{BONE}">FRAMED</text>')
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}">
+  <rect width="{w}" height="{h}" fill="{CHARCOAL}"/>
+  <g transform="rotate(-3 {w / 2} {h / 2})">
+    {wide_brackets(w / 2, h / 2, 940, 400, 17, BONE)}
+    {word}
+    {bust(795, 398, 0.22, CRIMSON)}
+  </g>
+</svg>
+'''
+
+
 def mark_svg(size, field, box, stroke, subject_scale):
     c = size / 2
     k = size / 1024
@@ -92,6 +136,12 @@ for d, s in [("mdpi", 96), ("hdpi", 144), ("xhdpi", 192), ("xxhdpi", 288),
 
 # --- Play Store listing icon (512x512 PNG, uploaded in the Console) ---
 png(f"{BRAND}/icon.svg", f"{BRAND}/play-store-icon.png", 512)
+
+# --- Play Store feature graphic (1024x500, uploaded in the Console) ---
+open(f"{BRAND}/feature-graphic.svg", "w").write(feature_graphic_svg())
+subprocess.run(["inkscape", f"{BRAND}/feature-graphic.svg", "-w", "1024",
+                "-h", "500", "-o", f"{BRAND}/feature-graphic.png"],
+               check=True, capture_output=True)
 
 # --- iOS app icon: drive every size off the catalogue's own Contents.json ---
 appicon = f"{IOS}/AppIcon.appiconset"

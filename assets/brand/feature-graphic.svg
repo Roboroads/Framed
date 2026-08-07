@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="500" viewBox="0 0 1024 500">
+  <rect width="1024" height="500" fill="#14100F"/>
+  <g transform="rotate(-3 512.0 250.0)">
+    <path d="M 162.0 50.0 L 42.0 50.0 L 42.0 170.0" fill="none" stroke="#F2EDEB" stroke-width="17.0" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <path d="M 878.0 50.0 L 982.0 50.0 L 982.0 154.0" fill="none" stroke="#F2EDEB" stroke-width="17.0" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <path d="M 862.0 450.0 L 982.0 450.0 L 982.0 330.0" fill="none" stroke="#F2EDEB" stroke-width="17.0" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <path d="M 146.0 450.0 L 42.0 450.0 L 42.0 346.0" fill="none" stroke="#F2EDEB" stroke-width="17.0" stroke-linecap="butt" stroke-linejoin="miter"/>
+    <text x="512.0" y="305.0" text-anchor="middle" font-family="Archivo" font-weight="800" font-size="150" style="font-variation-settings: 'wght' 800, 'wdth' 125" fill="#F2EDEB">FRAMED</text>
+    <circle cx="795.0" cy="385.2" r="13.6" fill="#E0313E"/><path d="M 762.0 426.6 A 33.0 31.3 0 0 1 828.0 426.6 Z" fill="#E0313E"/>
+  </g>
+</svg>
