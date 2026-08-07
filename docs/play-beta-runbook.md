@@ -54,7 +54,19 @@ iOS later reuses all of this: add an iOS app to the same Firebase project, then 
      --dart-define=SUPABASE_ANON_KEY=<anon key>
    ```
 
-   Upload `build/app/outputs/bundle/release/app-release.aab` under Testing > Internal testing > Create release.
+   Before uploading, confirm the bundle is release-signed. Without
+   `android/key.properties` the build silently falls back to debug keys
+   (so `flutter run --release` works on any checkout) and Play rejects
+   the upload with "signed in debug mode":
+
+   ```sh
+   keytool -printcert -jarfile build/app/outputs/bundle/release/app-release.aab | head -3
+   ```
+
+   `CN=Android Debug` means the fallback kicked in; it should show the
+   identity from step 1. Then upload
+   `build/app/outputs/bundle/release/app-release.aab` under Testing >
+   Internal testing > Create release.
 3. Testers: Internal testing > Testers > create an email list, share the opt-in link.
 4. Service account for CI uploads: in Google Cloud console (any project, the Firebase one from step 3 works), create a service account, generate a JSON key. In Play Console > Users and permissions, invite the service account's email with the *Release to testing tracks* + *View app information* permissions for Framed. Then `gh secret set PLAY_SERVICE_ACCOUNT_JSON --repo Roboroads/Framed < service-account.json`.
 
