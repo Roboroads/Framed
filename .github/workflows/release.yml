@@ -1,12 +1,12 @@
 name: Tagged release
 
 # On a version tag push (e.g. v0.4.0): build a signed release, upload it to
-# the Play Console internal testing track and TestFlight, and publish a
+# the Play Console closed testing track and TestFlight, and publish a
 # GitHub Release with the Android APK attached and notes generated from
 # the commits/PRs merged since the last tag (issue #33). Promoting a build
 # from internal/TestFlight to production stays a manual step on purpose.
 # Android and iOS build and release independently — see
-# internal-release.yml for
+# testing-release.yml for
 # the secrets each needs and the same skip-if-missing gating.
 
 on:
@@ -85,13 +85,13 @@ jobs:
             --dart-define=SUPABASE_ANON_KEY=${{ vars.PROD_SUPABASE_ANON_KEY }} \
             --dart-define=TILE_URL_TEMPLATE=${{ secrets.TILE_URL_TEMPLATE || 'https://tile.openstreetmap.org/{z}/{x}/{y}.png' }}
 
-      - name: Upload to Play Console (internal testing)
+      - name: Upload to Play Console (closed testing)
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
           packageName: me.roboroads.framed
           releaseFiles: build/app/outputs/bundle/release/app-release.aab
-          track: internal
+          track: alpha
           status: completed
 
       - name: Create GitHub Release

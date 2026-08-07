@@ -1,8 +1,9 @@
-name: Internal testing release
+name: Testing track release
 
 # Builds a signed app from every push to main and uploads it to Play
-# Console (internal testing track) and TestFlight — testers always run
-# the latest merged code (issue #33). Doc-only pushes skip the build.
+# Console (closed testing track "alpha", joinable via a Google Group)
+# and TestFlight — testers always run the latest merged code
+# (issue #33). Doc-only pushes skip the build.
 # Android and iOS build and upload independently; either skips itself
 # (via its own check-*-secrets job) until its secrets are all set,
 # rather than failing on every push.
@@ -140,13 +141,13 @@ jobs:
             --dart-define=SUPABASE_ANON_KEY=${{ vars.PROD_SUPABASE_ANON_KEY }} \
             --dart-define=TILE_URL_TEMPLATE=${{ secrets.TILE_URL_TEMPLATE || 'https://tile.openstreetmap.org/{z}/{x}/{y}.png' }}
 
-      - name: Upload to Play Console (internal testing)
+      - name: Upload to Play Console (closed testing)
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
           packageName: me.roboroads.framed
           releaseFiles: build/app/outputs/bundle/release/app-release.aab
-          track: internal
+          track: alpha
           status: completed
 
   check-ios-secrets:
