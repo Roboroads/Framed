@@ -143,7 +143,7 @@
     "leaveConfirmButton": "Leave",
     "errorGeneric": "Something went wrong. Check your connection and try again.",
     "joinSectionTitle": "Bring people in",
-    "keyLivesHere": "This code carries the game key. It never reaches our server, so this screen is the only way in — and the only thing that can read anyone's name or photo.",
+    "keyLivesHere": "This code carries the game key. It never reaches our server, so this screen is the only way in, and the only thing that can read anyone's name or photo.",
     "tapQrToEnlarge": "Tap the code to fill the screen",
     "rosterSectionTitle": "Who's in",
     "playAreaSectionTitle": "Play area",
@@ -259,7 +259,7 @@
   },
   "camera": {
     "permissionDeniedBody": "Framed needs camera access for this. Grant it, then try again.",
-    "permissionBlockedBody": "Camera access is turned off in Settings. Turn it on, then come back — you don't need to restart the app.",
+    "permissionBlockedBody": "Camera access is turned off in Settings. Turn it on, then come back. You don't need to restart the app.",
     "errorGeneric": "Couldn't start the camera. Try again.",
     "retry": "Try again",
     "shutterLabel": "Take the photo"

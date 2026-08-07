@@ -170,6 +170,7 @@ still waiting on a human read-through, one per line, grouped by locale.
 
 ## nl
 
+- [ ] lobby.keyLivesHere
 - [ ] push.youDiedTitle
 - [ ] goodToKnow.privacyBody
 - [ ] goodToKnow.beginnerTipsBody

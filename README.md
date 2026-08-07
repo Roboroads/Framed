@@ -2,13 +2,15 @@
 
 *Also available in: [Español](README.es.md) · [Français](README.fr.md) · [Nederlands](README.nl.md)*
 
-A local-area circular framing game you play IRL — GPS-assisted, photo-based. Two game modes: most frames wins (default) or last player standing.
+A local-area game you play with friends IRL: frame someone before you get framed. GPS-assisted, photo-based. Two game modes, most frames wins (default) or last player standing.
+
+Get it on [Google Play](https://play.google.com/store/apps/details?id=me.roboroads.framed).
 
 **[IDEA.md](IDEA.md)** holds the full game design.
 
 ## How it works
 
-Framed is a real-world hunting game played with your phone's GPS and camera. Nobody gets killed in Framed — you get *framed*: everyone has a secret target, and taking yours out means snapping a candid photo of them off guard, which the other players judge. Frame your target and you inherit whoever they were hunting, so the game keeps chaining until one player is left. Set a play area in the app, gather a group of 3 or more, and go.
+Framed is a real-world hunting game played with your phone's GPS and camera. Nobody gets killed, you get *framed*: everyone has a secret target, and taking yours out means snapping a candid photo of them off guard, which the other players judge. Frame your target and you inherit whoever they were hunting, so the game keeps chaining until one player is left. Set a play area in the app, gather a group of 3 or more, and go.
 
 ## Development
 
@@ -26,20 +28,20 @@ Checks: `dart format .` · `flutter analyze` · `flutter test`
 
 ## Structure
 
-- `lib/features/<feature>/{data,domain,presentation}` — clean architecture, feature-first
-- `lib/core/` — theme (design system), DI, config, crypto
-- `backend/` — Supabase docker-compose for local dev ([backend/README.md](backend/README.md))
+- `lib/features/<feature>/{data,domain,presentation}`: clean architecture, feature-first
+- `lib/core/`: theme (design system), DI, config, crypto
+- `backend/`: Supabase docker-compose for local dev ([backend/README.md](backend/README.md))
 
 ## Localization
 
 `lib/i18n/<locale>.i18n.json`, one file per locale, same keys as `en.i18n.json`
-(base locale) — `dart run build_runner build -d` fails on any missing key, so
+(base locale). `dart run build_runner build -d` fails on any missing key, so
 the set can't drift out of parity. New locales just need a new file; no
 config change (`slang.yaml`).
 
 Supported: `en` (base), `nl`, `es`, `fr`. `nl`/`es`/`fr` are machine-translated
-and need a native-speaker review before anyone treats their wording as final
-— this is a public app, and the rule-explanation and social-copy strings
+and need a native-speaker review before anyone treats their wording as final.
+This is a public app, and the rule-explanation and social-copy strings
 (game mode descriptions, the "good to know" body text, judging prompts) are
 exactly the kind that read stilted without one. Track review sign-off per
 locale in an issue against this repo.

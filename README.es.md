@@ -4,7 +4,9 @@
 
 *(Esta página es una traducción del README en inglés y todavía no la ha revisado un hablante nativo.)*
 
-Un juego circular de eliminación de área local que se juega en la vida real: asistido por GPS, basado en fotos. Dos modos de juego: gana quien más elimine (por defecto) o último jugador en pie.
+Un juego de área local que se juega con amigos en la vida real: elimina a tu objetivo antes de que te eliminen a ti. Asistido por GPS, basado en fotos. Dos modos de juego, gana quien más elimine (por defecto) o último jugador en pie.
+
+Descarga la app en [Google Play](https://play.google.com/store/apps/details?id=me.roboroads.framed).
 
 **[IDEA.md](IDEA.md)** contiene el diseño completo del juego (en inglés).
 
@@ -28,19 +30,19 @@ Comprobaciones: `dart format .` · `flutter analyze` · `flutter test`
 
 ## Estructura
 
-- `lib/features/<feature>/{data,domain,presentation}` — arquitectura limpia, organizada por funcionalidad
-- `lib/core/` — tema (sistema de diseño), inyección de dependencias, configuración, criptografía
-- `backend/` — docker-compose de Supabase para desarrollo local ([backend/README.md](backend/README.md), en inglés)
+- `lib/features/<feature>/{data,domain,presentation}`: arquitectura limpia, organizada por funcionalidad
+- `lib/core/`: tema (sistema de diseño), inyección de dependencias, configuración, criptografía
+- `backend/`: docker-compose de Supabase para desarrollo local ([backend/README.md](backend/README.md), en inglés)
 
 ## Localización
 
 `lib/i18n/<locale>.i18n.json`, un archivo por idioma, con las mismas claves que `en.i18n.json`
-(idioma base) — `dart run build_runner build -d` falla si falta alguna clave, así que
+(idioma base). `dart run build_runner build -d` falla si falta alguna clave, así que
 el conjunto no puede desincronizarse. Los idiomas nuevos solo necesitan un archivo nuevo; no
 requieren cambios de configuración (`slang.yaml`).
 
 Idiomas soportados: `en` (base), `nl`, `es`, `fr`. `nl`/`es`/`fr` están traducidos automáticamente
-y necesitan revisión de un hablante nativo antes de considerar su redacción definitiva
-— esta es una app pública, y las cadenas de explicación de reglas y contenido social
+y necesitan revisión de un hablante nativo antes de considerar su redacción definitiva.
+Esta es una app pública, y las cadenas de explicación de reglas y contenido social
 (descripciones de los modos de juego, el texto de "bueno saber", las indicaciones de votación) son
 precisamente las que suenan forzadas sin esa revisión. El seguimiento de la revisión por idioma se hace en un issue de este repositorio.

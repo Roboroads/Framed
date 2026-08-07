@@ -1,6 +1,6 @@
 # Framed
 
-A local-area circular framing game you play IRL.
+A local-area game you play with friends IRL: frame someone before you get framed.
 
 ## How does the game work
 
