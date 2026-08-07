@@ -5,7 +5,8 @@ name: Tagged release
 # GitHub Release with the Android APK attached and notes generated from
 # the commits/PRs merged since the last tag (issue #33). Promoting a build
 # from internal/TestFlight to production stays a manual step on purpose.
-# Android and iOS build and release independently — see nightly.yml for
+# Android and iOS build and release independently — see
+# internal-release.yml for
 # the secrets each needs and the same skip-if-missing gating.
 
 on:

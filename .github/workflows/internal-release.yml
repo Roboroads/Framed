@@ -1,10 +1,11 @@
-name: Nightly build
+name: Internal testing release
 
-# Builds a signed app from main every night and uploads it to Play Console
-# (internal testing track) and TestFlight — an always-fresh build for
-# testers without a manual trigger (issue #33). Android and iOS build and
-# upload independently; either skips itself (via its own check-*-secrets
-# job) until its secrets are all set, rather than failing every night.
+# Builds a signed app from every push to main and uploads it to Play
+# Console (internal testing track) and TestFlight — testers always run
+# the latest merged code (issue #33). Doc-only pushes skip the build.
+# Android and iOS build and upload independently; either skips itself
+# (via its own check-*-secrets job) until its secrets are all set,
+# rather than failing on every push.
 #
 # Secrets vs repo variables, one rule: key material, passwords, and
 # billable credentials are secrets; values already public in the shipped
@@ -67,9 +68,19 @@ name: Nightly build
 # IOS_* secrets exist and a run can actually happen.
 
 on:
-  schedule:
-    - cron: '0 3 * * *'
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
   workflow_dispatch:
+
+# A newer push supersedes a build still in progress — its upload would be
+# outdated the moment it lands, and the minutes-since-epoch build number
+# keeps whatever does get uploaded monotonic.
+concurrency:
+  group: internal-release
+  cancel-in-progress: true
 
 jobs:
   check-android-secrets:

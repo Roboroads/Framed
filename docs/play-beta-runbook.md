@@ -1,8 +1,8 @@
 # Play Store beta runbook
 
-One-time setup to get CI (`.github/workflows/nightly.yml` and `release.yml`, issue #33/#34) uploading to the Play internal testing track, plus the per-release routine. Every step here is manual on purpose: it involves accounts and secrets that stay with Robbin and never enter the repo or an AI session.
+One-time setup to get CI (`.github/workflows/internal-release.yml` and `release.yml`, issue #33/#34) uploading to the Play internal testing track, plus the per-release routine. Every step here is manual on purpose: it involves accounts and secrets that stay with Robbin and never enter the repo or an AI session.
 
-The workflows already do the rest — once the secrets below exist, a `v*` tag builds a signed bundle against the production backend and uploads it; nightlies follow automatically.
+The workflows already do the rest — once the secrets below exist, every push to main builds a signed bundle against the production backend and uploads it to the internal track, and a `v*` tag additionally publishes a GitHub Release.
 
 ## 1. Upload keystore
 
@@ -80,9 +80,9 @@ Short/full description, at least 2 phone screenshots, the 512px icon (from `tool
 git tag v0.2.0 && git push origin v0.2.0
 ```
 
-`release.yml` builds, uploads to internal testing, and publishes a GitHub Release with the APK. Nightlies from `main` keep the track fresh in between. Promotion beyond internal testing (closed beta, production) stays a manual Play Console action on purpose.
+`release.yml` builds, uploads to internal testing, and publishes a GitHub Release with the APK. Every push to main keeps the track fresh in between (doc-only pushes skip the build). Promotion beyond internal testing (closed beta, production) stays a manual Play Console action on purpose.
 
-Version code is minutes-since-epoch, monotonic across nightly and tagged runs — never set it by hand. Version *name* comes from the tag; keep `pubspec.yaml`'s `version:` roughly in sync for local builds.
+Version code is minutes-since-epoch, monotonic across push and tagged runs — never set it by hand. Version *name* comes from the tag; keep `pubspec.yaml`'s `version:` roughly in sync for local builds.
 
 ## Secrets and variables inventory
 
@@ -100,4 +100,4 @@ One rule decides which is which: key material, passwords, and billable credentia
 | `TILE_URL_TEMPLATE` | secret | optional; a paid template embeds a billable key. Unset means OSM's volunteer server (beta only) |
 | Prod server env `FCM_SERVICE_ACCOUNT_JSON` | server env | Firebase service account key (never on GitHub) |
 
-iOS additions for later (`IOS_*`, `APPSTORE_*`) are classified the same way in `nightly.yml`'s header: certificate + App Store Connect key stay secrets, the team id, profile name, and provisioning profile are variables.
+iOS additions for later (`IOS_*`, `APPSTORE_*`) are classified the same way in `internal-release.yml`'s header: certificate + App Store Connect key stay secrets, the team id, profile name, and provisioning profile are variables.
