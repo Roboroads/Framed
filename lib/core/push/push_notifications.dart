@@ -61,7 +61,7 @@ class PushNotifications {
   static Future<void> ensureInitialized() async {
     if (_initialized) return;
     await _plugin.initialize(
-      const InitializationSettings(
+      settings: const InitializationSettings(
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
         iOS: DarwinInitializationSettings(),
       ),
@@ -91,10 +91,10 @@ class PushNotifications {
       // Millisecond timestamps collide less than a fixed id — a burst of
       // two pushes should show as two notifications, not one overwritten
       // by the other (there's no dedupe/grouping requirement here).
-      DateTime.now().millisecondsSinceEpoch.remainder(1 << 31),
-      title,
-      body,
-      _details,
+      id: DateTime.now().millisecondsSinceEpoch.remainder(1 << 31),
+      title: title,
+      body: body,
+      notificationDetails: _details,
     );
   }
 
@@ -119,21 +119,21 @@ class PushNotifications {
   }) async {
     await ensureInitialized();
     await _plugin.zonedSchedule(
-      id,
-      title,
-      body,
+      id: id,
+      title: title,
+      body: body,
       // UTC, not tz.local: this only ever needs to fire at one absolute
       // instant, never a repeating local-calendar time, so there's no
       // reason to resolve (or ship a dependency to resolve) the device's
       // actual timezone name just for this.
-      tz.TZDateTime.from(at, tz.UTC),
-      _details,
+      scheduledDate: tz.TZDateTime.from(at, tz.UTC),
+      notificationDetails: _details,
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
     );
   }
 
   static Future<void> cancel(int id) async {
     await ensureInitialized();
-    await _plugin.cancel(id);
+    await _plugin.cancel(id: id);
   }
 }
