@@ -28,7 +28,10 @@ if (hasReleaseSigning) {
 
 android {
     namespace = "me.roboroads.framed"
-    compileSdk = flutter.compileSdkVersion
+    // flutter_secure_storage 11 compiles against API 37; Flutter 3.44's own
+    // default is still 36, so the higher one is pinned here (compileSdk only
+    // affects what the app compiles against, not targetSdk).
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
