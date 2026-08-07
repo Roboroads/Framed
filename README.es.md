@@ -4,13 +4,13 @@
 
 *(Esta página es una traducción del README en inglés y todavía no la ha revisado un hablante nativo.)*
 
-Un juego de asesinato circular de área local que se juega en la vida real: asistido por GPS, basado en fotos. Dos modos de juego: más fotos capturadas gana (por defecto) o último jugador en pie.
+Un juego circular de eliminación de área local que se juega en la vida real: asistido por GPS, basado en fotos. Dos modos de juego: gana quien más elimine (por defecto) o último jugador en pie.
 
 **[IDEA.md](IDEA.md)** contiene el diseño completo del juego (en inglés).
 
 ## Cómo funciona
 
-Framed es un juego de asesinatos en la vida real, jugado con el GPS y la cámara del móvil en vez de pistolas de juguete. Cada jugador recibe un objetivo secreto, y "matarlo" consiste en sacarle una foto sin que se dé cuenta. Si fotografías a tu objetivo, heredas a quien él estaba persiguiendo, así que la cadena sigue hasta que queda un solo jugador. Marca una zona de juego en la app, reúne a un grupo de 3 o más, y a jugar.
+Framed es un juego de caza en el mundo real, jugado con el GPS y la cámara del móvil. En Framed nadie muere: aquí te *eliminan*. Cada jugador tiene un objetivo secreto, y acabar con el tuyo consiste en sacarle una foto robada, con la guardia baja, que el resto de jugadores juzga. Elimina a tu objetivo y heredas a quien él estaba cazando, así que la cadena sigue hasta que queda un solo jugador. Marca una zona de juego en la app, reúne a un grupo de 3 o más, y a jugar.
 
 ## Desarrollo
 

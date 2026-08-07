@@ -2,13 +2,13 @@
 
 *Also available in: [Español](README.es.md) · [Français](README.fr.md) · [Nederlands](README.nl.md)*
 
-A local-area circular assassination game you play IRL — GPS-assisted, photo-based. Two game modes: most frames wins (default) or last player standing.
+A local-area circular framing game you play IRL — GPS-assisted, photo-based. Two game modes: most frames wins (default) or last player standing.
 
 **[IDEA.md](IDEA.md)** holds the full game design.
 
 ## How it works
 
-Framed is a real-world assassination game, played with your phone's GPS and camera instead of nerf guns. Everyone gets a secret target, and "killing" them just means snapping a candid photo of them off guard. Frame your target and you inherit whoever they were hunting, so the game keeps chaining until one player is left. Set a play area in the app, gather a group of 3 or more, and go.
+Framed is a real-world hunting game played with your phone's GPS and camera. Nobody gets killed in Framed — you get *framed*: everyone has a secret target, and taking yours out means snapping a candid photo of them off guard, which the other players judge. Frame your target and you inherit whoever they were hunting, so the game keeps chaining until one player is left. Set a play area in the app, gather a group of 3 or more, and go.
 
 ## Development
 

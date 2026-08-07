@@ -1,5 +1,5 @@
 name: framed
-description: "Framed — a local-area circular assassination game you play IRL."
+description: "Framed — a local-area game you play IRL: frame your target before someone frames you."
 publish_to: 'none'
 version: 0.1.0+1
 

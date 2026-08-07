@@ -26,6 +26,21 @@ still waiting on a human read-through, one per line, grouped by locale.
 
 ## es
 
+- [ ] push.youDiedTitle
+- [ ] goodToKnow.privacyBody
+- [ ] goodToKnow.beginnerTipsBody
+- [ ] hostSetup.modeLastManStandingDescription
+- [ ] hostSetup.softPunishmentMinutesInfo
+- [ ] hostSetup.hardPunishmentMinutesInfo
+- [ ] hostSetup.compassUpdateIntervalMinutesInfo
+- [ ] hostSetup.frameCooldownMinutesInfo
+- [ ] ingame.warningDeadline
+- [ ] ingame.deadTitleFramed
+- [ ] ingame.deadKilledBy
+- [ ] ingame.deadChatHint
+- [ ] finish.statMostKills
+- [ ] finish.killChainTitle
+- [ ] permissionRationale.cameraExplanation
 - [ ] finish.stillValue
 - [ ] ingame.deadSurvivedCaption
 - [ ] finish.winnerEyebrow
@@ -94,6 +109,21 @@ still waiting on a human read-through, one per line, grouped by locale.
 
 ## fr
 
+- [ ] push.youDiedTitle
+- [ ] goodToKnow.privacyBody
+- [ ] goodToKnow.beginnerTipsBody
+- [ ] hostSetup.modeLastManStandingDescription
+- [ ] hostSetup.softPunishmentMinutesInfo
+- [ ] hostSetup.hardPunishmentMinutesInfo
+- [ ] hostSetup.compassUpdateIntervalMinutesInfo
+- [ ] hostSetup.frameCooldownMinutesInfo
+- [ ] ingame.warningDeadline
+- [ ] ingame.deadTitleFramed
+- [ ] ingame.deadKilledBy
+- [ ] ingame.deadChatHint
+- [ ] finish.statMostKills
+- [ ] finish.killChainTitle
+- [ ] permissionRationale.cameraExplanation
 - [ ] finish.stillValue
 - [ ] ingame.deadSurvivedCaption
 - [ ] finish.winnerEyebrow
@@ -140,6 +170,21 @@ still waiting on a human read-through, one per line, grouped by locale.
 
 ## nl
 
+- [ ] push.youDiedTitle
+- [ ] goodToKnow.privacyBody
+- [ ] goodToKnow.beginnerTipsBody
+- [ ] hostSetup.modeLastManStandingDescription
+- [ ] hostSetup.softPunishmentMinutesInfo
+- [ ] hostSetup.hardPunishmentMinutesInfo
+- [ ] hostSetup.compassUpdateIntervalMinutesInfo
+- [ ] hostSetup.frameCooldownMinutesInfo
+- [ ] ingame.warningDeadline
+- [ ] ingame.deadTitleFramed
+- [ ] ingame.deadKilledBy
+- [ ] ingame.deadChatHint
+- [ ] finish.statMostKills
+- [ ] finish.killChainTitle
+- [ ] permissionRationale.cameraExplanation
 - [ ] finish.stillValue
 - [ ] ingame.deadSurvivedCaption
 - [ ] finish.winnerEyebrow

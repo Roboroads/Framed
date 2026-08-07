@@ -4,13 +4,13 @@
 
 *(Cette page est une traduction du README en anglais et n'a pas encore été relue par un locuteur natif.)*
 
-Un jeu d'assassinat circulaire en extérieur, joué en vrai : assisté par GPS, basé sur des photos. Deux modes de jeu : le plus de photos gagne (par défaut) ou dernier joueur en vie.
+Un jeu de piégeage circulaire de proximité, joué en vrai : assisté par GPS, basé sur des photos. Deux modes de jeu : le plus de piégeages gagne (par défaut) ou dernier survivant.
 
 **[IDEA.md](IDEA.md)** contient la conception complète du jeu (en anglais).
 
 ## Comment ça marche
 
-Framed est un jeu d'assassinat grandeur nature, joué avec le GPS et l'appareil photo du téléphone à la place de pistolets en mousse. Chaque joueur reçoit une cible secrète, et "l'éliminer" consiste simplement à la prendre en photo à son insu. Si vous photographiez votre cible, vous héritez de la personne qu'elle traquait, et la chaîne continue jusqu'à ce qu'il ne reste qu'un joueur. Délimitez une zone de jeu dans l'application, réunissez un groupe de 3 joueurs ou plus, et lancez-vous.
+Framed est un jeu de traque grandeur nature, joué avec le GPS et l'appareil photo du téléphone. Personne ne se fait tuer dans Framed : on se fait *piéger*. Chaque joueur a une cible secrète, et la sortir du jeu consiste à la prendre en photo à son insu, photo que les autres joueurs jugent ensuite. Piégez votre cible et vous héritez de la personne qu'elle traquait, et la chaîne continue jusqu'à ce qu'il ne reste qu'un joueur. Délimitez une zone de jeu dans l'application, réunissez un groupe de 3 joueurs ou plus, et lancez-vous.
 
 ## Développement
 

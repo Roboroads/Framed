@@ -4,13 +4,13 @@
 
 *(Deze pagina is een vertaling van de Engelse README en is nog niet nagekeken door een native speaker.)*
 
-Een lokaal, cirkelvormig moordspel dat je in het echt speelt: GPS-ondersteund, foto-gebaseerd. Twee spelmodi: meeste kiekjes wint (standaard) of laatste speler die overblijft.
+Een lokaal, cirkelvormig framespel dat je in het echt speelt: GPS-ondersteund, foto-gebaseerd. Twee spelmodi: meeste frames wint (standaard) of laatste speler die overblijft.
 
 **[IDEA.md](IDEA.md)** bevat het volledige spelontwerp (in het Engels).
 
 ## Hoe het werkt
 
-Framed is een levensecht moordspel, gespeeld met de GPS en camera van je telefoon in plaats van foam pistolen. Elke speler krijgt een geheim doelwit, en "vermoorden" betekent gewoon een foto van diegene maken zonder dat ze het doorhebben. Fotografeer je doelwit en je erft wie zij aan het jagen waren, zodat de keten doorgaat tot er nog één speler overblijft. Bepaal een speelgebied in de app, verzamel een groep van 3 of meer, en begin.
+Framed is een levensecht jachtspel, gespeeld met de GPS en camera van je telefoon. Niemand wordt vermoord in Framed — je wordt *geframed*: elke speler heeft een geheim doelwit, en dat uitschakelen betekent een spontane foto van diegene maken zonder dat ze het doorhebben, die de andere spelers beoordelen. Frame je doelwit en je erft wie zij aan het jagen waren, zodat de keten doorgaat tot er nog één speler overblijft. Bepaal een speelgebied in de app, verzamel een groep van 3 of meer, en begin.
 
 ## Ontwikkeling
 
