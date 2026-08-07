@@ -90,6 +90,9 @@ for d, s in [("mdpi", 96), ("hdpi", 144), ("xhdpi", 192), ("xxhdpi", 288),
              ("xxxhdpi", 384)]:
     png(f"{BRAND}/launch-mark.svg", f"{RES}/drawable-{d}/launch_mark.png", s)
 
+# --- Play Store listing icon (512x512 PNG, uploaded in the Console) ---
+png(f"{BRAND}/icon.svg", f"{BRAND}/play-store-icon.png", 512)
+
 # --- iOS app icon: drive every size off the catalogue's own Contents.json ---
 appicon = f"{IOS}/AppIcon.appiconset"
 meta = json.load(open(f"{appicon}/Contents.json"))
