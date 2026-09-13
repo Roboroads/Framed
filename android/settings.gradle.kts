@@ -19,8 +19,8 @@ pluginManagement {
 
 plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
-    id("com.android.application") version "9.1.0" apply false
-    id("org.jetbrains.kotlin.android") version "2.4.10" apply false
+    id("com.android.application") version "9.4.0" apply false
+    id("org.jetbrains.kotlin.android") version "2.4.20" apply false
     // Push (#28/#33): applied conditionally in app/build.gradle.kts — only
     // when google-services.json exists (gitignored; CI writes it from the
     // GOOGLE_SERVICES_JSON secret, a dev checkout usually has none).
